@@ -15,6 +15,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         AddOption(NonInteractiveOption.Instance);
         AddOption(DisableSecretsOption.Instance);
         AddOption(DisableStateOption.Instance);
+        AddOption(StatePathOption.Instance);
         AddOption(LaunchProfileOption.Instance);
         AddOption(SecretProviderOption.Instance);
         Handler = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
@@ -67,6 +68,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         {
             NonInteractive = options.NonInteractive,
             DisableState = options.DisableState,
+            StatePath = options.StatePath ?? Directory.GetCurrentDirectory(),
             State = handler.CurrentState,
             RequiresState = requiresState,
         };

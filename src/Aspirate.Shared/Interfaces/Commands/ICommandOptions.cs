@@ -8,4 +8,6 @@ public interface ICommandOptions
     string? SecretPassword { get; set; }
     string? LaunchProfile { get; set; }
     string? SecretProvider { get; set; }
+
+    string? StatePath { get; set; }
 }

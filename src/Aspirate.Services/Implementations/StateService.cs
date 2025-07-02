@@ -20,7 +20,7 @@ public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider s
             return;
         }
 
-        var stateFile = fs.Path.Combine(fs.Directory.GetCurrentDirectory(), AspirateLiterals.StateFileName);
+        var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
         var stateAsJson = JsonSerializer.Serialize(options.State, _jsonSerializerOptions);
 
         await fs.File.WriteAllTextAsync(stateFile, stateAsJson);
@@ -76,7 +76,7 @@ public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider s
 
     private bool ShouldCancelAsStateFileDoesNotExist(StateManagementOptions options, out string stateFile)
     {
-        stateFile = fs.Path.Combine(fs.Directory.GetCurrentDirectory(), AspirateLiterals.StateFileName);
+        stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
 
         var doesNotExist =  !fs.File.Exists(stateFile);
 
