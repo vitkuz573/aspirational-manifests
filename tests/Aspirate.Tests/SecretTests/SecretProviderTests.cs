@@ -116,6 +116,34 @@ public class SecretProviderTests
         secret.Should().Be(DecryptedTestValue);
     }
 
+    [Fact]
+    public void RotatePassword_ShouldReEncryptSecrets()
+    {
+        var provider = new SecretProvider(_fileSystem);
+
+        var state = GetState(
+            Base64Salt,
+            new Dictionary<string, Dictionary<string, string>>
+            {
+                [TestResource] = new()
+                {
+                    [TestKey] = EncryptedTestValue,
+                },
+            });
+
+        provider.LoadState(state);
+        provider.SetPassword(TestPassword);
+
+        var original = provider.GetSecret(TestResource, TestKey);
+
+        provider.RotatePassword("newPassword");
+
+        provider.CheckPassword("newPassword").Should().BeTrue();
+        var rotated = provider.GetSecret(TestResource, TestKey);
+
+        rotated.Should().Be(original);
+    }
+
     private static AspirateState GetState(string? salt = null, Dictionary<string, Dictionary<string, string>>? secrets = null)
     {
         var state = new SecretState

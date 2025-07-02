@@ -130,4 +130,39 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
         return State.Secrets[resourceName].TryGetValue(key, out var encryptedValue) ? _decrypter.DecryptValue(encryptedValue) : null;
     }
+
+    public void RotatePassword(string newPassword)
+    {
+        if (State?.Secrets == null || _decrypter == null)
+        {
+            return;
+        }
+
+        var decrypted = new Dictionary<string, Dictionary<string, string>>();
+
+        foreach (var resource in State.Secrets)
+        {
+            decrypted[resource.Key] = new Dictionary<string, string>();
+
+            foreach (var secret in resource.Value)
+            {
+                decrypted[resource.Key][secret.Key] = _decrypter.DecryptValue(secret.Value);
+            }
+        }
+
+        _salt = null;
+        SetPassword(newPassword);
+
+        State.Secrets = new Dictionary<string, Dictionary<string, string>>();
+
+        foreach (var resource in decrypted)
+        {
+            State.Secrets[resource.Key] = new Dictionary<string, string>();
+
+            foreach (var secret in resource.Value)
+            {
+                State.Secrets[resource.Key][secret.Key] = _encrypter!.EncryptValue(secret.Value);
+            }
+        }
+    }
 }

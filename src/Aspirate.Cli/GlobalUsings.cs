@@ -17,6 +17,7 @@ global using Aspirate.Commands.Commands.Destroy;
 global using Aspirate.Commands.Commands.Generate;
 global using Aspirate.Commands.Commands.Init;
 global using Aspirate.Commands.Commands.Run;
+global using Aspirate.Commands.Commands.RotatePassword;
 global using Aspirate.Commands.Commands.Settings;
 global using Aspirate.Commands.Commands.Stop;
 global using Aspirate.Processors;
