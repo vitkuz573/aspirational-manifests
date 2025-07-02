@@ -21,7 +21,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         // Derive a key from the passphrase using Pbkdf2 with SHA256, 1 million iterations.
         using var pbkdf2 = new Rfc2898DeriveBytes(_password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
         var key = pbkdf2.GetBytes(32); // AES-256-GCM needs a 32-byte key
-        var crypter = new AesGcmCrypter(key, _salt, TagSizeInBytes);
+        var crypter = new AesGcmCrypter(key, TagSizeInBytes);
 
         _encrypter = crypter;
         _decrypter = crypter;
