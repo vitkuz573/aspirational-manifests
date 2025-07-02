@@ -1,0 +1,19 @@
+namespace Aspirate.Commands.Options;
+
+public sealed class SecretProviderOption : BaseOption<string?>
+{
+    private static readonly string[] _aliases = ["--secret-provider"];
+
+    private SecretProviderOption() : base(_aliases, "ASPIRATE_SECRET_PROVIDER", "file")
+    {
+        Name = nameof(ICommandOptions.SecretProvider);
+        Description = "The secret backend provider to use (file or keyvault)";
+        Arity = ArgumentArity.ExactlyOne;
+        IsRequired = false;
+    }
+
+    public static SecretProviderOption Instance { get; } = new();
+
+    public override bool IsSecret => false;
+}
+

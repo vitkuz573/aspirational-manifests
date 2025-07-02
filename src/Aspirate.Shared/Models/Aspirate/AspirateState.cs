@@ -94,6 +94,10 @@ public class AspirateState :
     public bool? DisableSecrets { get; set; }
 
     [RestorableStateProperty]
+    [JsonPropertyName("secretProvider")]
+    public string? SecretProvider { get; set; }
+
+    [RestorableStateProperty]
     [JsonPropertyName("skipFinalKustomizeGeneration")]
     public bool? SkipFinalKustomizeGeneration { get; set; }
 

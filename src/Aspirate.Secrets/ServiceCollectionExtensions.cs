@@ -9,5 +9,9 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ISecretProtectionStrategy, MsSqlPasswordProtector>();
 
     public static IServiceCollection AddAspirateSecretProvider(this IServiceCollection services) =>
-        services.AddSingleton<ISecretProvider, SecretProvider>();
+        services
+            .AddSingleton<SecretProvider>()
+            .AddSingleton<AzureKeyVaultSecretProvider>()
+            .AddSingleton<SecretProviderFactory>()
+            .AddSingleton<ISecretProvider, DelegatingSecretProvider>();
 }

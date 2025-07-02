@@ -7,4 +7,5 @@ public interface ICommandOptions
     bool? DisableState { get; set; }
     string? SecretPassword { get; set; }
     string? LaunchProfile { get; set; }
+    string? SecretProvider { get; set; }
 }
