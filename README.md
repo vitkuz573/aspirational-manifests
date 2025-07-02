@@ -24,6 +24,8 @@ Documentation: https://prom3theu5.github.io/aspirational-manifests/
 9. [Uninstall tool](#uninstall-tool)
 10. [Configuring the Windows Terminal For Unicode and Emoji Support](#configuring-the-windows-terminal-for-unicode-and-emoji-support)
 11. [DevContainer Support](#devcontainer-support)
+12. [Security Best Practices](#security-best-practices)
+13. [Troubleshooting](#troubleshooting)
 
 ## To Install as a global tool
 
@@ -179,3 +181,11 @@ features": {
 ```
 
 An Example of a devcontainer can be found on the documentation page: [Here](https://prom3theu5.github.io/aspirational-manifests/installation-as-a-devcontainer-feature.html#example-dev-container-configuration)
+
+## Security Best Practices
+
+For tips on securing your secrets and state file see the [Security Best Practices](https://prom3theu5.github.io/aspirational-manifests/security-best-practices.html) page.
+
+## Troubleshooting
+
+Common issues and their solutions are available in the [Troubleshooting](https://prom3theu5.github.io/aspirational-manifests/troubleshooting.html) section of the docs.
