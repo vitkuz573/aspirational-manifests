@@ -5,4 +5,5 @@ public interface ISecretService
     void LoadSecrets(SecretManagementOptions options);
     void SaveSecrets(SecretManagementOptions options);
     void ReInitialiseSecrets(SecretManagementOptions options);
+    void RotatePassword(SecretManagementOptions options);
 }

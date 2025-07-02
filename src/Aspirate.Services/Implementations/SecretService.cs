@@ -81,6 +81,41 @@ public class SecretService(
         logger.MarkupLine("[green]Secret State has been initialised![/].");
     }
 
+    public void RotatePassword(SecretManagementOptions options)
+    {
+        if (options.DisableSecrets == true)
+        {
+            logger.MarkupLine("[green]Secrets are disabled[/].");
+            return;
+        }
+
+        if (!secretProvider.SecretStateExists(options.State))
+        {
+            logger.MarkupLine("[red]No secret state exists to rotate.[/]");
+            return;
+        }
+
+        secretProvider.LoadState(options.State);
+
+        if (!CheckPassword(options))
+        {
+            logger.MarkupLine("[red]Aborting due to inability to unlock secrets.[/]");
+            ActionCausesExitException.ExitNow();
+        }
+
+        if (!CreatePassword(options))
+        {
+            logger.ValidationFailed("Aborting due to inability to create password.");
+        }
+
+        secretProvider.RotatePassword(options.SecretPassword!);
+        secretProvider.SetState(options.State);
+        options.State.SecretPassword = options.SecretPassword;
+        options.State.SecretState = secretProvider.State;
+
+        logger.MarkupLine("[green]Secret password rotated![/].");
+    }
+
     public void LoadSecrets(SecretManagementOptions options)
     {
         logger.WriteRuler("[purple]Handling Aspirate Secrets[/]");

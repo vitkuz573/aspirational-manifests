@@ -15,4 +15,5 @@ public interface ISecretProvider
     string? GetSecret(string resourceName, string key);
     void SetPassword(string password);
     bool CheckPassword(string password);
+    void RotatePassword(string newPassword);
 }

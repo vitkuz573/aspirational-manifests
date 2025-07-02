@@ -66,6 +66,7 @@ internal class AspirateCli : RootCommand
         AddCommand(new BuildCommand());
         AddCommand(new ApplyCommand());
         AddCommand(new DestroyCommand());
+        AddCommand(new RotatePasswordCommand());
         AddCommand(new SettingsCommand());
     }
 }

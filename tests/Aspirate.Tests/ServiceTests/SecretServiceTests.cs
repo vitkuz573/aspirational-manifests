@@ -150,4 +150,33 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
         // Assert
         result.Should().Throw<ActionCausesExitException>();
     }
+
+    [Fact]
+    public void RotatePassword_RotatesSecrets()
+    {
+        // Arrange
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushTextWithEnter("password_for_secrets");
+        console.Input.PushTextWithEnter("new_secret_password");
+        console.Input.PushTextWithEnter("new_secret_password");
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+        var serviceProvider = CreateServiceProvider(state, console);
+        var service = GetSystemUnderTest(serviceProvider);
+        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
+
+        // Act
+        service.RotatePassword(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = false,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+        });
+
+        // Assert
+        secretProvider.CheckPassword("new_secret_password").Should().BeTrue();
+        secretProvider.GetSecret("postgrescontainer", "ConnectionString_Test").Should().Be("some_secret_value");
+    }
 }
