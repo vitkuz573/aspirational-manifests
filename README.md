@@ -72,7 +72,7 @@ Aspirate now includes built-in support for robust secret management, allowing yo
 ### Managing Secrets
 
 During the `generate` and `apply` processes, you will be prompted to input a password.
-This password is used to encrypt your secrets in the secrets file, named `aspirate-secrets.json`, located in the `aspirate-output` directory.
+This password is used to encrypt your secrets in the secrets file, named `aspirate-state.json`, located in the `aspirate-output` directory.
 
 ### Secrets File Contents
 
