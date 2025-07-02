@@ -10,7 +10,7 @@ public class SecretProviderTests
     private const string TestKey = "testKey";
     private const string TestResource = "testresource";
     private const string DecryptedTestValue = "testValue";
-    private const string EncryptedTestValue = "dxaPu37gk4KtgYByS0Fyt9hQ/dvbURmdavzyWNs8xEgBdduW9Q==";
+    private const string EncryptedTestValue = "lbD6eicWrRyb6o+4mBDfDUJsrlOR0rstWPfPLr0nAg8OEAer3g==";
     private readonly IFileSystem _fileSystem = CreateMockFilesystem();
 
     [Fact]
