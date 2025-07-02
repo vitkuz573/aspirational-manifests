@@ -16,6 +16,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         AddOption(DisableSecretsOption.Instance);
         AddOption(DisableStateOption.Instance);
         AddOption(LaunchProfileOption.Instance);
+        AddOption(SecretProviderOption.Instance);
         Handler = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
     }
 
@@ -56,6 +57,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
             DisableSecrets = handler.CurrentState.DisableSecrets,
             NonInteractive = options.NonInteractive,
             SecretPassword = options.SecretPassword,
+            SecretProvider = handler.CurrentState.SecretProvider,
             CommandUnlocksSecrets = CommandUnlocksSecrets,
             State = handler.CurrentState,
         });

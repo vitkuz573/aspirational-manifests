@@ -12,6 +12,7 @@ public sealed class RotatePasswordCommandHandler(IServiceProvider serviceProvide
             NonInteractive = options.NonInteractive,
             DisableSecrets = CurrentState.DisableSecrets,
             SecretPassword = options.SecretPassword,
+            SecretProvider = CurrentState.SecretProvider,
         });
 
         return Task.FromResult(0);

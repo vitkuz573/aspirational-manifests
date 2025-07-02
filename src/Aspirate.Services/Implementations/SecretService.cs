@@ -1,16 +1,18 @@
 namespace Aspirate.Services.Implementations;
 
 public class SecretService(
-    ISecretProvider secretProvider,
+    SecretProviderFactory providerFactory,
     IFileSystem fs,
     IAnsiConsole logger,
     IEnumerable<ISecretProtectionStrategy> protectionStrategies)
     : ISecretService
 {
+    private readonly SecretProviderFactory _factory = providerFactory;
     private IReadOnlyCollection<ISecretProtectionStrategy> ProtectionStrategies { get; } = protectionStrategies.ToList();
 
     public void SaveSecrets(SecretManagementOptions options)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         if (options.DisableSecrets == true)
         {
             logger.MarkupLine("Secrets have been [red]disabled[/] for this run.");
@@ -64,6 +66,7 @@ public class SecretService(
 
     public void ReInitialiseSecrets(SecretManagementOptions options)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         if (options.DisableSecrets == true)
         {
             logger.MarkupLine("[green]Secrets are disabled[/].");
@@ -83,6 +86,7 @@ public class SecretService(
 
     public void RotatePassword(SecretManagementOptions options)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         if (options.DisableSecrets == true)
         {
             logger.MarkupLine("[green]Secrets are disabled[/].");
@@ -118,6 +122,7 @@ public class SecretService(
 
     public void LoadSecrets(SecretManagementOptions options)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         logger.WriteRuler("[purple]Handling Aspirate Secrets[/]");
 
         if (options.DisableSecrets == true)
@@ -167,6 +172,7 @@ public class SecretService(
 
     private bool CheckPassword(SecretManagementOptions options)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         if (CliSecretPasswordSupplied(options, out var validPassword))
         {
             return validPassword;
@@ -203,6 +209,7 @@ public class SecretService(
 
     private bool CliSecretPasswordSupplied(SecretManagementOptions options, out bool validPassword)
     {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
         if (string.IsNullOrEmpty(options.SecretPassword))
         {
             validPassword = false;
@@ -235,6 +242,7 @@ public class SecretService(
     private bool CreatePassword(SecretManagementOptions options)
     {
         logger.MarkupLine("Secrets are to be protected by a [green]password[/]");
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
 
         if (!string.IsNullOrEmpty(options.State.SecretPassword))
         {

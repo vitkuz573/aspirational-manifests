@@ -15,6 +15,7 @@ public class SaveSecretsAction(
             NonInteractive = CurrentState.NonInteractive,
             DisableSecrets = CurrentState.DisableSecrets,
             SecretPassword = CurrentState.SecretPassword,
+            SecretProvider = CurrentState.SecretProvider,
         });
 
         return Task.FromResult(true);
