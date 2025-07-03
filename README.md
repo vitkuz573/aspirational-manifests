@@ -71,6 +71,14 @@ aspirate build
 
 Aspirate now includes built-in support for robust secret management, allowing you to easily encrypt sensitive data such as connection strings. This feature is designed to increase security and minimize vulnerabilities.
 
+Built-in protection strategies handle the following configuration keys automatically:
+
+- `ConnectionString*`
+- `POSTGRES_PASSWORD`
+- `MSSQL_SA_PASSWORD`
+- `API_KEY`
+- `CLIENT_SECRET`
+
 ### Managing Secrets
 
 During the `generate` and `apply` processes, you will be prompted to input a password.
