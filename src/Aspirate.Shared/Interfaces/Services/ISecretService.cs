@@ -12,4 +12,6 @@ public interface ISecretService
     Task RotatePasswordAsync(SecretManagementOptions options);
     void ClearSecrets(SecretManagementOptions options);
     Task ClearSecretsAsync(SecretManagementOptions options);
+    void VerifySecrets(SecretManagementOptions options);
+    Task VerifySecretsAsync(SecretManagementOptions options);
 }

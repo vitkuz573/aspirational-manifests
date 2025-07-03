@@ -500,4 +500,63 @@ public class SecretService(
             }
         }
     }
+
+    public void VerifySecrets(SecretManagementOptions options)
+    {
+        var secretProvider = GetProvider(options);
+
+        if (options.DisableSecrets == true)
+        {
+            logger.MarkupLine("[green]Secrets are disabled[/].");
+            return;
+        }
+
+        if (!secretProvider.SecretStateExists(options.State))
+        {
+            logger.MarkupLine("[yellow]No secret state exists to verify.[/]");
+            return;
+        }
+
+        secretProvider.LoadState(options.State);
+        if (secretProvider.State is not null)
+        {
+            secretProvider.Pbkdf2Iterations = secretProvider.State.Pbkdf2Iterations;
+        }
+
+        var versionMismatch = CheckSecretVersion(secretProvider);
+
+        if (!CheckPassword(options))
+        {
+            logger.MarkupLine("[red]Aborting due to inability to unlock secrets.[/]");
+            ActionCausesExitException.ExitNow();
+        }
+
+        logger.MarkupLine("[green]Secrets verified successfully.[/]");
+
+        if (versionMismatch)
+        {
+            logger.MarkupLine("[yellow]Consider rotating the password to upgrade encryption.[/]");
+        }
+
+        secretProvider.ClearPassword();
+    }
+
+    public async Task VerifySecretsAsync(SecretManagementOptions options)
+    {
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            if (fs.File.Exists(stateFile))
+            {
+                var stateAsJson = await fs.File.ReadAllTextAsync(stateFile);
+                var previousState = JsonSerializer.Deserialize<AspirateState>(stateAsJson, _jsonSerializerOptions);
+                if (previousState?.SecretState is not null)
+                {
+                    options.State.SecretState = previousState.SecretState;
+                }
+            }
+        }
+
+        VerifySecrets(options);
+    }
 }

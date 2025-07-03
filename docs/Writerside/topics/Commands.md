@@ -10,3 +10,5 @@
 
 The pages in this section will go into detail about each command, and how to use them.
 All the cli options listed in tables on each page are optional, and will default to the values allowing %product% prompting the user for input.
+
+The `verify-secrets` command checks that the password used to encrypt secrets is valid. It also warns if the stored secrets were encrypted using an outdated version.
