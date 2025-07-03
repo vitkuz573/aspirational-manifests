@@ -25,6 +25,7 @@ public class DelegatingSecretProvider(SecretProviderFactory factory, AspirateSta
     public void SetPassword(string password) => Resolve().SetPassword(password);
     public bool CheckPassword(string password) => Resolve().CheckPassword(password);
     public void RotatePassword(string newPassword) => Resolve().RotatePassword(newPassword);
+    public void UpgradeEncryption() => Resolve().UpgradeEncryption();
     public void ClearPassword() => Resolve().ClearPassword();
 }
 

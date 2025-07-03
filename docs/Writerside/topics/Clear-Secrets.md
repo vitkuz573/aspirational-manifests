@@ -16,4 +16,4 @@ aspirate clear-secrets
 | --pbkdf2-iterations | | `ASPIRATE_PBKDF2_ITERATIONS` | Override the PBKDF2 iteration count used for password hashing |
 | --state-path | | `ASPIRATE_STATE_PATH` | Path to the directory containing `aspirate-state.json` |
 | --disable-secrets | | `ASPIRATE_DISABLE_SECRETS` | Disables secrets management features. |
-| --secret-provider | | `ASPIRATE_SECRET_PROVIDER` | The secret provider in use. |
+| --secret-provider | | `ASPIRATE_SECRET_PROVIDER` | Secret provider: `file`, `env` or `base64`. |

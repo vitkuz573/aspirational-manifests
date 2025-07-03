@@ -17,5 +17,6 @@ public interface ISecretProvider
     void SetPassword(string password);
     bool CheckPassword(string password);
     void RotatePassword(string newPassword);
+    void UpgradeEncryption();
     void ClearPassword();
 }

@@ -8,6 +8,7 @@ global using System.Text.Json.Serialization;
 global using System.Text.RegularExpressions;
 global using Ardalis.SmartEnum.SystemTextJson;
 global using Aspirate.Services.Implementations;
+global using Aspirate.Secrets;
 global using Aspirate.Shared.Enums;
 global using Aspirate.Shared.Exceptions;
 global using Aspirate.Shared.Extensions;
