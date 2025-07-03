@@ -82,6 +82,7 @@ public sealed class ContainerCompositionService(
 
     private async Task<ShellCommandResult> PushContainer(string builder, string? registry, List<string> fullImages, bool? nonInteractive)
     {
+        var command = GetContainerBuilderCommand(builder);
         if (!string.IsNullOrEmpty(registry))
         {
             ShellCommandResult? result = null;
@@ -97,7 +98,7 @@ public sealed class ContainerCompositionService(
                 result = await shellExecutionService.ExecuteCommand(
                     new()
                     {
-                        Command = builder,
+                        Command = command,
                         ArgumentsBuilder = pushArgumentBuilder,
                         NonInteractive = nonInteractive.GetValueOrDefault(),
                         ShowOutput = true,
@@ -117,6 +118,7 @@ public sealed class ContainerCompositionService(
 
     private Task<ShellCommandResult> BuildContainer(string context, Dictionary<string, string>? env, Dictionary<string, string> buildArgs, string builder, bool? nonInteractive, List<string> tags, string fullDockerfilePath)
     {
+        var command = GetContainerBuilderCommand(builder);
         var buildArgumentBuilder = ArgumentsBuilder
             .Create()
             .AppendArgument(DockerLiterals.BuildCommand, string.Empty, quoteValue: false);
@@ -142,7 +144,7 @@ public sealed class ContainerCompositionService(
 
         return shellExecutionService.ExecuteCommand(new()
         {
-            Command = builder,
+            Command = command,
             ArgumentsBuilder = buildArgumentBuilder,
             NonInteractive = nonInteractive.GetValueOrDefault(),
             ShowOutput = true,
@@ -249,11 +251,12 @@ public sealed class ContainerCompositionService(
 
     private async Task CheckIfBuilderIsRunning(string builder)
     {
-        var builderAvailable = shellExecutionService.IsCommandAvailable(builder);
+        var command = GetContainerBuilderCommand(builder);
+        var builderAvailable = shellExecutionService.IsCommandAvailable(command);
 
         if (!builderAvailable.IsAvailable)
         {
-            console.MarkupLine($"[red bold]{builder} is not available or found on your system.[/]");
+            console.MarkupLine($"[red bold]{command} is not available or found on your system.[/]");
             ActionCausesExitException.ExitNow();
         }
 
@@ -308,5 +311,15 @@ public sealed class ContainerCompositionService(
         var architecture = RuntimeInformation.OSArchitecture;
 
         return architecture == Architecture.Arm64 ? "linux-arm64" : "linux-x64";
+    }
+
+    private static string GetContainerBuilderCommand(string builder)
+    {
+        return builder.ToLower() switch
+        {
+            "podman" => ContainerBuilder.Podman.Value,
+            "nerdctl" => ContainerBuilder.Nerdctl.Value,
+            _ => ContainerBuilder.Docker.Value,
+        };
     }
 }
