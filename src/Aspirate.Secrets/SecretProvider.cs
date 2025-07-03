@@ -4,7 +4,19 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 {
     private const int TagSizeInBytes = 16;
     private const int DefaultIterations = 1_000_000;
-    public int Pbkdf2Iterations { get; set; } = DefaultIterations;
+    private const int MinimumIterations = 100_000;
+
+    private int _pbkdf2Iterations = DefaultIterations;
+    public int Pbkdf2Iterations
+    {
+        get => _pbkdf2Iterations;
+        set => _pbkdf2Iterations = value >= MinimumIterations
+            ? value
+            : throw new ArgumentOutOfRangeException(
+                nameof(Pbkdf2Iterations),
+                value,
+                $"Iterations must be at least {MinimumIterations}");
+    }
     private char[]? _password;
     private IEncrypter? _encrypter;
     private IDecrypter? _decrypter;
