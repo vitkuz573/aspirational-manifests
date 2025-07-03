@@ -13,7 +13,6 @@ public static class ServiceCollectionExtensions
     public static IServiceCollection AddAspirateSecretProvider(this IServiceCollection services) =>
         services
             .AddSingleton<SecretProvider>()
-            .AddSingleton<AzureKeyVaultSecretProvider>()
             .AddSingleton<SecretProviderFactory>()
             .AddSingleton<ISecretProvider, DelegatingSecretProvider>();
 }

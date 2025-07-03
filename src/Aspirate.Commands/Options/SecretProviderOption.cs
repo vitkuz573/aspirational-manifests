@@ -7,7 +7,7 @@ public sealed class SecretProviderOption : BaseOption<string?>
     private SecretProviderOption() : base(_aliases, "ASPIRATE_SECRET_PROVIDER", "file")
     {
         Name = nameof(ICommandOptions.SecretProvider);
-        Description = "The secret backend provider to use (file or keyvault)";
+        Description = "The secret backend provider to use. Defaults to file.";
         Arity = ArgumentArity.ExactlyOne;
         IsRequired = false;
     }
