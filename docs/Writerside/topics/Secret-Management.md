@@ -25,3 +25,13 @@ variable to choose between `file` and `keyvault` backends.
 When supplying the secret password via the `ASPIRATE_SECRET_PASSWORD` environment
 variable, Aspirate clears the variable after reading it to avoid leaving the
 password in the shell environment.
+
+## Built-in Secret Protection Strategies
+
+The following environment variable names are protected automatically when secrets are saved:
+
+- `ConnectionString*` - any value beginning with this prefix.
+- `POSTGRES_PASSWORD`
+- `MSSQL_SA_PASSWORD`
+- `API_KEY`
+- `CLIENT_SECRET`
