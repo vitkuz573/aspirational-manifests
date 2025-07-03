@@ -177,6 +177,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
 
         // Assert
         secretProvider.CheckPassword("new_secret_password").Should().BeTrue();
+        secretProvider.SetPassword("new_secret_password");
         secretProvider.GetSecret("postgrescontainer", "ConnectionString_Test").Should().Be("some_secret_value");
     }
 }
