@@ -19,7 +19,7 @@ The `init` command allows you to bootstrap certain settings for an aspire projec
 | Option                        | Alias | Environmental Variable Counterpart     | Description                                                                       |
 |-------------------------------|-------|----------------------------------------|-----------------------------------------------------------------------------------|
 | --project-path                | -p    | `ASPIRATE_PROJECT_PATH`                | The path to the aspire project.                                                   |
-| --container-builder           |       | `ASPIRATE_CONTAINER_BUILDER`           | The Container Builder: can be `docker` or `podman`. The default is `docker`.      |
+| --container-builder           |       | `ASPIRATE_CONTAINER_BUILDER`           | The Container Builder: can be `docker`, `podman` or `nerdctl`. The default is `docker`.      |
 | --container-registry          | -cr   | `ASPIRATE_CONTAINER_REGISTRY`          | The Container Registry to use as the fall-back value for all containers.          |
 | --container-repository-prefix | -crp  | `ASPIRATE_CONTAINER_REPOSITORY_PREFIX` | The Container Repository Prefix to use as the fall-back value for all containers. |
 | --container-image-tag         | -ct   | `ASPIRATE_CONTAINER_IMAGE_TAG`         | The Container Image Tag to use as the fall-back value for all containers.         |

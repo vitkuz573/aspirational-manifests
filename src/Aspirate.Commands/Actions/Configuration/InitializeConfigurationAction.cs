@@ -69,7 +69,7 @@ public class InitializeConfigurationAction(
             return;
         }
 
-        Logger.MarkupLine("Aspirate supports [blue]Docker[/] and [blue]Podman[/] as container builders..");
+        Logger.MarkupLine("Aspirate supports [blue]Docker[/], [blue]Podman[/] and [blue]Nerdctl[/] as container builders..");
         var shouldSetBuilder = Logger.Confirm("Would you like to set a fall-back value for the container builder?", false);
 
         if (!shouldSetBuilder)

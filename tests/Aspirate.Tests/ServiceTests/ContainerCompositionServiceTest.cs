@@ -11,6 +11,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldCallExpectedMethods_WhenCalled(string builder)
     {
         // Arrange
@@ -26,7 +27,7 @@ public class ContainerCompositionServiceTest
         var prefix = "testPrefix";
         var registry = "testRegistry";
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -55,6 +56,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldSetEnvVarsAsBuildArgs_WhenCalled(string builder)
     {
         // Arrange
@@ -77,7 +79,7 @@ public class ContainerCompositionServiceTest
             },
         };
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -102,15 +104,16 @@ public class ContainerCompositionServiceTest
         calls.Length.Should().Be(4);
 
         var buildCall = calls[2];
-        VerifyDockerCall(buildCall, $"build --tag \"testregistry/testimagename:latest\" --build-arg TestArg=\"TestValue\" --build-arg TestArgTwo=\"TestValueTwo\" --file \"{testFile}\" testContext");
+        VerifyDockerCall(buildCall, $"build --tag \"testregistry/testimagename:latest\" --build-arg TestArg=\"TestValue\" --build-arg TestArgTwo=\"TestValueTwo\" --file \"{testFile}\" testContext", builder);
 
         var pushCall = calls[3];
-        VerifyDockerCall(pushCall, "push testregistry/testimagename:latest");
+        VerifyDockerCall(pushCall, "push testregistry/testimagename:latest", builder);
     }
 
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldSetEnvVarsAsBuildArgsWithPrefix_WhenCalled(string builder)
     {
         // Arrange
@@ -133,7 +136,7 @@ public class ContainerCompositionServiceTest
             },
         };
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -159,15 +162,16 @@ public class ContainerCompositionServiceTest
         calls.Length.Should().Be(4);
 
         var buildCall = calls[2];
-        VerifyDockerCall(buildCall, $"build --tag \"testregistry/testprefix/testimagename:latest\" --build-arg TestArg=\"TestValue\" --build-arg TestArgTwo=\"TestValueTwo\" --file \"{testFile}\" testContext");
+        VerifyDockerCall(buildCall, $"build --tag \"testregistry/testprefix/testimagename:latest\" --build-arg TestArg=\"TestValue\" --build-arg TestArgTwo=\"TestValueTwo\" --file \"{testFile}\" testContext", builder);
 
         var pushCall = calls[3];
-        VerifyDockerCall(pushCall, "push testregistry/testprefix/testimagename:latest");
+        VerifyDockerCall(pushCall, "push testregistry/testprefix/testimagename:latest", builder);
     }
 
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_BuilderOffline_ThrowsExitException(string builder)
     {
         // Arrange
@@ -200,16 +204,17 @@ public class ContainerCompositionServiceTest
         await action.Should().ThrowAsync<ActionCausesExitException>();
     }
 
-   private static void VerifyDockerCall(ICall call, string expectedArgumentsOutput)
-    {
+   private static void VerifyDockerCall(ICall call, string expectedArgumentsOutput, string builder)
+   {
         if (call.GetArguments()[0] is not ShellCommandOptions options)
         {
             throw new InvalidOperationException("The shell execution service was not called with the expected arguments.");
         }
 
         options.Should().NotBeNull();
+        options.Command.Should().Be(builder);
         options.ArgumentsBuilder.RenderArguments().Should().Be(expectedArgumentsOutput);
-    }
+   }
 
     private static string DockerInfoOutput =>
         """
