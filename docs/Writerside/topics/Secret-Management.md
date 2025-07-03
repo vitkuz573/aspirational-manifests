@@ -20,7 +20,12 @@ If unset, the default value of `1_000_000` iterations is used.
 
 Secrets are stored locally by default. Use the
 `--secret-provider` option or the `ASPIRATE_SECRET_PROVIDER` environment
-variable to choose an alternative provider implemented via the service container.
+variable to select a different provider.
+Available providers:
+
+- `file` - encrypted secrets written to disk (default)
+- `env` - read secrets from environment variables
+- `base64` - secrets encoded as Base64 in the state file
 
 When supplying the secret password via the `ASPIRATE_SECRET_PASSWORD` environment
 variable, Aspirate clears the variable after reading it to avoid leaving the
