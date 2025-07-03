@@ -17,17 +17,20 @@ public class SecretService(
         return provider;
     }
 
-    private void CheckSecretVersion(ISecretProvider provider)
+    private bool CheckSecretVersion(ISecretProvider provider)
     {
         if (provider.State is null)
         {
-            return;
+            return false;
         }
 
         if (provider.State.SecretsVersion != SecretState.CurrentVersion)
         {
             logger.MarkupLine($"[yellow]Secret state version mismatch. Expected {SecretState.CurrentVersion}, found {provider.State.SecretsVersion}.[/]");
+            return true;
         }
+
+        return false;
     }
 
     public void SaveSecrets(SecretManagementOptions options)
@@ -45,15 +48,23 @@ public class SecretService(
             return;
         }
 
+        bool versionMismatch = false;
+
         if (secretProvider.SecretStateExists(options.State))
         {
             secretProvider.LoadState(options.State);
-            CheckSecretVersion(secretProvider);
+            versionMismatch = CheckSecretVersion(secretProvider);
 
             if (!CheckPassword(options))
             {
                 logger.MarkupLine("[red]Aborting due to inability to unlock secrets.[/]");
                 ActionCausesExitException.ExitNow();
+            }
+
+            if (versionMismatch && logger.Confirm("Re-encrypt secrets using the new algorithm?"))
+            {
+                secretProvider.UpgradeEncryption();
+                secretProvider.SetState(options.State);
             }
         }
 
@@ -123,12 +134,18 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
-        CheckSecretVersion(secretProvider);
+        var versionMismatch = CheckSecretVersion(secretProvider);
 
         if (!CheckPassword(options))
         {
             logger.MarkupLine("[red]Aborting due to inability to unlock secrets.[/]");
             ActionCausesExitException.ExitNow();
+        }
+
+        if (versionMismatch && logger.Confirm("Re-encrypt secrets using the new algorithm?"))
+        {
+            secretProvider.UpgradeEncryption();
+            secretProvider.SetState(options.State);
         }
 
         if (!CreatePassword(options))
@@ -169,7 +186,7 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
-        CheckSecretVersion(secretProvider);
+        var versionMismatch = CheckSecretVersion(secretProvider);
 
         if (!options.CommandUnlocksSecrets)
         {
@@ -189,6 +206,12 @@ public class SecretService(
         {
             logger.MarkupLine("[red]Aborting due to inability to unlock secrets.[/]");
             ActionCausesExitException.ExitNow();
+        }
+
+        if (versionMismatch && logger.Confirm("Re-encrypt secrets using the new algorithm?"))
+        {
+            secretProvider.UpgradeEncryption();
+            secretProvider.SetState(options.State);
         }
 
         options.State.SecretState = secretProvider.State;

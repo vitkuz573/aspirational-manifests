@@ -12,5 +12,7 @@ You have three chances to enter the correct password, after which the generation
 
 If you already have existing secrets, they will be reused unless `--replace-secrets` is passed as a cli option.
 
+If the encryption algorithm changes, the `secretsVersion` stored in `aspirate-state.json` will differ from the current release. Running `generate` detects this mismatch and offers to re-encrypt your secrets with the new algorithm. You can manually trigger the upgrade by running `aspirate generate --replace-secrets`.
+
 After secrets have been generated, they will be encrypted and stored in the `aspirate-state.json` file.
 The `generate` command will then move on to manifest generation.
