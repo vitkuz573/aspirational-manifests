@@ -279,4 +279,44 @@ public class SecretService(
 
         return false;
     }
+
+    public void ClearSecrets(SecretManagementOptions options)
+    {
+        var secretProvider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
+
+        if (options.DisableSecrets == true)
+        {
+            logger.MarkupLine("[green]Secrets are disabled[/].");
+            return;
+        }
+
+        if (options.NonInteractive == true && options.Force != true)
+        {
+            logger.MarkupLine("[red]--force is required in non-interactive mode.[/]");
+            ActionCausesExitException.ExitNow();
+        }
+
+        if (options.NonInteractive != true && options.Force != true)
+        {
+            var shouldDelete = logger.Confirm("Are you sure you want to clear all secret state?");
+            if (!shouldDelete)
+            {
+                logger.MarkupLine("[yellow]Aborting secret clear.[/]");
+                return;
+            }
+        }
+
+        secretProvider.RemoveState(options.State);
+
+        if (secretProvider is SecretProvider && !string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            if (fs.File.Exists(stateFile))
+            {
+                fs.File.Delete(stateFile);
+            }
+        }
+
+        logger.MarkupLine("[green]Secret State cleared.[/]");
+    }
 }

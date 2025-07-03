@@ -6,4 +6,5 @@ public interface ISecretService
     void SaveSecrets(SecretManagementOptions options);
     void ReInitialiseSecrets(SecretManagementOptions options);
     void RotatePassword(SecretManagementOptions options);
+    void ClearSecrets(SecretManagementOptions options);
 }

@@ -180,4 +180,69 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
         secretProvider.SetPassword("new_secret_password");
         secretProvider.GetSecret("postgrescontainer", "ConnectionString_Test").Should().Be("some_secret_value");
     }
+
+    [Fact]
+    public void ClearSecrets_RemovesStateAndFile()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var statePath = "/state";
+        fs.AddDirectory(statePath);
+        var stateFile = fs.Path.Combine(statePath, AspirateLiterals.StateFileName);
+        fs.AddFile(stateFile, "{}");
+
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        service.ClearSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+            SecretProvider = "file",
+            StatePath = statePath,
+            Force = true
+        });
+
+        state.SecretState.Should().BeNull();
+        fs.FileExists(stateFile).Should().BeFalse();
+    }
+
+    [Fact]
+    public void ClearSecrets_NonInteractiveNoForce_Throws()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var statePath = "/state";
+        fs.AddDirectory(statePath);
+        var stateFile = fs.Path.Combine(statePath, AspirateLiterals.StateFileName);
+        fs.AddFile(stateFile, "{}");
+
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        var act = () => service.ClearSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+            SecretProvider = "file",
+            StatePath = statePath
+        });
+
+        act.Should().Throw<ActionCausesExitException>();
+        fs.FileExists(stateFile).Should().BeTrue();
+    }
 }
