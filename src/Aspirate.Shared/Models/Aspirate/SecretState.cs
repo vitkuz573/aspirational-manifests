@@ -2,6 +2,8 @@ namespace Aspirate.Shared.Models.Aspirate;
 
 public sealed class SecretState
 {
+    public const int CurrentVersion = 1;
+
     [JsonPropertyName("salt")]
     [RestorableStateProperty]
     public string? Salt { get; set; }
@@ -13,4 +15,8 @@ public sealed class SecretState
     [JsonPropertyName("secrets")]
     [RestorableStateProperty]
     public Dictionary<string, Dictionary<string, string>> Secrets { get; set; } = [];
+
+    [JsonPropertyName("secretsVersion")]
+    [RestorableStateProperty]
+    public int SecretsVersion { get; set; } = CurrentVersion;
 }

@@ -48,6 +48,11 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
         State ??= new();
 
+        if (State.SecretsVersion == 0)
+        {
+            State.SecretsVersion = SecretState.CurrentVersion;
+        }
+
         _salt = !string.IsNullOrEmpty(State.Salt) ? Convert.FromBase64String(State.Salt) : null;
     }
 
@@ -56,6 +61,10 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         _salt = new byte[12];
         RandomNumberGenerator.Fill(_salt);
         State ??= new();
+        if (State.SecretsVersion == 0)
+        {
+            State.SecretsVersion = SecretState.CurrentVersion;
+        }
         State.Salt = Convert.ToBase64String(_salt);
     }
 
