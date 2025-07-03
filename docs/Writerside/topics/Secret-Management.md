@@ -21,3 +21,7 @@ If unset, the default value of `1_000_000` iterations is used.
 Secrets can be stored locally (the default) or in Azure Key Vault. Use the
 `--secret-provider` option or the `ASPIRATE_SECRET_PROVIDER` environment
 variable to choose between `file` and `keyvault` backends.
+
+When supplying the secret password via the `ASPIRATE_SECRET_PASSWORD` environment
+variable, Aspirate clears the variable after reading it to avoid leaving the
+password in the shell environment.
