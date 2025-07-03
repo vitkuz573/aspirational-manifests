@@ -21,6 +21,20 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
         }
         """;
 
+    private const string InvalidVersionState =
+        """
+        {
+          "salt": "EgEu/M6c1XP/PCkG",
+          "hash": "gSeKYq+cBB8Lx1Fw5iuImcUIONz99cQqt6052BjWLp4\u003d",
+          "secrets": {
+            "postgrescontainer": {
+              "ConnectionString_Test": "EgEu/M6c1XP/PCkGUkJTJ9meX9wOz8mY0w0ca46KF3bVqqHah6QLTDwOyTHX"
+            }
+          },
+          "secretsVersion": 2
+        }
+        """;
+
     [Fact]
     public void LoadState_NotExistsInitialises_Success()
     {
@@ -149,6 +163,29 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
 
         // Assert
         result.Should().Throw<ActionCausesExitException>();
+    }
+
+    [Fact]
+    public void LoadState_InvalidVersion_Warns()
+    {
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushTextWithEnter("password_for_secrets");
+
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(InvalidVersionState);
+        var serviceProvider = CreateServiceProvider(state, console);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        service.LoadSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = false,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+        });
+
+        console.Output.Should().Contain("Secret state version mismatch");
     }
 
     [Fact]

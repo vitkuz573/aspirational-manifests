@@ -6,9 +6,22 @@ public class SecretService(
     IAnsiConsole logger,
     IEnumerable<ISecretProtectionStrategy> protectionStrategies)
     : ISecretService
-{
+{ 
     private readonly SecretProviderFactory _factory = providerFactory;
     private IReadOnlyCollection<ISecretProtectionStrategy> ProtectionStrategies { get; } = protectionStrategies.ToList();
+
+    private void CheckSecretVersion(ISecretProvider provider)
+    {
+        if (provider.State is null)
+        {
+            return;
+        }
+
+        if (provider.State.SecretsVersion != SecretState.CurrentVersion)
+        {
+            logger.MarkupLine($"[yellow]Secret state version mismatch. Expected {SecretState.CurrentVersion}, found {provider.State.SecretsVersion}.[/]");
+        }
+    }
 
     public void SaveSecrets(SecretManagementOptions options)
     {
@@ -28,6 +41,7 @@ public class SecretService(
         if (secretProvider.SecretStateExists(options.State))
         {
             secretProvider.LoadState(options.State);
+            CheckSecretVersion(secretProvider);
 
             if (!CheckPassword(options))
             {
@@ -102,6 +116,7 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
+        CheckSecretVersion(secretProvider);
 
         if (!CheckPassword(options))
         {
@@ -147,6 +162,7 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
+        CheckSecretVersion(secretProvider);
 
         if (!options.CommandUnlocksSecrets)
         {
