@@ -13,6 +13,7 @@ public sealed class ClearSecretsCommandHandler(IServiceProvider serviceProvider)
             DisableSecrets = CurrentState.DisableSecrets,
             SecretPassword = options.SecretPassword,
             SecretProvider = CurrentState.SecretProvider,
+            Pbkdf2Iterations = options.Pbkdf2Iterations,
             StatePath = options.StatePath ?? Directory.GetCurrentDirectory(),
             Force = options.Force
         });

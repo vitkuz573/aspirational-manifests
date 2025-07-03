@@ -13,6 +13,7 @@ public sealed class RotatePasswordCommandHandler(IServiceProvider serviceProvide
             DisableSecrets = CurrentState.DisableSecrets,
             SecretPassword = options.SecretPassword,
             SecretProvider = CurrentState.SecretProvider,
+            Pbkdf2Iterations = options.Pbkdf2Iterations,
         });
 
         return Task.FromResult(0);

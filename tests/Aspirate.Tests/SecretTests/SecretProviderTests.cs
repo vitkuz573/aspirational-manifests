@@ -32,51 +32,33 @@ public class SecretProviderTests
     }
 
     [Fact]
-    public void SetPassword_UsesIterationCountFromEnvironment()
+    public void SetPassword_RespectsIterationConfiguration()
     {
-        Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "5");
+        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 5 };
+        var state = GetState(Base64Salt);
+        provider.LoadState(state);
 
-        try
-        {
-            var provider = new SecretProvider(_fileSystem);
-            var state = GetState(Base64Salt);
-            provider.LoadState(state);
+        provider.SetPassword(TestPassword);
 
-            provider.SetPassword(TestPassword);
+        using var pbkdf2 = new Rfc2898DeriveBytes(TestPassword, Convert.FromBase64String(Base64Salt), 5, HashAlgorithmName.SHA256);
+        var expected = Convert.ToBase64String(pbkdf2.GetBytes(32));
 
-            using var pbkdf2 = new Rfc2898DeriveBytes(TestPassword, Convert.FromBase64String(Base64Salt), 5, HashAlgorithmName.SHA256);
-            var expected = Convert.ToBase64String(pbkdf2.GetBytes(32));
-
-            provider.State.Hash.Should().Be(expected);
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", null);
-        }
+        provider.State.Hash.Should().Be(expected);
     }
 
     [Fact]
-    public void CheckPassword_UsesIterationCountFromEnvironment()
+    public void CheckPassword_RespectsIterationConfiguration()
     {
-        Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "5");
+        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 5 };
+        var state = GetState(Base64Salt);
+        provider.LoadState(state);
+        provider.SetPassword(TestPassword);
 
-        try
-        {
-            var provider = new SecretProvider(_fileSystem);
-            var state = GetState(Base64Salt);
-            provider.LoadState(state);
-            provider.SetPassword(TestPassword);
+        provider.CheckPassword(TestPassword).Should().BeTrue();
 
-            provider.CheckPassword(TestPassword).Should().BeTrue();
+        provider.Pbkdf2Iterations = 6;
 
-            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "6");
-
-            provider.CheckPassword(TestPassword).Should().BeFalse();
-        }
-        finally
-        {
-            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", null);
-        }
+        provider.CheckPassword(TestPassword).Should().BeFalse();
     }
 
     [Fact]

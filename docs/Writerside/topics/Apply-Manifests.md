@@ -20,6 +20,7 @@ Any secrets are written to temporary files within the operating system's temp di
 | --input-path      | -i    | `ASPIRATE_INPUT_PATH`              | The path for the kustomize manifests directory. Defaults to `%output-dir%`                          |
 | --kube-context    | -k    | `ASPIRATE_KUBERNETES_CONTEXT`      | The name of the kubernetes context within your kubeconfig to apply / deploy manifests to.           |
 | --secret-password |       | `ASPIRATE_SECRET_PASSWORD`         | If using secrets, or you have a secret file - Specify the password to decrypt them                  |
+| --pbkdf2-iterations |       | `ASPIRATE_PBKDF2_ITERATIONS`      | Override the PBKDF2 iteration count used for password hashing |
 | --non-interactive |       | `ASPIRATE_NON_INTERACTIVE`         | Disables interactive mode for the command                                                           |
 | --disable-secrets |       | `ASPIRATE_DISABLE_SECRETS`         | Disables secrets management features.                                                               |
 | --rolling-restart | -r    | `ASPIRATE_ROLLING_RESTART`         | Perform a rollout restart of deployments directly after applying the manifests. Defaults to `false` |

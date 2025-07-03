@@ -18,6 +18,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         AddOption(StatePathOption.Instance);
         AddOption(LaunchProfileOption.Instance);
         AddOption(SecretProviderOption.Instance);
+        AddOption(Pbkdf2IterationsOption.Instance);
         Handler = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
     }
 
@@ -59,6 +60,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
             NonInteractive = options.NonInteractive,
             SecretPassword = options.SecretPassword,
             SecretProvider = handler.CurrentState.SecretProvider,
+            Pbkdf2Iterations = options.Pbkdf2Iterations,
             CommandUnlocksSecrets = CommandUnlocksSecrets,
             State = handler.CurrentState,
         });
