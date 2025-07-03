@@ -2,7 +2,7 @@
 
 > **Note**
 >
-> While %product% is in development, the package will be versioned as a preview and the `--prelease` option will get the latest preview.
+> While %product% is in development, the package will be versioned as a preview and the `--prerelease` option will get the latest preview.
 >
 {style="note"}
 
