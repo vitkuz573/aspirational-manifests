@@ -315,4 +315,28 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
         act.Should().Throw<ActionCausesExitException>();
         fs.FileExists(stateFile).Should().BeTrue();
     }
+
+    [Fact]
+    public void SaveSecrets_DetectsAdditionalVariables()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var state = CreateAspirateStateWithAdditionalSecrets(nonInteractive: true, password: "test-password");
+
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        service.SaveSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = state.SecretPassword,
+        });
+
+        secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.JwtSecret.Value);
+        secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.RedisPassword.Value);
+    }
 }

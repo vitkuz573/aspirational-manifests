@@ -8,7 +8,11 @@ public static class ServiceCollectionExtensions
             .AddSingleton<ISecretProtectionStrategy, PostgresPasswordProtector>()
             .AddSingleton<ISecretProtectionStrategy, MsSqlPasswordProtector>()
             .AddSingleton<ISecretProtectionStrategy, ApiKeyProtector>()
-            .AddSingleton<ISecretProtectionStrategy, ClientSecretProtector>();
+            .AddSingleton<ISecretProtectionStrategy, ClientSecretProtector>()
+            .AddSingleton<ISecretProtectionStrategy, JwtSecretProtector>()
+            .AddSingleton<ISecretProtectionStrategy, RedisPasswordProtector>()
+            .AddSingleton<ISecretProtectionStrategy, MongoDbPasswordProtector>()
+            .AddSingleton<ISecretProtectionStrategy, RabbitMqPasswordProtector>();
 
     public static IServiceCollection AddAspirateSecretProvider(this IServiceCollection services) =>
         services

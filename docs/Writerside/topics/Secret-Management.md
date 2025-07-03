@@ -35,3 +35,7 @@ The following environment variable names are protected automatically when secret
 - `MSSQL_SA_PASSWORD`
 - `API_KEY`
 - `CLIENT_SECRET`
+- `JWT_SECRET`
+- `REDIS_PASSWORD`
+- `MONGODB_PASSWORD`
+- `RABBITMQ_PASSWORD`
