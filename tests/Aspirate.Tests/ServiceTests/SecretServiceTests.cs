@@ -182,6 +182,39 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
     }
 
     [Fact]
+    public void RotatePassword_RejectsWeakPassword()
+    {
+        // Arrange
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushTextWithEnter("password_for_secrets");
+        // weak password attempt
+        console.Input.PushTextWithEnter("weak");
+        console.Input.PushTextWithEnter("weak");
+        // strong password attempt
+        console.Input.PushTextWithEnter("StrongPass1!");
+        console.Input.PushTextWithEnter("StrongPass1!");
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+        var serviceProvider = CreateServiceProvider(state, console);
+        var service = GetSystemUnderTest(serviceProvider);
+        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
+
+        // Act
+        service.RotatePassword(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = false,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+        });
+
+        // Assert
+        secretProvider.CheckPassword("StrongPass1!").Should().BeTrue();
+        console.Output.Should().Contain("Password does not meet complexity requirements.");
+    }
+
+    [Fact]
     public void ClearSecrets_RemovesStateAndFile()
     {
         var console = new TestConsole();

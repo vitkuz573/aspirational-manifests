@@ -268,6 +268,12 @@ public class SecretService(
 
             if (firstEntry.Equals(secondEntry, StringComparison.Ordinal))
             {
+                if (!IsStrongPassword(firstEntry))
+                {
+                    LogPasswordError(i, "Password does not meet complexity requirements.");
+                    continue;
+                }
+
                 secretProvider.SetPassword(firstEntry);
                 options.SecretPassword = firstEntry;
                 options.State.SecretPassword = firstEntry;
@@ -278,6 +284,21 @@ public class SecretService(
         }
 
         return false;
+    }
+
+    private static bool IsStrongPassword(string password)
+    {
+        if (password.Length < 8)
+        {
+            return false;
+        }
+
+        var hasUpper = password.Any(char.IsUpper);
+        var hasLower = password.Any(char.IsLower);
+        var hasDigit = password.Any(char.IsDigit);
+        var hasSpecial = password.Any(c => !char.IsLetterOrDigit(c));
+
+        return hasUpper && hasLower && hasDigit && hasSpecial;
     }
 
     public void ClearSecrets(SecretManagementOptions options)
