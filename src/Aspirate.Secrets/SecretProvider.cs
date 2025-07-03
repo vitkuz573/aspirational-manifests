@@ -22,11 +22,20 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
         // Derive a key from the passphrase using Pbkdf2 with SHA256.
         using var pbkdf2 = new Rfc2898DeriveBytes(password, salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
-        var key = pbkdf2.GetBytes(32); // AES-256-GCM needs a 32-byte key
-        var crypter = new AesGcmCrypter(key, TagSizeInBytes);
+        var key = pbkdf2.GetBytes(32); // 256 bit key
 
-        _encrypter = crypter;
-        _decrypter = crypter;
+        if (State?.SecretsVersion == 1)
+        {
+            var crypter = new AesGcmCrypter(key, TagSizeInBytes);
+            _encrypter = crypter;
+            _decrypter = crypter;
+        }
+        else
+        {
+            var crypter = new AesCbcCrypter(key);
+            _encrypter = crypter;
+            _decrypter = crypter;
+        }
 
         SetPasswordHash();
     }
@@ -161,6 +170,44 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
         _salt = null;
         SetPassword(newPassword);
+
+        State.SecretsVersion = SecretState.CurrentVersion;
+
+        State.Secrets = new Dictionary<string, Dictionary<string, string>>();
+
+        foreach (var resource in decrypted)
+        {
+            State.Secrets[resource.Key] = new Dictionary<string, string>();
+
+            foreach (var secret in resource.Value)
+            {
+                State.Secrets[resource.Key][secret.Key] = _encrypter!.EncryptValue(secret.Value);
+            }
+        }
+    }
+
+    public void UpgradeEncryption()
+    {
+        if (_password == null || State?.Secrets == null || _decrypter == null)
+        {
+            return;
+        }
+
+        var decrypted = new Dictionary<string, Dictionary<string, string>>();
+
+        foreach (var resource in State.Secrets)
+        {
+            decrypted[resource.Key] = new Dictionary<string, string>();
+
+            foreach (var secret in resource.Value)
+            {
+                decrypted[resource.Key][secret.Key] = _decrypter.DecryptValue(secret.Value);
+            }
+        }
+
+        _salt = null;
+        State.SecretsVersion = SecretState.CurrentVersion;
+        SetPassword(new string(_password));
 
         State.Secrets = new Dictionary<string, Dictionary<string, string>>();
 

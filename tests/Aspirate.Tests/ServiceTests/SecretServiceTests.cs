@@ -17,7 +17,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
               "ConnectionString_Test": "EgEu/M6c1XP/PCkGUkJTJ9meX9wOz8mY0w0ca46KF3bVqqHah6QLTDwOyTHX"
             }
           },
-          "secretsVersion": 1
+          "secretsVersion": 2
         }
         """;
 
@@ -31,7 +31,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
               "ConnectionString_Test": "EgEu/M6c1XP/PCkGUkJTJ9meX9wOz8mY0w0ca46KF3bVqqHah6QLTDwOyTHX"
             }
           },
-          "secretsVersion": 2
+          "secretsVersion": 3
         }
         """;
 

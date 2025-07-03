@@ -28,6 +28,8 @@ The `salt` and `hash` properties are used to encrypt the secrets in the `secrets
 
 Each individual secret is encrypted using the `AesGcm` algorithm, using the `salt` and `hash` properties as the key.
 
+The `secretsVersion` value denotes the encryption algorithm in use. When Aspirate upgrades the algorithm this number increases, signalling that stored secrets should be re-encrypted.
+
 The `secrets` property contains a dictionary of secrets, where the key is the name of the service, and the value is a dictionary of secrets for that service.
 
 The key of each secret is the name of the secret, and the value is the encrypted secret.
