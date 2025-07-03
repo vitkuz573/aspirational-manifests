@@ -11,6 +11,8 @@ This will be used for deployment
 
 If you have a secret file, you will be prompted to enter the password to decrypt it.
 
+Any secrets are written to temporary files within the operating system's temp directory. These files are created with restricted permissions and are automatically removed after deployment.
+
 ## Cli Options (Optional)
 
 | Option            | Alias | Environmental Variable Counterpart | Description                                                                                         |
