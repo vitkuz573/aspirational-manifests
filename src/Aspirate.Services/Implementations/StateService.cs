@@ -1,3 +1,6 @@
+using System.Security.AccessControl;
+using System.Security.Principal;
+
 namespace Aspirate.Services.Implementations;
 
 public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider secretProvider) : IStateService
@@ -24,6 +27,26 @@ public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider s
         var stateAsJson = JsonSerializer.Serialize(options.State, _jsonSerializerOptions);
 
         await fs.File.WriteAllTextAsync(stateFile, stateAsJson);
+
+        if (OperatingSystem.IsWindows())
+        {
+            var fileInfo = fs.FileInfo.New(stateFile);
+            var security = fileInfo.GetAccessControl();
+            var currentUser = WindowsIdentity.GetCurrent().User;
+            if (currentUser != null)
+            {
+                var rule = new FileSystemAccessRule(currentUser,
+                    FileSystemRights.Read | FileSystemRights.Write,
+                    AccessControlType.Allow);
+                security.SetAccessRule(rule);
+                security.SetAccessRuleProtection(true, false);
+                fileInfo.SetAccessControl(security);
+            }
+        }
+        else
+        {
+            fs.File.SetUnixFileMode(stateFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        }
     }
 
     public async Task RestoreState(StateManagementOptions options)
