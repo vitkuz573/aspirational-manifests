@@ -1,6 +1,7 @@
 using System.CommandLine.Help;
 using Aspirate.Commands.Options;
 using Aspirate.Commands.Commands.ClearSecrets;
+using Aspirate.Commands.Commands.ListSecrets;
 
 namespace Aspirate.Cli;
 
@@ -69,6 +70,7 @@ internal class AspirateCli : RootCommand
         AddCommand(new DestroyCommand());
         AddCommand(new RotatePasswordCommand());
         AddCommand(new ClearSecretsCommand());
+        AddCommand(new ListSecretsCommand());
         AddCommand(new SettingsCommand());
     }
 }
