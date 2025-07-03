@@ -19,6 +19,10 @@ public abstract class BaseOption<T>(
         () =>
         {
             var envValue = Environment.GetEnvironmentVariable(envVarName);
+            if (envVarName == "ASPIRATE_SECRET_PASSWORD")
+            {
+                Environment.SetEnvironmentVariable(envVarName, null);
+            }
             if (envValue == null)
             {
                 return defaultValue;
