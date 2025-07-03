@@ -339,4 +339,40 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
         secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.JwtSecret.Value);
         secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.RedisPassword.Value);
     }
+
+    [Fact]
+    public void Iterations_PersistAcrossRuns()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+
+        var state = CreateAspirateStateWithConnectionStrings(nonInteractive: true, password: "test-password");
+        var serviceProvider = CreateServiceProvider(state, console, fs, new SecretProvider(fs));
+        var service = GetSystemUnderTest(serviceProvider);
+
+        service.SaveSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = state.SecretPassword,
+            Pbkdf2Iterations = 200_000
+        });
+
+        var newProvider = new SecretProvider(fs);
+        var sp2 = CreateServiceProvider(state, console, fs, newProvider);
+        var service2 = GetSystemUnderTest(sp2);
+
+        service2.LoadSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = state.SecretPassword,
+            CommandUnlocksSecrets = true
+        });
+
+        newProvider.Pbkdf2Iterations.Should().Be(200_000);
+        newProvider.CheckPassword("test-password").Should().BeTrue();
+    }
 }

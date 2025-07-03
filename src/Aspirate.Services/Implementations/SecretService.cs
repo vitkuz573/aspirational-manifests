@@ -13,7 +13,9 @@ public class SecretService(
     private ISecretProvider GetProvider(SecretManagementOptions options)
     {
         var provider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
-        provider.Pbkdf2Iterations = options.Pbkdf2Iterations ?? provider.Pbkdf2Iterations;
+        provider.Pbkdf2Iterations = options.Pbkdf2Iterations
+            ?? options.State.SecretState?.Pbkdf2Iterations
+            ?? provider.Pbkdf2Iterations;
         return provider;
     }
 
@@ -53,6 +55,10 @@ public class SecretService(
         if (secretProvider.SecretStateExists(options.State))
         {
             secretProvider.LoadState(options.State);
+            if (secretProvider.State is not null)
+            {
+                secretProvider.Pbkdf2Iterations = secretProvider.State.Pbkdf2Iterations;
+            }
             versionMismatch = CheckSecretVersion(secretProvider);
 
             if (!CheckPassword(options))
@@ -64,6 +70,10 @@ public class SecretService(
             if (versionMismatch && logger.Confirm("Re-encrypt secrets using the new algorithm?"))
             {
                 secretProvider.UpgradeEncryption();
+                if (secretProvider.State is not null)
+                {
+                    secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
+                }
                 secretProvider.SetState(options.State);
             }
         }
@@ -91,6 +101,10 @@ public class SecretService(
             }
         }
 
+        if (secretProvider.State is not null)
+        {
+            secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
+        }
         secretProvider.SetState(options.State);
 
         logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Secret State has been saved.");
@@ -110,6 +124,10 @@ public class SecretService(
 
         HandleInitialisation(options);
 
+        if (secretProvider.State is not null)
+        {
+            secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
+        }
         secretProvider.SetState(options.State);
 
         options.State.SecretState = secretProvider.State;
@@ -134,6 +152,10 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
+        if (secretProvider.State is not null)
+        {
+            secretProvider.Pbkdf2Iterations = secretProvider.State.Pbkdf2Iterations;
+        }
         var versionMismatch = CheckSecretVersion(secretProvider);
 
         if (!CheckPassword(options))
@@ -145,6 +167,10 @@ public class SecretService(
         if (versionMismatch && logger.Confirm("Re-encrypt secrets using the new algorithm?"))
         {
             secretProvider.UpgradeEncryption();
+            if (secretProvider.State is not null)
+            {
+                secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
+            }
             secretProvider.SetState(options.State);
         }
 
@@ -154,6 +180,10 @@ public class SecretService(
         }
 
         secretProvider.RotatePassword(options.SecretPassword!);
+        if (secretProvider.State is not null)
+        {
+            secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
+        }
         secretProvider.SetState(options.State);
         options.State.SecretPassword = options.SecretPassword;
         options.State.SecretState = secretProvider.State;
@@ -186,6 +216,10 @@ public class SecretService(
         }
 
         secretProvider.LoadState(options.State);
+        if (secretProvider.State is not null)
+        {
+            secretProvider.Pbkdf2Iterations = secretProvider.State.Pbkdf2Iterations;
+        }
         var versionMismatch = CheckSecretVersion(secretProvider);
 
         if (!options.CommandUnlocksSecrets)

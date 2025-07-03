@@ -16,6 +16,8 @@ ASPIRATE_PBKDF2_ITERATIONS=2500000 aspirate generate
 
 If unset, the default value of `1_000_000` iterations is used.
 
+The chosen iteration count is saved in the secrets file so subsequent runs use the same value automatically.
+
 ## Selecting a Secret Provider
 
 Secrets are stored locally by default. Use the
