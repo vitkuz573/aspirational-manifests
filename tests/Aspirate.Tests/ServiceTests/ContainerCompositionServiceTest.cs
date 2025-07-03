@@ -11,6 +11,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldCallExpectedMethods_WhenCalled(string builder)
     {
         // Arrange
@@ -26,7 +27,7 @@ public class ContainerCompositionServiceTest
         var prefix = "testPrefix";
         var registry = "testRegistry";
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -55,6 +56,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldSetEnvVarsAsBuildArgs_WhenCalled(string builder)
     {
         // Arrange
@@ -77,7 +79,7 @@ public class ContainerCompositionServiceTest
             },
         };
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -111,6 +113,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_ShouldSetEnvVarsAsBuildArgsWithPrefix_WhenCalled(string builder)
     {
         // Arrange
@@ -133,7 +136,7 @@ public class ContainerCompositionServiceTest
             },
         };
 
-        var response = builder == "docker" ? DockerInfoOutput : PodmanInfoOutput;
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
 
         shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
             .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
@@ -168,6 +171,7 @@ public class ContainerCompositionServiceTest
     [Theory]
     [InlineData("docker")]
     [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_BuilderOffline_ThrowsExitException(string builder)
     {
         // Arrange

@@ -8,4 +8,5 @@ public class ContainerBuilder : SmartEnum<ContainerBuilder, string>
 
     public static ContainerBuilder Docker = new(nameof(Docker), "docker");
     public static ContainerBuilder Podman = new(nameof(Podman), "podman");
+    public static ContainerBuilder Nerdctl = new(nameof(Nerdctl), "nerdctl");
 }
