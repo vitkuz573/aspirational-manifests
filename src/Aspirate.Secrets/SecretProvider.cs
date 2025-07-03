@@ -3,6 +3,8 @@ namespace Aspirate.Secrets;
 public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 {
     private const int TagSizeInBytes = 16;
+    private const string IterationsEnvName = "ASPIRATE_PBKDF2_ITERATIONS";
+    private static int Pbkdf2Iterations => int.TryParse(Environment.GetEnvironmentVariable(IterationsEnvName), out var i) ? i : 1_000_000;
     private char[]? _password;
     private IEncrypter? _encrypter;
     private IDecrypter? _decrypter;
@@ -18,8 +20,8 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
             CreateNewSalt();
         }
 
-        // Derive a key from the passphrase using Pbkdf2 with SHA256, 1 million iterations.
-        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
+        // Derive a key from the passphrase using Pbkdf2 with SHA256.
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
         var key = pbkdf2.GetBytes(32); // AES-256-GCM needs a 32-byte key
         var crypter = new AesGcmCrypter(key, TagSizeInBytes);
 
@@ -31,7 +33,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     public bool CheckPassword(string password)
     {
-        using var pbkdf2ToCheck = new Rfc2898DeriveBytes(password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
+        using var pbkdf2ToCheck = new Rfc2898DeriveBytes(password, salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
         var passwordToCheckHash = Convert.ToBase64String(pbkdf2ToCheck.GetBytes(32));
 
         return passwordToCheckHash == State.Hash;
@@ -59,7 +61,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     private void SetPasswordHash()
     {
-        using var pbkdf2 = new Rfc2898DeriveBytes(new string(_password!), salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(new string(_password!), salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
         State.Hash = Convert.ToBase64String(pbkdf2.GetBytes(32));
     }
 
