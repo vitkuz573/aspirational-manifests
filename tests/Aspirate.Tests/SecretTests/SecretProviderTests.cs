@@ -34,13 +34,13 @@ public class SecretProviderTests
     [Fact]
     public void SetPassword_RespectsIterationConfiguration()
     {
-        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 5 };
+        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 100_000 };
         var state = GetState(Base64Salt);
         provider.LoadState(state);
 
         provider.SetPassword(TestPassword);
 
-        using var pbkdf2 = new Rfc2898DeriveBytes(TestPassword, Convert.FromBase64String(Base64Salt), 5, HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(TestPassword, Convert.FromBase64String(Base64Salt), 100_000, HashAlgorithmName.SHA256);
         var expected = Convert.ToBase64String(pbkdf2.GetBytes(32));
 
         provider.State.Hash.Should().Be(expected);
@@ -49,16 +49,25 @@ public class SecretProviderTests
     [Fact]
     public void CheckPassword_RespectsIterationConfiguration()
     {
-        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 5 };
+        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 100_000 };
         var state = GetState(Base64Salt);
         provider.LoadState(state);
         provider.SetPassword(TestPassword);
 
         provider.CheckPassword(TestPassword).Should().BeTrue();
 
-        provider.Pbkdf2Iterations = 6;
+        provider.Pbkdf2Iterations = 100_001;
 
         provider.CheckPassword(TestPassword).Should().BeFalse();
+    }
+
+    [Fact]
+    public void SettingIterations_BelowMinimum_Throws()
+    {
+        var provider = new SecretProvider(_fileSystem);
+        var act = () => provider.Pbkdf2Iterations = 5;
+
+        act.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]
