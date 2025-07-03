@@ -52,6 +52,34 @@ public abstract class AspirateTestBase
         return state;
     }
 
+    protected AspirateState CreateAspirateStateWithAdditionalSecrets(bool nonInteractive = false, string? password = null)
+    {
+        var container = new ContainerResource
+        {
+            Name = "testcontainer",
+            Type = AspireComponentLiterals.Container,
+            Image = "redis:latest",
+            Bindings = new(),
+        };
+
+        (container as IResourceWithEnvironmentalVariables).Env = new Dictionary<string, string>
+        {
+            [ProtectorType.JwtSecret.Value] = "jwt-secret-value",
+            [ProtectorType.RedisPassword.Value] = "redis-pass",
+        };
+
+        var resources = new Dictionary<string, Resource>
+        {
+            ["testcontainer"] = container,
+        };
+
+        var state = CreateAspirateState(nonInteractive: nonInteractive, password: password);
+        state.LoadedAspireManifestResources = resources;
+        state.AspireComponentsToProcess = resources.Keys.ToList();
+
+        return state;
+    }
+
     protected static IServiceProvider CreateServiceProvider(
         AspirateState state,
         TestConsole? testConsole = null,

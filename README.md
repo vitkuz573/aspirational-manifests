@@ -78,6 +78,10 @@ Built-in protection strategies handle the following configuration keys automatic
 - `MSSQL_SA_PASSWORD`
 - `API_KEY`
 - `CLIENT_SECRET`
+- `JWT_SECRET`
+- `REDIS_PASSWORD`
+- `MONGODB_PASSWORD`
+- `RABBITMQ_PASSWORD`
 
 ### Managing Secrets
 
