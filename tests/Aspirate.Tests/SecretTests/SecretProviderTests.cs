@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Security.Cryptography;
 using Xunit;
 
 namespace Aspirate.Tests.SecretTests;
@@ -28,6 +29,54 @@ public class SecretProviderTests
         var provider = new SecretProvider(_fileSystem);
         provider.SetPassword(TestPassword);
         provider.CheckPassword(TestPassword).Should().BeTrue();
+    }
+
+    [Fact]
+    public void SetPassword_UsesIterationCountFromEnvironment()
+    {
+        Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "5");
+
+        try
+        {
+            var provider = new SecretProvider(_fileSystem);
+            var state = GetState(Base64Salt);
+            provider.LoadState(state);
+
+            provider.SetPassword(TestPassword);
+
+            using var pbkdf2 = new Rfc2898DeriveBytes(TestPassword, Convert.FromBase64String(Base64Salt), 5, HashAlgorithmName.SHA256);
+            var expected = Convert.ToBase64String(pbkdf2.GetBytes(32));
+
+            provider.State.Hash.Should().Be(expected);
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", null);
+        }
+    }
+
+    [Fact]
+    public void CheckPassword_UsesIterationCountFromEnvironment()
+    {
+        Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "5");
+
+        try
+        {
+            var provider = new SecretProvider(_fileSystem);
+            var state = GetState(Base64Salt);
+            provider.LoadState(state);
+            provider.SetPassword(TestPassword);
+
+            provider.CheckPassword(TestPassword).Should().BeTrue();
+
+            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", "6");
+
+            provider.CheckPassword(TestPassword).Should().BeFalse();
+        }
+        finally
+        {
+            Environment.SetEnvironmentVariable("ASPIRATE_PBKDF2_ITERATIONS", null);
+        }
     }
 
     [Fact]
