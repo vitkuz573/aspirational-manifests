@@ -1,5 +1,8 @@
 namespace Aspirate.Services.Implementations;
 
+using System.Security.AccessControl;
+using System.Security.Principal;
+
 public class KustomizeService(IFileSystem fileSystem, IShellExecutionService shellExecutionService, IAnsiConsole logger) : IKustomizeService
 {
     public CommandAvailableResult IsKustomizeAvailable()
@@ -52,16 +55,11 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
+        var tempPath = fileSystem.Path.GetTempPath();
+
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {
-            var resourcePath = fileSystem.Path.Combine(state.OutputPath, resourceSecrets.Key);
-
-            if (!fileSystem.Directory.Exists(resourcePath))
-            {
-                continue;
-            }
-
-            var secretFile = fileSystem.Path.Combine(resourcePath, $".{resourceSecrets.Key}.secrets");
+            var secretFile = fileSystem.Path.Combine(tempPath, $"{resourceSecrets.Key}.{Path.GetRandomFileName()}.secrets");
 
             files.Add(secretFile);
 
@@ -75,6 +73,26 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
 
             await streamWriter.FlushAsync();
             streamWriter.Close();
+
+            if (OperatingSystem.IsWindows())
+            {
+                var fileInfo = fileSystem.FileInfo.New(secretFile);
+                var security = fileInfo.GetAccessControl();
+                var currentUser = WindowsIdentity.GetCurrent().User;
+                if (currentUser != null)
+                {
+                    var rule = new FileSystemAccessRule(currentUser,
+                        FileSystemRights.Read | FileSystemRights.Write,
+                        AccessControlType.Allow);
+                    security.SetAccessRule(rule);
+                    security.SetAccessRuleProtection(true, false);
+                    fileInfo.SetAccessControl(security);
+                }
+            }
+            else
+            {
+                fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            }
         }
     }
 

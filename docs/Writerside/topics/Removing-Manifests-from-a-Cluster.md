@@ -11,6 +11,8 @@ This will be used for removal.
 
 If you have a secret file, these secrets will be removed as well. This command does not prompt for a password, as secrets do not need to be decrypted to be removed from your cluster.
 
+Temporary secret files created during deployment are also deleted at this stage.
+
 ## Cli Options (Optional)
 
 | Option            | Alias | Environmental Variable Counterpart | Description                                                                               |
