@@ -3,7 +3,7 @@ namespace Aspirate.Secrets;
 public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 {
     private const int TagSizeInBytes = 16;
-    private string? _password;
+    private char[]? _password;
     private IEncrypter? _encrypter;
     private IDecrypter? _decrypter;
     private byte[]? _salt;
@@ -11,7 +11,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     public void SetPassword(string password)
     {
-        _password = password;
+        _password = password.ToCharArray();
 
         if (_salt is null)
         {
@@ -19,7 +19,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         }
 
         // Derive a key from the passphrase using Pbkdf2 with SHA256, 1 million iterations.
-        using var pbkdf2 = new Rfc2898DeriveBytes(_password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
         var key = pbkdf2.GetBytes(32); // AES-256-GCM needs a 32-byte key
         var crypter = new AesGcmCrypter(key, TagSizeInBytes);
 
@@ -39,11 +39,9 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     public void ProcessAfterStateRestoration()
     {
-        if (!string.IsNullOrEmpty(_password))
+        if (_password is { Length: > 0 })
         {
-            _password = null;
-            _decrypter = null;
-            _encrypter = null;
+            ClearPassword();
         }
 
         State ??= new();
@@ -61,7 +59,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     private void SetPasswordHash()
     {
-        using var pbkdf2 = new Rfc2898DeriveBytes(_password, salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
+        using var pbkdf2 = new Rfc2898DeriveBytes(new string(_password!), salt: _salt, iterations: 1000000, HashAlgorithmName.SHA256);
         State.Hash = Convert.ToBase64String(pbkdf2.GetBytes(32));
     }
 
@@ -164,5 +162,17 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
                 State.Secrets[resource.Key][secret.Key] = _encrypter!.EncryptValue(secret.Value);
             }
         }
+    }
+
+    public void ClearPassword()
+    {
+        if (_password != null)
+        {
+            Array.Fill(_password, '\0');
+            _password = null;
+        }
+
+        _encrypter = null;
+        _decrypter = null;
     }
 }

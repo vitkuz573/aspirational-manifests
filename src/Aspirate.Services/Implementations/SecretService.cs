@@ -62,6 +62,7 @@ public class SecretService(
         secretProvider.SetState(options.State);
 
         logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Secret State has been saved.");
+        secretProvider.ClearPassword();
     }
 
     public void ReInitialiseSecrets(SecretManagementOptions options)
@@ -82,6 +83,7 @@ public class SecretService(
         options.State.SecretState = secretProvider.State;
 
         logger.MarkupLine("[green]Secret State has been initialised![/].");
+        secretProvider.ClearPassword();
     }
 
     public void RotatePassword(SecretManagementOptions options)
@@ -118,6 +120,7 @@ public class SecretService(
         options.State.SecretState = secretProvider.State;
 
         logger.MarkupLine("[green]Secret password rotated![/].");
+        secretProvider.ClearPassword();
     }
 
     public void LoadSecrets(SecretManagementOptions options)

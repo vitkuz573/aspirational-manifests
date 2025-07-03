@@ -61,5 +61,7 @@ public class AzureKeyVaultSecretProvider(IConfiguration configuration) : ISecret
     public bool CheckPassword(string password) => true;
 
     public void RotatePassword(string newPassword) { }
+
+    public void ClearPassword() { }
 }
 
