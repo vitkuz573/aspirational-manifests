@@ -7,11 +7,7 @@ public class SecretProviderFactory(IServiceProvider services)
 {
     public ISecretProvider GetProvider(string? provider)
     {
-        return provider?.ToLowerInvariant() switch
-        {
-            "keyvault" => services.GetRequiredService<AzureKeyVaultSecretProvider>(),
-            _ => services.GetRequiredService<SecretProvider>(),
-        };
+        return services.GetRequiredService<SecretProvider>();
     }
 }
 

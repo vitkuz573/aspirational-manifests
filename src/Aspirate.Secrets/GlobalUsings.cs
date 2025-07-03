@@ -13,7 +13,4 @@ global using Aspirate.Shared.Models.AspireManifests;
 global using Aspirate.Shared.Models.AspireManifests.Interfaces;
 global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.Configuration;
-global using Azure.Security.KeyVault.Secrets;
-global using Azure.Identity;
-global using Azure;
 global using Spectre.Console;

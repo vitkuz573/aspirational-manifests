@@ -74,7 +74,7 @@ When ran non-interactively, you can specify which components to build with `-c` 
 | --runtime-identifier          |       | `ASPIRATE_RUNTIME_IDENTIFIER`              | Sets the runtime identifier for project builds. Defaults to `linux-x64`.                                                                                                                     |
 | --secret-password             |       | `ASPIRATE_SECRET_PASSWORD`                 | If using secrets, or you have a secret file - Specify the password to decrypt them                                                                                                           |
 | --pbkdf2-iterations             |       | `ASPIRATE_PBKDF2_ITERATIONS`                 | Override the PBKDF2 iteration count used for password hashing
-| --secret-provider             |       | `ASPIRATE_SECRET_PROVIDER`                 | Choose `file` (default) or `keyvault` as the secret backend
+| --secret-provider             |       | `ASPIRATE_SECRET_PROVIDER`                 | The secret backend provider to use. Defaults to `file`
                                     |
 | --non-interactive             |       | `ASPIRATE_NON_INTERACTIVE`                 | Disables interactive mode for the command                                                                                                                                                    |
 | --private-registry            |       | `ASPIRATE_PRIVATE_REGISTRY`                | Enables usage of a private registry - which will produce image pull secret.                                                                                                                  |
