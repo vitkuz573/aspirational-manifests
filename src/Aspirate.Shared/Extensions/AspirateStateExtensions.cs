@@ -31,7 +31,7 @@ public static class AspirateStateExtensions
         // Ensure we have a default container builder.
         if (string.IsNullOrEmpty(state.ContainerBuilder))
         {
-            state.OutputFormat = ContainerBuilder.Docker.Value;
+            state.ContainerBuilder = ContainerBuilder.Docker.Value;
         }
     }
 
