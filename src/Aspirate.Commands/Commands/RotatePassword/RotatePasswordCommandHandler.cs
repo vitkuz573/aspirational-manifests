@@ -2,11 +2,11 @@ namespace Aspirate.Commands.Commands.RotatePassword;
 
 public sealed class RotatePasswordCommandHandler(IServiceProvider serviceProvider) : BaseCommandOptionsHandler<RotatePasswordOptions>(serviceProvider)
 {
-    public override Task<int> HandleAsync(RotatePasswordOptions options)
+    public override async Task<int> HandleAsync(RotatePasswordOptions options)
     {
         var secretService = Services.GetRequiredService<ISecretService>();
 
-        secretService.RotatePassword(new SecretManagementOptions
+        await secretService.RotatePasswordAsync(new SecretManagementOptions
         {
             State = CurrentState,
             NonInteractive = options.NonInteractive,
@@ -16,6 +16,6 @@ public sealed class RotatePasswordCommandHandler(IServiceProvider serviceProvide
             Pbkdf2Iterations = options.Pbkdf2Iterations,
         });
 
-        return Task.FromResult(0);
+        return 0;
     }
 }
