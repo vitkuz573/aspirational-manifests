@@ -6,6 +6,7 @@ An example of the contents of secrets within the state file are shown below:
 {
   "salt": "2hO/L8lfSH6BG5J1",
   "hash": "4nLU37zidTC1TF6EM8h6\u002BIz79wIu03nYAIiMhuIKcwU=",
+  "pbkdf2Iterations": 1000000,
   "secrets": {
     "catalogservice": {
       "ConnectionStrings__catalogdb": "2hO/L8lfSH6BG5J1YKAxbgV8Jkg33lnuKqrPD5/kCk\u002BJZRhJz33KFWZnLIEL2P2Z52M3Nf3K55RUctdzR4rVtovBFtFJLqO4cCDXc2\u002BEleXzyn48vdEOJ37tmU1V0VLGPzFYsGjHV3DQ"
@@ -27,6 +28,8 @@ An example of the contents of secrets within the state file are shown below:
 The `salt` and `hash` properties are used to encrypt the secrets in the `secrets` property.
 
 Each individual secret is encrypted using the `AesGcm` algorithm, using the `salt` and `hash` properties as the key.
+
+`pbkdf2Iterations` stores the number of PBKDF2 rounds used to derive the encryption key.
 
 The `secretsVersion` value denotes the encryption algorithm in use. When Aspirate upgrades the algorithm this number increases, signalling that stored secrets should be re-encrypted.
 

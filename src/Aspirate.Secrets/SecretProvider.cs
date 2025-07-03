@@ -3,7 +3,7 @@ namespace Aspirate.Secrets;
 public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 {
     private const int TagSizeInBytes = 16;
-    private const int DefaultIterations = 1_000_000;
+    private const int DefaultIterations = SecretState.DefaultIterations;
     private const int MinimumIterations = 100_000;
 
     private int _pbkdf2Iterations = DefaultIterations;
@@ -56,6 +56,10 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         }
 
         SetPasswordHash();
+        if (State is not null)
+        {
+            State.Pbkdf2Iterations = Pbkdf2Iterations;
+        }
     }
 
     public bool CheckPassword(string password)
@@ -81,6 +85,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         }
 
         _salt = !string.IsNullOrEmpty(State.Salt) ? Convert.FromBase64String(State.Salt) : null;
+        Pbkdf2Iterations = State.Pbkdf2Iterations > 0 ? State.Pbkdf2Iterations : DefaultIterations;
     }
 
     private void CreateNewSalt()
@@ -93,6 +98,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
             State.SecretsVersion = SecretState.CurrentVersion;
         }
         State.Salt = Convert.ToBase64String(_salt);
+        State.Pbkdf2Iterations = Pbkdf2Iterations;
     }
 
     private void SetPasswordHash()

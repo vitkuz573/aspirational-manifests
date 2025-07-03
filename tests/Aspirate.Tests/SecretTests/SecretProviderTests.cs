@@ -184,6 +184,22 @@ public class SecretProviderTests
         rotated.Should().Be(original);
     }
 
+    [Fact]
+    public void IterationCount_PersistedAcrossLoad()
+    {
+        var provider = new SecretProvider(_fileSystem) { Pbkdf2Iterations = 150_000 };
+        var state = GetState(Base64Salt);
+        provider.LoadState(state);
+        provider.SetPassword(TestPassword);
+        provider.SetState(state);
+
+        var provider2 = new SecretProvider(_fileSystem);
+        provider2.LoadState(state);
+
+        provider2.Pbkdf2Iterations.Should().Be(150_000);
+        provider2.CheckPassword(TestPassword).Should().BeTrue();
+    }
+
     private static AspirateState GetState(string? salt = null, Dictionary<string, Dictionary<string, string>>? secrets = null)
     {
         var state = new SecretState
