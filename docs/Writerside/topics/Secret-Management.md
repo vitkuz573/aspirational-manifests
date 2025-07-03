@@ -44,3 +44,7 @@ The following environment variable names are protected automatically when secret
 - `REDIS_PASSWORD`
 - `MONGODB_PASSWORD`
 - `RABBITMQ_PASSWORD`
+
+## Password Handling
+
+Passwords entered at the CLI are stored using `SecureString` where available. On Windows this provides OS level protection for the in‑memory value. On Linux and macOS the data is still cleared after use but may not be encrypted in memory.

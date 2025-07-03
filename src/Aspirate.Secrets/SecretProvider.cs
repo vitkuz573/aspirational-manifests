@@ -17,7 +17,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
                 value,
                 $"Iterations must be at least {MinimumIterations}");
     }
-    private char[]? _password;
+    private SecureString? _password;
     private IEncrypter? _encrypter;
     private IDecrypter? _decrypter;
     private byte[]? _salt;
@@ -25,7 +25,13 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     public void SetPassword(string password)
     {
-        _password = password.ToCharArray();
+        _password?.Dispose();
+        _password = new SecureString();
+        foreach (var ch in password)
+        {
+            _password.AppendChar(ch);
+        }
+        _password.MakeReadOnly();
 
         if (_salt is null)
         {
@@ -62,7 +68,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     public void ProcessAfterStateRestoration()
     {
-        if (_password is { Length: > 0 })
+        if (_password?.Length > 0)
         {
             ClearPassword();
         }
@@ -91,8 +97,29 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
     private void SetPasswordHash()
     {
-        using var pbkdf2 = new Rfc2898DeriveBytes(new string(_password!), salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
-        State.Hash = Convert.ToBase64String(pbkdf2.GetBytes(32));
+        var pwd = ConvertToUnsecureString(_password!);
+        try
+        {
+            using var pbkdf2 = new Rfc2898DeriveBytes(pwd, salt: _salt, iterations: Pbkdf2Iterations, HashAlgorithmName.SHA256);
+            State.Hash = Convert.ToBase64String(pbkdf2.GetBytes(32));
+        }
+        finally
+        {
+            pwd = string.Empty;
+        }
+    }
+
+    private static string ConvertToUnsecureString(SecureString secureString)
+    {
+        var ptr = Marshal.SecureStringToGlobalAllocUnicode(secureString);
+        try
+        {
+            return Marshal.PtrToStringUni(ptr)!;
+        }
+        finally
+        {
+            Marshal.ZeroFreeGlobalAllocUnicode(ptr);
+        }
     }
 
      protected readonly JsonSerializerOptions _serializerOptions = new()
@@ -219,7 +246,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 
         _salt = null;
         State.SecretsVersion = SecretState.CurrentVersion;
-        SetPassword(new string(_password));
+        SetPassword(ConvertToUnsecureString(_password));
 
         State.Secrets = new Dictionary<string, Dictionary<string, string>>();
 
@@ -238,7 +265,7 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
     {
         if (_password != null)
         {
-            Array.Fill(_password, '\0');
+            _password.Dispose();
             _password = null;
         }
 
