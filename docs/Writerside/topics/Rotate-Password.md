@@ -13,5 +13,6 @@ When executed, you will be prompted for the current password protecting the secr
 | Option | Alias | Environmental Variable Counterpart | Description |
 |-------|-------|------------------------------------|-------------|
 | --secret-password |       | `ASPIRATE_SECRET_PASSWORD` | Supply the current password when running non‑interactively. |
+| --pbkdf2-iterations |       | `ASPIRATE_PBKDF2_ITERATIONS` | Override the PBKDF2 iteration count used for password hashing |
 | --non-interactive |       | `ASPIRATE_NON_INTERACTIVE` | Disables interactive mode for the command |
 | --disable-secrets |       | `ASPIRATE_DISABLE_SECRETS` | Disables secrets management features. |

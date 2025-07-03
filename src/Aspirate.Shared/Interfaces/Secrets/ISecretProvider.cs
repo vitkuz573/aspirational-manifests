@@ -2,6 +2,7 @@ namespace Aspirate.Shared.Interfaces.Secrets;
 public interface ISecretProvider
 {
     SecretState? State { get; }
+    int Pbkdf2Iterations { get; set; }
     void AddResource(string resourceName);
     bool ResourceExists(string resourceName);
     void RemoveResource(string resourceName);

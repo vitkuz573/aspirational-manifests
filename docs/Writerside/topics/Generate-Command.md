@@ -73,6 +73,7 @@ When ran non-interactively, you can specify which components to build with `-c` 
 | --output-format               |       | `ASPIRATE_OUTPUT_FORMAT`                   | Sets the output manifest format. Defaults to `kustomize`. Can be `kustomize`, `helm` or `compose`.                                                                                           |
 | --runtime-identifier          |       | `ASPIRATE_RUNTIME_IDENTIFIER`              | Sets the runtime identifier for project builds. Defaults to `linux-x64`.                                                                                                                     |
 | --secret-password             |       | `ASPIRATE_SECRET_PASSWORD`                 | If using secrets, or you have a secret file - Specify the password to decrypt them                                                                                                           |
+| --pbkdf2-iterations             |       | `ASPIRATE_PBKDF2_ITERATIONS`                 | Override the PBKDF2 iteration count used for password hashing
 | --secret-provider             |       | `ASPIRATE_SECRET_PROVIDER`                 | Choose `file` (default) or `keyvault` as the secret backend
                                     |
 | --non-interactive             |       | `ASPIRATE_NON_INTERACTIVE`                 | Disables interactive mode for the command                                                                                                                                                    |

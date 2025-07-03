@@ -7,6 +7,7 @@ public class SecretManagementOptions
     public required string? SecretPassword { get; set; }
     public bool CommandUnlocksSecrets { get; set; }
     public string? SecretProvider { get; set; }
+    public int? Pbkdf2Iterations { get; set; }
     public string? StatePath { get; set; }
     public bool? Force { get; set; }
     public required AspirateState State { get; set; }

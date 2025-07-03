@@ -9,5 +9,6 @@ public abstract class BaseCommandOptions : ICommandOptions
     public string? SecretPassword { get; set; }
     public string? LaunchProfile { get; set; }
     public string? SecretProvider { get; set; }
+    public int? Pbkdf2Iterations { get; set; }
     public string? StatePath { get; set; }
 }

@@ -7,4 +7,4 @@
 - Prefer an external provider such as Azure Key Vault for shared environments.
 - Avoid setting long-lived environment variables containing secret passwords. Supply passwords via prompts or temporary variables scoped to a single command.
 - Aspirate clears passwords from memory after secret operations such as generate, apply, and rotate to minimize exposure.
-- Tune the secret encryption strength using the `ASPIRATE_PBKDF2_ITERATIONS` configuration option if higher security is required.
+- Tune the secret encryption strength using the `ASPIRATE_PBKDF2_ITERATIONS` configuration option or the `--pbkdf2-iterations` command option if higher security is required.

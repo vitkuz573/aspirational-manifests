@@ -10,6 +10,7 @@ public class AzureKeyVaultSecretProvider(IConfiguration configuration) : ISecret
         new DefaultAzureCredential());
 
     public SecretState? State { get; set; } = new();
+    public int Pbkdf2Iterations { get; set; }
 
     public void AddResource(string resourceName) { }
 

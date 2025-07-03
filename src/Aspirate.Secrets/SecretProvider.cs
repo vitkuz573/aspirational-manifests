@@ -3,8 +3,8 @@ namespace Aspirate.Secrets;
 public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
 {
     private const int TagSizeInBytes = 16;
-    private const string IterationsEnvName = "ASPIRATE_PBKDF2_ITERATIONS";
-    private static int Pbkdf2Iterations => int.TryParse(Environment.GetEnvironmentVariable(IterationsEnvName), out var i) ? i : 1_000_000;
+    private const int DefaultIterations = 1_000_000;
+    public int Pbkdf2Iterations { get; set; } = DefaultIterations;
     private char[]? _password;
     private IEncrypter? _encrypter;
     private IDecrypter? _decrypter;

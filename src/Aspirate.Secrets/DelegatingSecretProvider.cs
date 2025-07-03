@@ -9,6 +9,7 @@ public class DelegatingSecretProvider(SecretProviderFactory factory, AspirateSta
         factory.GetProvider(state.SecretProvider ?? Environment.GetEnvironmentVariable("ASPIRATE_SECRET_PROVIDER"));
 
     public SecretState? State => Resolve().State;
+    public int Pbkdf2Iterations { get => Resolve().Pbkdf2Iterations; set => Resolve().Pbkdf2Iterations = value; }
 
     public void AddResource(string resourceName) => Resolve().AddResource(resourceName);
     public bool ResourceExists(string resourceName) => Resolve().ResourceExists(resourceName);
