@@ -5,11 +5,11 @@ public class SaveSecretsAction(
     ISecretService secretService,
     IServiceProvider serviceProvider) : BaseAction(serviceProvider)
 {
-    public override Task<bool> ExecuteAsync()
+    public override async Task<bool> ExecuteAsync()
     {
         Logger.WriteRuler("[purple]Populating Secrets File[/]");
 
-        secretService.SaveSecrets(new SecretManagementOptions
+        await secretService.SaveSecretsAsync(new SecretManagementOptions
         {
             State = CurrentState,
             NonInteractive = CurrentState.NonInteractive,
@@ -18,6 +18,6 @@ public class SaveSecretsAction(
             SecretProvider = CurrentState.SecretProvider,
         });
 
-        return Task.FromResult(true);
+        return true;
     }
 }

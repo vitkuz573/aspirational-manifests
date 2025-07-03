@@ -44,7 +44,7 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
 
         handler.CurrentState.PopulateStateFromOptions(options);
 
-        LoadSecrets(options, secretService, handler);
+        await LoadSecrets(options, secretService, handler);
 
         var exitCode = await handler.HandleAsync(options);
 
@@ -53,8 +53,8 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         return exitCode;
     }
 
-    private void LoadSecrets(TOptions options, ISecretService secretService, TOptionsHandler handler) =>
-        secretService.LoadSecrets(new SecretManagementOptions
+    private Task LoadSecrets(TOptions options, ISecretService secretService, TOptionsHandler handler) =>
+        secretService.LoadSecretsAsync(new SecretManagementOptions
         {
             DisableSecrets = handler.CurrentState.DisableSecrets,
             NonInteractive = options.NonInteractive,

@@ -10,6 +10,17 @@ public class SecretService(
     private readonly SecretProviderFactory _factory = providerFactory;
     private IReadOnlyCollection<ISecretProtectionStrategy> ProtectionStrategies { get; } = protectionStrategies.ToList();
 
+    private readonly JsonSerializerOptions _jsonSerializerOptions = new()
+    {
+        WriteIndented = true,
+        DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingDefault,
+        IncludeFields = true,
+        Converters =
+        {
+            new SmartEnumNameConverter<ExistingSecretsType, string>()
+        }
+    };
+
     private ISecretProvider GetProvider(SecretManagementOptions options)
     {
         var provider = _factory.GetProvider(options.SecretProvider ?? options.State.SecretProvider);
@@ -111,6 +122,18 @@ public class SecretService(
         secretProvider.ClearPassword();
     }
 
+    public async Task SaveSecretsAsync(SecretManagementOptions options)
+    {
+        SaveSecrets(options);
+
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            var stateAsJson = JsonSerializer.Serialize(options.State, _jsonSerializerOptions);
+            await fs.File.WriteAllTextAsync(stateFile, stateAsJson);
+        }
+    }
+
     public void ReInitialiseSecrets(SecretManagementOptions options)
     {
         var secretProvider = GetProvider(options);
@@ -134,6 +157,18 @@ public class SecretService(
 
         logger.MarkupLine("[green]Secret State has been initialised![/].");
         secretProvider.ClearPassword();
+    }
+
+    public async Task ReInitialiseSecretsAsync(SecretManagementOptions options)
+    {
+        ReInitialiseSecrets(options);
+
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            var stateAsJson = JsonSerializer.Serialize(options.State, _jsonSerializerOptions);
+            await fs.File.WriteAllTextAsync(stateFile, stateAsJson);
+        }
     }
 
     public void RotatePassword(SecretManagementOptions options)
@@ -190,6 +225,18 @@ public class SecretService(
 
         logger.MarkupLine("[green]Secret password rotated![/].");
         secretProvider.ClearPassword();
+    }
+
+    public async Task RotatePasswordAsync(SecretManagementOptions options)
+    {
+        RotatePassword(options);
+
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            var stateAsJson = JsonSerializer.Serialize(options.State, _jsonSerializerOptions);
+            await fs.File.WriteAllTextAsync(stateFile, stateAsJson);
+        }
     }
 
     public void LoadSecrets(SecretManagementOptions options)
@@ -251,6 +298,25 @@ public class SecretService(
         options.State.SecretState = secretProvider.State;
 
         logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Secret State populated successfully.");
+    }
+
+    public async Task LoadSecretsAsync(SecretManagementOptions options)
+    {
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            if (fs.File.Exists(stateFile))
+            {
+                var stateAsJson = await fs.File.ReadAllTextAsync(stateFile);
+                var previousState = JsonSerializer.Deserialize<AspirateState>(stateAsJson, _jsonSerializerOptions);
+                if (previousState?.SecretState is not null)
+                {
+                    options.State.SecretState = previousState.SecretState;
+                }
+            }
+        }
+
+        LoadSecrets(options);
     }
 
     private bool CheckPassword(SecretManagementOptions options)
@@ -419,5 +485,19 @@ public class SecretService(
         }
 
         logger.MarkupLine("[green]Secret State cleared.[/]");
+    }
+
+    public async Task ClearSecretsAsync(SecretManagementOptions options)
+    {
+        ClearSecrets(options);
+
+        if (!string.IsNullOrEmpty(options.StatePath))
+        {
+            var stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
+            if (fs.File.Exists(stateFile))
+            {
+                await Task.Run(() => fs.File.Delete(stateFile));
+            }
+        }
     }
 }

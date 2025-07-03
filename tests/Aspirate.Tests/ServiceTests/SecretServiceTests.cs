@@ -1,3 +1,4 @@
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
@@ -374,5 +375,114 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
 
         newProvider.Pbkdf2Iterations.Should().Be(200_000);
         newProvider.CheckPassword("test-password").Should().BeTrue();
+    }
+
+    [Fact]
+    public async Task LoadStateAsync_NotExistsInitialises_Success()
+    {
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = null;
+        var serviceProvider = CreateServiceProvider(state, console);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        state.SecretPassword = "test-password";
+
+        await service.LoadSecretsAsync(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = "test-password",
+            StatePath = "/"
+        });
+
+        state.SecretState.Should().NotBeNull();
+    }
+
+    [Fact]
+    public async Task RotatePasswordAsync_RotatesSecrets()
+    {
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = true;
+        console.Input.PushTextWithEnter("password_for_secrets");
+        console.Input.PushTextWithEnter("new_secret_password");
+        console.Input.PushTextWithEnter("new_secret_password");
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+        var serviceProvider = CreateServiceProvider(state, console);
+        var service = GetSystemUnderTest(serviceProvider);
+        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
+
+        await service.RotatePasswordAsync(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = false,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+            StatePath = "/"
+        });
+
+        secretProvider.CheckPassword("new_secret_password").Should().BeTrue();
+        secretProvider.SetPassword("new_secret_password");
+        secretProvider.GetSecret("postgrescontainer", "ConnectionString_Test").Should().Be("some_secret_value");
+    }
+
+    [Fact]
+    public async Task SaveSecretsAsync_DetectsAdditionalVariables()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var state = CreateAspirateStateWithAdditionalSecrets(nonInteractive: true, password: "test-password");
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        await service.SaveSecretsAsync(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = state.SecretPassword,
+            StatePath = "/"
+        });
+
+        secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.JwtSecret.Value);
+        secretProvider.State.Secrets["testcontainer"].Should().ContainKey(ProtectorType.RedisPassword.Value);
+    }
+
+    [Fact]
+    public async Task ClearSecretsAsync_RemovesStateAndFile()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var statePath = "/state";
+        fs.AddDirectory(statePath);
+        var stateFile = fs.Path.Combine(statePath, AspirateLiterals.StateFileName);
+        fs.AddFile(stateFile, "{}");
+
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
+
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        await service.ClearSecretsAsync(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = string.Empty,
+            SecretProvider = "file",
+            StatePath = statePath,
+            Force = true
+        });
+
+        state.SecretState.Should().BeNull();
+        fs.FileExists(stateFile).Should().BeFalse();
     }
 }
