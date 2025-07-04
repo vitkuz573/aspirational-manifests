@@ -3,7 +3,7 @@ namespace Aspirate.Services.Implementations;
 using System.Security.AccessControl;
 using System.Security.Principal;
 
-public class KustomizeService(IFileSystem fileSystem, IShellExecutionService shellExecutionService, IAnsiConsole logger) : IKustomizeService
+public class KustomizeService(IFileSystem fileSystem, IShellExecutionService shellExecutionService, IAnsiConsole logger, IManifestWriter manifestWriter) : IKustomizeService
 {
     public CommandAvailableResult IsKustomizeAvailable()
     {
@@ -130,17 +130,7 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return null;
         }
 
-        var dockerConfigJson = CreateDockerConfigJson(registryUrl, registryUsername, registryPassword, registryEmail);
-
-        var secret = ImagePullSecret.Create()
-            .WithName(resourceName)
-            .WithDockerConfigJson(dockerConfigJson);
-
-        var serializer = new SerializerBuilder()
-            .WithNamingConvention(CamelCaseNamingConvention.Instance)
-            .Build();
-
-        var secretYaml = serializer.Serialize(secret);
+        var secretYaml = manifestWriter.CreateImagePullSecretYaml(registryUrl, registryUsername, registryPassword, registryEmail, resourceName);
 
         var tempPath = fileSystem.Path.GetTempPath();
         var secretFile = fileSystem.Path.Combine(tempPath, $"{resourceName}.{Path.GetRandomFileName()}.yaml");
@@ -169,23 +159,6 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
         }
 
         return secretFile;
-    }
-
-    private static DockerConfigJson CreateDockerConfigJson(string registryUrl, string registryUsername, string registryPassword, string registryEmail)
-    {
-        var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{registryUsername}:{registryPassword}"));
-
-        return new DockerConfigJson
-        {
-            Auths = new()
-            {
-                [registryUrl] = new()
-                {
-                    Auth = auth,
-                    Email = registryEmail,
-                },
-            },
-        };
     }
 
     public void CleanupSecretEnvFiles(bool? disableSecrets, IEnumerable<string> secretFiles)

@@ -15,7 +15,8 @@ public class KustomizeServiceTests : AspirateTestBase
 
         var shellExecutionService = Substitute.For<IShellExecutionService>();
         var console = Substitute.For<IAnsiConsole>();
-        var sut = new KustomizeService(fs, shellExecutionService, console);
+        var manifestWriter = new ManifestWriter(fs);
+        var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
 
         var state = CreateAspirateStateWithConnectionStrings();
         state.SecretState = new SecretState
@@ -54,7 +55,8 @@ public class KustomizeServiceTests : AspirateTestBase
 
         var shellExecutionService = Substitute.For<IShellExecutionService>();
         var console = Substitute.For<IAnsiConsole>();
-        var sut = new KustomizeService(fs, shellExecutionService, console);
+        var manifestWriter = new ManifestWriter(fs);
+        var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
 
         var state = CreateAspirateState();
         state.WithPrivateRegistry = true;
