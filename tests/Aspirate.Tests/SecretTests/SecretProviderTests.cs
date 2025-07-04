@@ -139,13 +139,16 @@ public class SecretProviderTests
         var provider = new SecretProvider(_fileSystem);
 
         var state = GetState(
-            Base64Salt, secrets: new()
+            Base64Salt,
+            secrets: new()
             {
                 [TestResource] = new()
                 {
                     [TestKey] = EncryptedTestValue,
                 },
-            });
+            },
+            pbkdf2Iterations: 1_000_000,
+            secretsVersion: 1);
 
         provider.LoadState(state);
 
@@ -169,7 +172,9 @@ public class SecretProviderTests
                 {
                     [TestKey] = EncryptedTestValue,
                 },
-            });
+            },
+            pbkdf2Iterations: 1_000_000,
+            secretsVersion: 1);
 
         provider.LoadState(state);
         provider.SetPassword(TestPassword);
@@ -200,12 +205,18 @@ public class SecretProviderTests
         provider2.CheckPassword(TestPassword).Should().BeTrue();
     }
 
-    private static AspirateState GetState(string? salt = null, Dictionary<string, Dictionary<string, string>>? secrets = null)
+    private static AspirateState GetState(
+        string? salt = null,
+        Dictionary<string, Dictionary<string, string>>? secrets = null,
+        int? pbkdf2Iterations = null,
+        int secretsVersion = SecretState.CurrentVersion)
     {
         var state = new SecretState
         {
             Salt = salt,
             Secrets = secrets ?? [],
+            Pbkdf2Iterations = pbkdf2Iterations ?? SecretState.DefaultIterations,
+            SecretsVersion = secretsVersion,
         };
 
         return new AspirateState { SecretState = state };
