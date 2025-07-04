@@ -87,8 +87,9 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             containerImages :
         throw new InvalidOperationException($"Container Image for {key} not found.");
 
-    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, string image, TContainerResource? container, List<string> manifests) =>
-        new KubernetesDeploymentData()
+    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, string image, TContainerResource? container, List<string> manifests)
+    {
+        var data = new KubernetesDeploymentData()
             .SetWithDashboard(options.WithDashboard.GetValueOrDefault())
             .SetName(options.Resource.Key)
             .SetContainerImage(image)
@@ -102,9 +103,12 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             .SetArgs(container.Args)
             .SetEntrypoint(container.Entrypoint)
             .SetManifests(manifests)
-            .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
-            .ApplyIngress(options)
-            .Validate();
+            .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault());
+
+        ApplyIngress(data, options);
+
+        return data.Validate();
+    }
 
     public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive)
     {
@@ -184,7 +188,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         return data.ToKubernetesObjects(options.EncodeSecrets);
     }
 
-    private static KubernetesDeploymentData ApplyIngress(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    private static KubernetesDeploymentData ApplyIngress(KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
     {
         var state = options.CurrentState;
         if (state?.IngressDefinitions != null && state.IngressDefinitions.TryGetValue(options.Resource.Key, out var def))
