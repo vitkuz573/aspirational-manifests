@@ -85,7 +85,11 @@ public class SecretProvider(IFileSystem fileSystem) : ISecretProvider
         }
 
         _salt = !string.IsNullOrEmpty(State.Salt) ? Convert.FromBase64String(State.Salt) : null;
-        Pbkdf2Iterations = State.Pbkdf2Iterations > 0 ? State.Pbkdf2Iterations : DefaultIterations;
+
+        if (_pbkdf2Iterations == DefaultIterations)
+        {
+            Pbkdf2Iterations = State.Pbkdf2Iterations > 0 ? State.Pbkdf2Iterations : DefaultIterations;
+        }
     }
 
     private void CreateNewSalt()

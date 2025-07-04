@@ -55,7 +55,8 @@ public class SecretService(
             return;
         }
 
-        if (!ProtectionStrategies.CheckForProtectableSecrets(options.State.AllSelectedSupportedComponents))
+        if (!ProtectionStrategies.CheckForProtectableSecrets(options.State.AllSelectedSupportedComponents)
+            && options.State.WithPrivateRegistry != true)
         {
             logger.MarkupLine("No secrets to protect in any [blue]selected components[/]");
             return;
