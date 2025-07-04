@@ -99,6 +99,11 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         result.Should().BeTrue();
         var aspirateSettingsJson = await fileSystem.File.ReadAllTextAsync(fileSystem.Path.Combine(DefaultProjectPath, AspirateSettings.FileName));
         var aspirateSettings = JsonSerializer.Deserialize<AspirateSettings>(aspirateSettingsJson);
+
+        // Normalize the template path for cross platform consistency
+        var templateFolderName = fileSystem.Path.GetFileName(aspirateSettings.TemplatePath);
+        aspirateSettings.TemplatePath = $"/{templateFolderName}";
+
         await Verify(aspirateSettings)
             .UseDirectory("VerifyResults");
     }
