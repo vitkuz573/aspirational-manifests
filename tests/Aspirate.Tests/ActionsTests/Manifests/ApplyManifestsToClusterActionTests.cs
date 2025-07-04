@@ -108,4 +108,50 @@ public class ApplyManifestsToClusterActionTests : BaseActionTests<ApplyManifests
         // Assert
         result.Should().BeTrue();
     }
+
+    [Fact]
+    public async Task ExecuteApplyManifestsToClusterActionTests_ImagePullSecretApplied()
+    {
+        var state = CreateAspirateState(nonInteractive: true, projectPath: DefaultProjectPath, inputPath: "/some-path", kubeContext: "docker-desktop");
+        state.WithPrivateRegistry = true;
+
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddDirectory(fileSystem.Path.GetTempPath());
+
+        var kubeCtl = Substitute.For<IKubeCtlService>();
+        kubeCtl.ApplyManifests(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+        kubeCtl.ApplyManifestFile(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+
+        var kustomize = Substitute.For<IKustomizeService>();
+        kustomize.WriteImagePullSecretToTempFile(state, Arg.Any<ISecretProvider>())
+            .Returns(Task.FromResult<string?>("temp.yaml"));
+
+        var secretProvider = new SecretProvider(fileSystem);
+
+        var services = new ServiceCollection();
+        services.RegisterAspirateEssential();
+        services.RemoveAll<IFileSystem>();
+        services.RemoveAll<IShellExecutionService>();
+        services.RemoveAll<IAnsiConsole>();
+        services.RemoveAll<AspirateState>();
+        services.RemoveAll<IKubeCtlService>();
+        services.RemoveAll<IKustomizeService>();
+
+        services.AddSingleton<IFileSystem>(fileSystem);
+        services.AddSingleton<ISecretProvider>(secretProvider);
+        services.AddSingleton<IAnsiConsole>(new TestConsole());
+        services.AddSingleton(state);
+        services.AddSingleton(Substitute.For<IShellExecutionService>());
+        services.AddSingleton(kubeCtl);
+        services.AddSingleton(kustomize);
+
+        var provider = services.BuildServiceProvider();
+
+        var action = GetSystemUnderTest(provider);
+
+        await action.ExecuteAsync();
+
+        await kubeCtl.Received().ApplyManifestFile(state.KubeContext, "temp.yaml");
+        kustomize.Received().CleanupSecretEnvFiles(state.DisableSecrets, Arg.Is<IEnumerable<string>>(x => x.Contains("temp.yaml")));
+    }
 }

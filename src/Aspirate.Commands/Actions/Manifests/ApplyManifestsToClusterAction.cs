@@ -22,6 +22,15 @@ public sealed class ApplyManifestsToClusterAction(
             await HandleDapr();
 
             await kustomizeService.WriteSecretsOutToTempFiles(CurrentState, secretFiles, secretProvider);
+
+            var imagePullSecretFile = await kustomizeService.WriteImagePullSecretToTempFile(CurrentState, secretProvider);
+
+            if (!string.IsNullOrEmpty(imagePullSecretFile))
+            {
+                secretFiles.Add(imagePullSecretFile);
+                await kubeCtlService.ApplyManifestFile(CurrentState.KubeContext, imagePullSecretFile);
+            }
+
             await kubeCtlService.ApplyManifests(CurrentState.KubeContext, CurrentState.InputPath);
             await HandleRollingRestart();
             Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] Deployments successfully applied to cluster [blue]'{CurrentState.KubeContext}'[/]");
