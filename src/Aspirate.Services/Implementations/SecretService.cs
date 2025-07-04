@@ -112,6 +112,23 @@ public class SecretService(
             }
         }
 
+        if (options.State.WithPrivateRegistry == true)
+        {
+            const string resourceName = TemplateLiterals.ImagePullSecretType;
+
+            if (!secretProvider.ResourceExists(resourceName))
+            {
+                secretProvider.AddResource(resourceName);
+            }
+
+            secretProvider.AddSecret(resourceName, "registryUrl", options.State.PrivateRegistryUrl ?? string.Empty);
+            secretProvider.AddSecret(resourceName, "registryUsername", options.State.PrivateRegistryUsername ?? string.Empty);
+            secretProvider.AddSecret(resourceName, "registryPassword", options.State.PrivateRegistryPassword ?? string.Empty);
+            secretProvider.AddSecret(resourceName, "registryEmail", options.State.PrivateRegistryEmail ?? string.Empty);
+
+            options.State.PrivateRegistryPassword = null;
+        }
+
         if (secretProvider.State is not null)
         {
             secretProvider.State.Pbkdf2Iterations = secretProvider.Pbkdf2Iterations;
