@@ -45,4 +45,35 @@ public class KustomizeServiceTests : AspirateTestBase
         // Assert - files removed
         files.Should().AllSatisfy(file => fs.FileExists(file).Should().BeFalse());
     }
+
+    [Fact]
+    public async Task WriteImagePullSecretToTempFile_CreatesFile()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory(fs.Path.GetTempPath());
+
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+        var console = Substitute.For<IAnsiConsole>();
+        var sut = new KustomizeService(fs, shellExecutionService, console);
+
+        var state = CreateAspirateState();
+        state.WithPrivateRegistry = true;
+
+        var secretProvider = new SecretProvider(fs)
+        {
+            State = new SecretState()
+        };
+        secretProvider.SetPassword("pwd");
+        secretProvider.AddResource(TemplateLiterals.ImagePullSecretType);
+        secretProvider.AddSecret(TemplateLiterals.ImagePullSecretType, "registryUrl", "https://registry.example.com");
+        secretProvider.AddSecret(TemplateLiterals.ImagePullSecretType, "registryUsername", "user");
+        secretProvider.AddSecret(TemplateLiterals.ImagePullSecretType, "registryPassword", "pass");
+        secretProvider.AddSecret(TemplateLiterals.ImagePullSecretType, "registryEmail", "user@example.com");
+        secretProvider.SetState(state);
+
+        var result = await sut.WriteImagePullSecretToTempFile(state, secretProvider);
+
+        result.Should().NotBeNull();
+        fs.FileExists(result!).Should().BeTrue();
+    }
 }

@@ -96,6 +96,98 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
         }
     }
 
+    public async Task<string?> WriteImagePullSecretToTempFile(AspirateState state, ISecretProvider secretProvider)
+    {
+        if (state.WithPrivateRegistry != true)
+        {
+            return null;
+        }
+
+        if (!secretProvider.SecretStateExists(state))
+        {
+            return null;
+        }
+
+        if (secretProvider.State?.Secrets == null || secretProvider.State.Secrets.Count == 0)
+        {
+            return null;
+        }
+
+        const string resourceName = TemplateLiterals.ImagePullSecretType;
+
+        if (!secretProvider.ResourceExists(resourceName))
+        {
+            return null;
+        }
+
+        var registryUrl = secretProvider.GetSecret(resourceName, "registryUrl");
+        var registryUsername = secretProvider.GetSecret(resourceName, "registryUsername");
+        var registryPassword = secretProvider.GetSecret(resourceName, "registryPassword");
+        var registryEmail = secretProvider.GetSecret(resourceName, "registryEmail") ?? string.Empty;
+
+        if (registryUrl == null || registryUsername == null || registryPassword == null)
+        {
+            return null;
+        }
+
+        var dockerConfigJson = CreateDockerConfigJson(registryUrl, registryUsername, registryPassword, registryEmail);
+
+        var secret = ImagePullSecret.Create()
+            .WithName(resourceName)
+            .WithDockerConfigJson(dockerConfigJson);
+
+        var serializer = new SerializerBuilder()
+            .WithNamingConvention(CamelCaseNamingConvention.Instance)
+            .Build();
+
+        var secretYaml = serializer.Serialize(secret);
+
+        var tempPath = fileSystem.Path.GetTempPath();
+        var secretFile = fileSystem.Path.Combine(tempPath, $"{resourceName}.{Path.GetRandomFileName()}.yaml");
+
+        await fileSystem.File.WriteAllTextAsync(secretFile, secretYaml);
+
+        if (OperatingSystem.IsWindows())
+        {
+            var fileInfo = fileSystem.FileInfo.New(secretFile);
+            var security = fileInfo.GetAccessControl();
+            var currentUser = WindowsIdentity.GetCurrent().User;
+            if (currentUser != null)
+            {
+                var rule = new FileSystemAccessRule(
+                    currentUser,
+                    FileSystemRights.Read | FileSystemRights.Write,
+                    AccessControlType.Allow);
+                security.SetAccessRule(rule);
+                security.SetAccessRuleProtection(true, false);
+                fileInfo.SetAccessControl(security);
+            }
+        }
+        else
+        {
+            fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+        }
+
+        return secretFile;
+    }
+
+    private static DockerConfigJson CreateDockerConfigJson(string registryUrl, string registryUsername, string registryPassword, string registryEmail)
+    {
+        var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{registryUsername}:{registryPassword}"));
+
+        return new DockerConfigJson
+        {
+            Auths = new()
+            {
+                [registryUrl] = new()
+                {
+                    Auth = auth,
+                    Email = registryEmail,
+                },
+            },
+        };
+    }
+
     public void CleanupSecretEnvFiles(bool? disableSecrets, IEnumerable<string> secretFiles)
     {
         if (disableSecrets == true)
