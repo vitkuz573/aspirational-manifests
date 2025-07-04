@@ -13,9 +13,10 @@ public class SecretPasswordOptionTests
         // Arrange
         Environment.SetEnvironmentVariable("ASPIRATE_SECRET_PASSWORD", "test");
         var cli = new AspirateCli();
+        var parser = new Parser(cli);
 
         // Act
-        var result = cli.Parse(["generate"]);
+        var result = parser.Parse(["generate"]);
         result.GetValueForOption(SecretPasswordOption.Instance);
 
         // Assert

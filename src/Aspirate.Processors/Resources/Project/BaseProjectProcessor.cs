@@ -48,8 +48,9 @@ public abstract class BaseProjectProcessor(
         return Task.FromResult(true);
     }
 
-    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, MsBuildContainerProperties containerDetails, ProjectResource? project) =>
-        new KubernetesDeploymentData()
+    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, MsBuildContainerProperties containerDetails, ProjectResource? project)
+    {
+        var data = new KubernetesDeploymentData()
             .SetWithDashboard(options.WithDashboard.GetValueOrDefault())
             .SetName(options.Resource.Key)
             .SetContainerImage(containerDetails.FullContainerImage)
@@ -62,9 +63,12 @@ public abstract class BaseProjectProcessor(
             .SetIsProject(true)
             .SetPorts(options.Resource.MapBindingsToPorts())
             .SetManifests(_manifests)
-            .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
-            .ApplyIngress(options)
-            .Validate();
+            .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault());
+
+        ApplyIngress(data, options);
+
+        return data.Validate();
+    }
 
     public async Task BuildAndPushProjectContainer(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? runtimeIdentifier, bool preferDockerfile)
     {
@@ -154,7 +158,7 @@ public abstract class BaseProjectProcessor(
         return data.ToKubernetesObjects(options.EncodeSecrets);
     }
 
-    private static KubernetesDeploymentData ApplyIngress(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    private static KubernetesDeploymentData ApplyIngress(KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
     {
         var state = options.CurrentState;
         if (state?.IngressDefinitions != null && state.IngressDefinitions.TryGetValue(options.Resource.Key, out var def))

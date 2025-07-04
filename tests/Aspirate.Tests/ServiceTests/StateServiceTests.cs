@@ -106,6 +106,7 @@ public class StateServiceTests : BaseServiceTests<IStateService>
 
         if (OperatingSystem.IsWindows())
         {
+#pragma warning disable CA1416 // Validate platform compatibility
             var fileInfo = fs.FileInfo.New(stateFile);
             var acl = fileInfo.GetAccessControl();
             var rules = acl.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>();
@@ -113,6 +114,7 @@ public class StateServiceTests : BaseServiceTests<IStateService>
             rules.Should().Contain(r => r.IdentityReference.Equals(currentUser) &&
                                        r.FileSystemRights.HasFlag(FileSystemRights.Read) &&
                                        r.FileSystemRights.HasFlag(FileSystemRights.Write));
+#pragma warning restore CA1416
         }
         else
         {

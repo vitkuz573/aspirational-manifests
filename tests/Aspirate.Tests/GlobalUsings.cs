@@ -39,3 +39,7 @@ global using Spectre.Console;
 global using Spectre.Console.Testing;
 global using ContainerResource = Aspirate.Shared.Models.AspireManifests.Components.V0.Container.ContainerResource;
 global using Resource = Aspirate.Shared.Models.AspireManifests.Resource;
+global using Aspirate.Cli;
+global using Aspirate.Commands.Commands.ListSecrets;
+global using Aspirate.Commands.Commands.VerifySecrets;
+global using k8s;
