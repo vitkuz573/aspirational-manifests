@@ -36,6 +36,7 @@ public abstract class AspirateTestBase
             InputPath = inputPath,
             KubeContext = kubeContext,
             SecretPassword = password,
+            SecretProvider = "file",
             OutputFormat = outputFormat,
         };
 
@@ -97,9 +98,10 @@ public abstract class AspirateTestBase
         services.RemoveAll<IShellExecutionService>();
         services.RemoveAll<IAnsiConsole>();
         services.RemoveAll<AspirateState>();
+        services.RemoveAll<SecretProvider>();
 
         services.AddSingleton(fileSystem);
-        services.AddSingleton(secretProvider);
+        services.AddSingleton((SecretProvider)secretProvider);
         services.AddSingleton<IAnsiConsole>(console);
         services.AddSingleton(state);
         services.AddSingleton(Substitute.For<IShellExecutionService>());
