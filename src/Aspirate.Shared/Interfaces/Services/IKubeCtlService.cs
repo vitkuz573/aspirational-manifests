@@ -43,4 +43,12 @@ public interface IKubeCtlService
     /// <returns>A <see cref="Task"/> representing the asynchronous operation.
     /// The task result represents whether the manifests were successfully removed.</returns>
     Task<bool> RemoveManifests(string context, string outputFolder);
+
+    /// <summary>
+    /// Applies an individual manifest file to the specified context.
+    /// </summary>
+    /// <param name="context">The kubernetes context.</param>
+    /// <param name="manifestFile">The manifest file to apply.</param>
+    /// <returns>A task representing whether the apply succeeded.</returns>
+    Task<bool> ApplyManifestFile(string context, string manifestFile);
 }
