@@ -242,6 +242,65 @@ public static class KubernetesDeploymentDataExtensions
         };
     }
 
+    public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
+    {
+        var labels = data.ToKubernetesLabels();
+        var metadata = data.ToKubernetesObjectMetaData(labels);
+
+        var servicePort = data.Ports.FirstOrDefault()?.InternalPort ?? 80;
+
+        var ingress = new V1Ingress
+        {
+            ApiVersion = "networking.k8s.io/v1",
+            Kind = "Ingress",
+            Metadata = metadata,
+            Spec = new V1IngressSpec
+            {
+                IngressClassName = "nginx",
+                Rules =
+                [
+                    new V1IngressRule
+                    {
+                        Host = data.IngressHost,
+                        Http = new V1HTTPIngressRuleValue
+                        {
+                            Paths =
+                            [
+                                new V1HTTPIngressPath
+                                {
+                                    Path = data.IngressPath ?? "/",
+                                    PathType = "Prefix",
+                                    Backend = new V1IngressBackend
+                                    {
+                                        Service = new V1IngressServiceBackend
+                                        {
+                                            Name = data.Name,
+                                            Port = new V1ServiceBackendPort { Number = servicePort }
+                                        }
+                                    }
+                                }
+                            ]
+                        }
+                    }
+                ]
+            }
+        };
+
+        if (!string.IsNullOrEmpty(data.IngressTlsSecret))
+        {
+            ingress.Spec.Tls =
+            [
+                new V1IngressTLS
+                {
+                    SecretName = data.IngressTlsSecret,
+                    Hosts = [ data.IngressHost ]
+                }
+            ];
+        }
+
+        return ingress;
+    }
+
     public static List<object> ToKubernetesObjects(this KubernetesDeploymentData data, bool? encodeSecrets = true)
     {
         var objects = new List<object>();
@@ -267,6 +326,11 @@ public static class KubernetesDeploymentDataExtensions
         }
 
         objects.Add(data.ToKubernetesService());
+
+        if (data.IngressEnabled == true)
+        {
+            objects.Add(data.ToKubernetesIngress());
+        }
 
         return objects;
     }

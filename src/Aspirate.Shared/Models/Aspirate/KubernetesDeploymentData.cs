@@ -22,6 +22,10 @@ public class KubernetesDeploymentData
     public string? Entrypoint {get; private set;}
     public string? ImagePullPolicy {get; private set;}
     public string? ServiceType { get; private set; } = "ClusterIP";
+    public bool? IngressEnabled { get; private set; } = false;
+    public string? IngressHost { get; private set; }
+    public string? IngressTlsSecret { get; private set; }
+    public string? IngressPath { get; private set; }
 
     public KubernetesDeploymentData SetName(string name)
     {
@@ -121,6 +125,30 @@ public class KubernetesDeploymentData
     public KubernetesDeploymentData SetServiceType(string? serviceType)
     {
         ServiceType = serviceType ?? "ClusterIP";
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressEnabled(bool enabled)
+    {
+        IngressEnabled = enabled;
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressHost(string? host)
+    {
+        IngressHost = host;
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressTlsSecret(string? secret)
+    {
+        IngressTlsSecret = secret;
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressPath(string? path)
+    {
+        IngressPath = path;
         return this;
     }
 

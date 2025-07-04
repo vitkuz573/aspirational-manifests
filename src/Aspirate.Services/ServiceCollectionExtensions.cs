@@ -48,6 +48,7 @@ public static class ServiceCollectionExtensions
             .AddSingleton<IKubeCtlService, KubeCtlService>()
             .AddSingleton<IKustomizeService, KustomizeService>()
             .AddSingleton<IKubernetesService, KubernetesService>()
+            .AddSingleton<IKubernetesIngressService, KubernetesIngressService>()
             .AddSingleton<IHelmChartCreator, HelmChartCreator>();
 
     /// <summary>

@@ -63,6 +63,7 @@ public abstract class BaseProjectProcessor(
             .SetPorts(options.Resource.MapBindingsToPorts())
             .SetManifests(_manifests)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
+            .ApplyIngress(options)
             .Validate();
 
     public async Task BuildAndPushProjectContainer(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? runtimeIdentifier, bool preferDockerfile)
@@ -151,5 +152,20 @@ public abstract class BaseProjectProcessor(
         var data = PopulateKubernetesDeploymentData(options, containerDetails, project);
 
         return data.ToKubernetesObjects(options.EncodeSecrets);
+    }
+
+    private static KubernetesDeploymentData ApplyIngress(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    {
+        var state = options.CurrentState;
+        if (state?.IngressDefinitions != null && state.IngressDefinitions.TryGetValue(options.Resource.Key, out var def))
+        {
+            data
+                .SetIngressEnabled(true)
+                .SetIngressHost(def.Host)
+                .SetIngressTlsSecret(def.TlsSecret)
+                .SetIngressPath(def.Path);
+        }
+
+        return data;
     }
 }

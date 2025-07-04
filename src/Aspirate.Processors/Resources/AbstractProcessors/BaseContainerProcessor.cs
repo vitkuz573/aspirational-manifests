@@ -103,6 +103,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             .SetEntrypoint(container.Entrypoint)
             .SetManifests(manifests)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
+            .ApplyIngress(options)
             .Validate();
 
     public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive)
@@ -181,5 +182,20 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         var data = PopulateKubernetesDeploymentData(options, image, container, []);
 
         return data.ToKubernetesObjects(options.EncodeSecrets);
+    }
+
+    private static KubernetesDeploymentData ApplyIngress(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    {
+        var state = options.CurrentState;
+        if (state?.IngressDefinitions != null && state.IngressDefinitions.TryGetValue(options.Resource.Key, out var def))
+        {
+            data
+                .SetIngressEnabled(true)
+                .SetIngressHost(def.Host)
+                .SetIngressTlsSecret(def.TlsSecret)
+                .SetIngressPath(def.Path);
+        }
+
+        return data;
     }
 }

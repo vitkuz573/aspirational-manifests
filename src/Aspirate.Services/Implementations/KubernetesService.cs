@@ -273,6 +273,7 @@ public class KubernetesService(IAnsiConsole logger, IKubeCtlService kubeCtlServi
             DisableSecrets = state.DisableSecrets,
             WithPrivateRegistry = state.WithPrivateRegistry,
             WithDashboard = state.IncludeDashboard,
+            CurrentState = state,
             EncodeSecrets = encodeSecrets,
         });
     }
