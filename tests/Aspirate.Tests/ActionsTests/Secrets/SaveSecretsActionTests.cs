@@ -46,13 +46,14 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
 
         // Assert
         result.Should().BeTrue();
-        secretProvider.State.Secrets.Count.Should().Be(4);
-        secretProvider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
-        secretProvider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
-        secretProvider.LoadState(state);
-        secretProvider.State.Secrets.Count.Should().Be(4);
-        secretProvider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
-        secretProvider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
+        var provider = serviceProvider.GetRequiredService<SecretProvider>();
+        provider.State.Secrets.Count.Should().Be(4);
+        provider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
+        provider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
+        provider.LoadState(state);
+        provider.State.Secrets.Count.Should().Be(4);
+        provider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
+        provider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
     }
 
     [Fact]
@@ -99,7 +100,6 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
         var serviceProvider = CreateServiceProvider(state, console);
         var action = GetSystemUnderTest(serviceProvider);
-        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
 
         // Act
         var act = () => action.ExecuteAsync();
@@ -107,9 +107,10 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         // Assert
         await act.Should().NotThrowAsync();
         console.Output.Should().Contain("Secret State has been saved");
-        secretProvider.State.Secrets.Count.Should().Be(4);
-        secretProvider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
-        secretProvider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
+        var provider = serviceProvider.GetRequiredService<SecretProvider>();
+        provider.State.Secrets.Count.Should().Be(4);
+        provider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
+        provider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
     }
 
     [Fact]
@@ -135,7 +136,6 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
         var serviceProvider = CreateServiceProvider(state, console);
         var action = GetSystemUnderTest(serviceProvider);
-        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
 
         // Act
         var act = () => action.ExecuteAsync();
@@ -143,9 +143,10 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         // Assert
         await act.Should().NotThrowAsync();
         console.Output.Should().Contain("Secret State has been saved");
-        secretProvider.State.Secrets.Count.Should().Be(4);
-        secretProvider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
-        secretProvider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
+        var provider = serviceProvider.GetRequiredService<SecretProvider>();
+        provider.State.Secrets.Count.Should().Be(4);
+        provider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
+        provider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
     }
 
     [Fact]
@@ -173,7 +174,6 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         var state = CreateAspirateStateWithConnectionStrings();
         state.SecretState = JsonSerializer.Deserialize<SecretState>(ValidState);
         var serviceProvider = CreateServiceProvider(state, console);
-        var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
         var action = GetSystemUnderTest(serviceProvider);
 
         // Act
@@ -182,8 +182,9 @@ public class SaveSecretsActionTests : BaseActionTests<SaveSecretsAction>
         // Assert
         await act.Should().NotThrowAsync();
         console.Output.Should().Contain("Secret State has been saved");
-        secretProvider.State.Secrets.Count.Should().Be(4);
-        secretProvider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
-        secretProvider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
+        var provider = serviceProvider.GetRequiredService<SecretProvider>();
+        provider.State.Secrets.Count.Should().Be(4);
+        provider.State.Secrets["postgrescontainer"].Count.Should().Be(1);
+        provider.State.Secrets["postgrescontainer2"].Count.Should().Be(1);
     }
 }
