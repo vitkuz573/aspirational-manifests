@@ -1,5 +1,6 @@
 using Aspirate.Cli;
 using Aspirate.Commands.Options;
+using System.CommandLine;
 using System.CommandLine.Parsing;
 using Xunit;
 

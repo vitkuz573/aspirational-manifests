@@ -1,4 +1,6 @@
 using System.Threading.Tasks;
+using k8s;
+using k8s.Models;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
