@@ -125,6 +125,14 @@ public class ManifestWriter(IFileSystem fileSystem) : IManifestWriter
     /// <inheritdoc />
     public void CreateImagePullSecret(string registryUrl, string registryUsername, string registryPassword, string registryEmail, string secretName, string outputPath)
     {
+        var secretYaml = CreateImagePullSecretYaml(registryUrl, registryUsername, registryPassword, registryEmail, secretName);
+
+        fileSystem.File.WriteAllText(fileSystem.Path.Combine(outputPath, $"{TemplateLiterals.ImagePullSecretType}.yaml"), secretYaml);
+    }
+
+    /// <inheritdoc />
+    public string CreateImagePullSecretYaml(string registryUrl, string registryUsername, string registryPassword, string registryEmail, string secretName)
+    {
         var dockerConfigJson = CreateDockerConfigJson(registryUrl, registryUsername, registryPassword, registryEmail);
 
         var secret = ImagePullSecret.Create()
@@ -135,9 +143,7 @@ public class ManifestWriter(IFileSystem fileSystem) : IManifestWriter
             .WithNamingConvention(CamelCaseNamingConvention.Instance)
             .Build();
 
-        string secretYaml = serializer.Serialize(secret);
-
-        fileSystem.File.WriteAllText(fileSystem.Path.Combine(outputPath, $"{TemplateLiterals.ImagePullSecretType}.yaml"), secretYaml);
+        return serializer.Serialize(secret);
     }
 
     private void CreateFile<TTemplateData>(string inputFile, string outputPath, TTemplateData data, string? templatePath)
