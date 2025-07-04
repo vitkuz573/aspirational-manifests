@@ -52,10 +52,7 @@ public sealed class FinalProcessor(IFileSystem fileSystem, IAnsiConsole console,
             return;
         }
 
-        _console.MarkupLine("[bold]Generating private registry secret manifest.[/]");
-        _manifestWriter.CreateImagePullSecret(registryUrl, registryUsername, registryPassword, registryEmail, TemplateLiterals.ImagePullSecretType, outputPath);
-        manifests.Add($"{TemplateLiterals.ImagePullSecretType}.yaml");
-        _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{outputPath}/{TemplateLiterals.ImagePullSecretType}.yaml[/]");
+        _console.MarkupLine("[bold]Private registry detected. Image pull secret will be generated dynamically during deployment.[/]");
     }
 
     private void HandleNamespace(string outputPath, string? templatePath, string @namespace, KubernetesDeploymentData templateDataBuilder, List<string> manifests)
