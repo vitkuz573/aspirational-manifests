@@ -34,7 +34,7 @@ public class ConfigureIngressAction(
 
         if (candidates.Count == 0)
         {
-            Logger.MarkupLine("[yellow](!)[/] No HTTP services detected.[/]");
+            Logger.MarkupLine("[yellow](!)[/] No HTTP services detected.");
             return true;
         }
 
