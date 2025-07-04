@@ -19,10 +19,15 @@
         <PackageReference Include="TestableIO.System.IO.Abstractions.Wrappers" />
     </ItemGroup>
 
-    <ItemGroup>
+  <ItemGroup>
       <ProjectReference Include="..\..\src\Aspirate.Cli\Aspirate.Cli.csproj" />
       <ProjectReference Include="..\..\src\Aspirate.Secrets\Aspirate.Secrets.csproj" />
-    </ItemGroup>
+      <ProjectReference Include="..\..\src\Aspirate.Commands\Aspirate.Commands.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+      <PackageReference Include="KubernetesClient" />
+  </ItemGroup>
 
     <ItemGroup>
       <Compile Remove="TestData\**" />

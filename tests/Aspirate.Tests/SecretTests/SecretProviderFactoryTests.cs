@@ -1,5 +1,6 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
+using System.IO.Abstractions;
 using Xunit;
 
 namespace Aspirate.Tests.SecretTests;
@@ -9,6 +10,7 @@ public class SecretProviderFactoryTests
     private static ServiceProvider CreateServices()
     {
         var services = new ServiceCollection();
+        services.AddSingleton<IFileSystem>(new FileSystem());
         services.AddSingleton<SecretProvider>();
         services.AddSingleton<Base64SecretProvider>();
         services.AddSingleton<EnvironmentSecretProvider>();
