@@ -12,13 +12,14 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
           "hash": "gSeKYq+cBB8Lx1Fw5iuImcUIONz99cQqt6052BjWLp4\u003d",
           "secrets": {
             "postgrescontainer": {
-              "ConnectionString_Test": "EgEu/M6c1XP/PCkGUkJTJ9meX9wOz8mY0w0ca46KF3bVqqHah6QLTDwOyTHX"
+              "ConnectionString_Test": "pS2TKkcv5CsdOmBrZoNrxebeFYacDs2LM+QDGtYvHLIJPJ6JO6y2XUk4GULsVGYS"
             },
             "postgrescontainer2": {
-              "ConnectionString_Test": "EgEu/M6c1XP/PCkGUkJTJ9meX9wOz8mY0w0ca46KF3bVqqHah6QLTDwOyTHX"
+              "ConnectionString_Test": "pS2TKkcv5CsdOmBrZoNrxebeFYacDs2LM+QDGtYvHLIJPJ6JO6y2XUk4GULsVGYS"
             }
           },
-          "secretsVersion": 2
+          "secretsVersion": 2,
+          "pbkdf2Iterations": 1000000
         }
         """;
 
