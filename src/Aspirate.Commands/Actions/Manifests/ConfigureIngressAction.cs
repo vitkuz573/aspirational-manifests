@@ -49,8 +49,14 @@ public class ConfigureIngressAction(
 
             foreach (var service in selected)
             {
-                var host = Logger.Ask<string>($"[bold]Enter host for service [blue]{service}[/]: [/]");
-                var tls = Logger.Ask<string>($"[bold]Enter TLS secret for service [blue]{service}[/] (leave blank if none): [/]", "");
+                var host = Logger.Prompt(
+                    new TextPrompt<string>($"[bold]Enter host for service [blue]{service}[/]: [/]")
+                        .PromptStyle("yellow"));
+
+                var tls = Logger.Prompt(
+                    new TextPrompt<string>($"[bold]Enter TLS secret for service [blue]{service}[/] (leave blank if none): [/]")
+                        .PromptStyle("yellow")
+                        .AllowEmpty());
                 CurrentState.IngressDefinitions[service] = new IngressDefinition
                 {
                     Host = host,

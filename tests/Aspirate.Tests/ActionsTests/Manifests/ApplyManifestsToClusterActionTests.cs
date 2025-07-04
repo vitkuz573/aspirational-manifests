@@ -1,5 +1,6 @@
 using System;
 using System.Threading.Tasks;
+using Aspirate.Cli;
 using Xunit;
 
 namespace Aspirate.Tests.ActionsTests.Manifests;

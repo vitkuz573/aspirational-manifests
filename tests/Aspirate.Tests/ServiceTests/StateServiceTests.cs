@@ -2,6 +2,8 @@ using System.Threading.Tasks;
 using System.Security.AccessControl;
 using System.Security.Principal;
 using System.Linq;
+using System.IO.Abstractions;
+using System.IO.Abstractions.TestingHelpers;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
@@ -12,13 +14,22 @@ public class StateServiceTests : BaseServiceTests<IStateService>
     public async Task SaveState_WritesFile_ToStatePath()
     {
         // Arrange
-        var fs = new MockFileSystem();
+        IFileSystem fs = OperatingSystem.IsWindows()
+            ? new MockFileSystem()
+            : new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = fs.Path.Combine("/custom", "state");
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), "state");
+        if (fs is MockFileSystem mfs)
+        {
+            mfs.AddDirectory(statePath);
+        }
+        else
+        {
+            fs.Directory.CreateDirectory(statePath);
+        }
 
         var state = CreateAspirateState();
 
@@ -36,20 +47,29 @@ public class StateServiceTests : BaseServiceTests<IStateService>
 
         // Assert
         var stateFile = fs.Path.Combine(statePath, AspirateLiterals.StateFileName);
-        fs.FileExists(stateFile).Should().BeTrue();
+        fs.File.Exists(stateFile).Should().BeTrue();
     }
 
     [Fact]
     public async Task RestoreState_ReadsFile_FromStatePath()
     {
         // Arrange
-        var fs = new MockFileSystem();
+        IFileSystem fs = OperatingSystem.IsWindows()
+            ? new MockFileSystem()
+            : new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = fs.Path.Combine("/custom", "state");
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), "state");
+        if (fs is MockFileSystem mfs2)
+        {
+            mfs2.AddDirectory(statePath);
+        }
+        else
+        {
+            fs.Directory.CreateDirectory(statePath);
+        }
 
         var initialState = CreateAspirateState();
         var saveOptions = new StateManagementOptions
@@ -82,13 +102,22 @@ public class StateServiceTests : BaseServiceTests<IStateService>
     [Fact]
     public async Task SaveState_SetsSecurePermissions()
     {
-        var fs = new MockFileSystem(new Dictionary<string, MockFileData>(), "/");
+        IFileSystem fs = OperatingSystem.IsWindows()
+            ? new MockFileSystem(new Dictionary<string, MockFileData>(), "/")
+            : new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = "/state";
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), "state2");
+        if (fs is MockFileSystem mfs3)
+        {
+            mfs3.AddDirectory(statePath);
+        }
+        else
+        {
+            fs.Directory.CreateDirectory(statePath);
+        }
 
         var state = CreateAspirateState();
         var options = new StateManagementOptions
@@ -106,6 +135,7 @@ public class StateServiceTests : BaseServiceTests<IStateService>
 
         if (OperatingSystem.IsWindows())
         {
+#pragma warning disable CA1416 // Validate platform compatibility
             var fileInfo = fs.FileInfo.New(stateFile);
             var acl = fileInfo.GetAccessControl();
             var rules = acl.GetAccessRules(true, true, typeof(SecurityIdentifier)).Cast<FileSystemAccessRule>();
@@ -113,6 +143,7 @@ public class StateServiceTests : BaseServiceTests<IStateService>
             rules.Should().Contain(r => r.IdentityReference.Equals(currentUser) &&
                                        r.FileSystemRights.HasFlag(FileSystemRights.Read) &&
                                        r.FileSystemRights.HasFlag(FileSystemRights.Write));
+#pragma warning restore CA1416
         }
         else
         {

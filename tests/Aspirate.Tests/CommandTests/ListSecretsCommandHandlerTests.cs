@@ -1,3 +1,4 @@
+using Aspirate.Commands.Commands.ListSecrets;
 using Xunit;
 
 namespace Aspirate.Tests.CommandTests;
