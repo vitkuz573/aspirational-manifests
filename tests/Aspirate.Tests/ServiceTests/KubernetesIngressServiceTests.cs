@@ -1,5 +1,8 @@
+using System.Collections.Generic;
+using System.Threading;
 using System.Threading.Tasks;
 using k8s;
+using k8s.Autorest;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
@@ -15,7 +18,13 @@ public class KubernetesIngressServiceTests : BaseServiceTests<IKubernetesIngress
         var console = Substitute.For<IAnsiConsole>();
         var k8sClient = Substitute.For<IKubernetes>();
         k8sService.CreateClient("test").Returns(k8sClient);
-        k8sClient.CoreV1.ReadNamespaceAsync("ingress-nginx").Returns(Task.FromException<V1Namespace>(new Exception()));
+        k8sClient.CoreV1
+            .ReadNamespaceWithHttpMessagesAsync(
+                "ingress-nginx",
+                Arg.Any<bool?>(),
+                Arg.Any<IReadOnlyDictionary<string, IReadOnlyList<string>>>(),
+                Arg.Any<CancellationToken>())
+            .ThrowsAsync(new HttpOperationException());
 
         var sut = new KubernetesIngressService(fileSystem, kubeCtl, k8sService, console);
 
