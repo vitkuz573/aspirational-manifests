@@ -1,5 +1,8 @@
 using System;
 using System.Threading.Tasks;
+using Aspirate.Cli;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Xunit;
 
 namespace Aspirate.Tests.ActionsTests.Manifests;
