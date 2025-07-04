@@ -91,7 +91,18 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             }
             else
             {
-                fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+                try
+                {
+                    fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+                }
+                catch (PlatformNotSupportedException)
+                {
+                    // Ignore on platforms that do not support setting file permissions
+                }
+                catch (NotImplementedException)
+                {
+                    // Mock file system used in tests does not implement this API
+                }
             }
         }
     }
@@ -155,7 +166,18 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
         }
         else
         {
-            fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            try
+            {
+                fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+            }
+            catch (PlatformNotSupportedException)
+            {
+                // Ignore on platforms that do not support setting file permissions
+            }
+            catch (NotImplementedException)
+            {
+                // Mock file system used in tests does not implement this API
+            }
         }
 
         return secretFile;
