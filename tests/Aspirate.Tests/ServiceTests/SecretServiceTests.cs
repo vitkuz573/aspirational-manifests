@@ -342,6 +342,41 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
     }
 
     [Fact]
+    public void SaveSecrets_AddsPrivateRegistrySecrets()
+    {
+        var console = new TestConsole();
+        var fs = new MockFileSystem();
+        var secretProvider = new SecretProvider(fs);
+
+        var state = CreateAspirateState(nonInteractive: true, password: "test-password");
+        state.WithPrivateRegistry = true;
+        state.PrivateRegistryUrl = "https://registry.example.com";
+        state.PrivateRegistryUsername = "user";
+        state.PrivateRegistryPassword = "pass";
+        state.PrivateRegistryEmail = "user@example.com";
+
+        var serviceProvider = CreateServiceProvider(state, console, fs, secretProvider);
+        var service = GetSystemUnderTest(serviceProvider);
+
+        service.SaveSecrets(new SecretManagementOptions
+        {
+            State = state,
+            NonInteractive = true,
+            DisableSecrets = false,
+            SecretPassword = state.SecretPassword,
+        });
+
+        var resourceName = TemplateLiterals.ImagePullSecretType;
+        secretProvider.State.Secrets.Should().ContainKey(resourceName);
+        secretProvider.SetPassword(state.SecretPassword!);
+        secretProvider.GetSecret(resourceName, "registryUrl").Should().Be(state.PrivateRegistryUrl);
+        secretProvider.GetSecret(resourceName, "registryUsername").Should().Be(state.PrivateRegistryUsername);
+        secretProvider.GetSecret(resourceName, "registryPassword").Should().Be("pass");
+        secretProvider.GetSecret(resourceName, "registryEmail").Should().Be(state.PrivateRegistryEmail);
+        state.PrivateRegistryPassword.Should().BeNull();
+    }
+
+    [Fact]
     public void Iterations_PersistAcrossRuns()
     {
         var console = new TestConsole();
