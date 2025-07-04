@@ -22,6 +22,64 @@ public class KubernetesService(IAnsiConsole logger, IKubeCtlService kubeCtlServi
             kubernetesObjects.AddRange(CreateDashboardKubernetesObjects());
         }
 
+        if (state.WithPrivateRegistry == true)
+        {
+            var secretProvider = serviceProvider.GetRequiredService<ISecretProvider>();
+
+            if (secretProvider.SecretStateExists(state))
+            {
+                secretProvider.LoadState(state);
+
+                if (!string.IsNullOrEmpty(state.SecretPassword))
+                {
+                    secretProvider.SetPassword(state.SecretPassword);
+                }
+
+                const string resourceName = TemplateLiterals.ImagePullSecretType;
+
+                if (secretProvider.ResourceExists(resourceName))
+                {
+                    var registryUrl = secretProvider.GetSecret(resourceName, "registryUrl");
+                    var registryUsername = secretProvider.GetSecret(resourceName, "registryUsername");
+                    var registryPassword = secretProvider.GetSecret(resourceName, "registryPassword");
+                    var registryEmail = secretProvider.GetSecret(resourceName, "registryEmail") ?? string.Empty;
+
+                    if (registryUrl != null && registryUsername != null && registryPassword != null)
+                    {
+                        var auth = Convert.ToBase64String(Encoding.UTF8.GetBytes($"{registryUsername}:{registryPassword}"));
+
+                        var dockerConfig = new DockerConfigJson
+                        {
+                            Auths = new()
+                            {
+                                [registryUrl] = new DockerAuth
+                                {
+                                    Auth = auth,
+                                    Email = registryEmail,
+                                },
+                            },
+                        };
+
+                        var dockerConfigEncoded = Convert.ToBase64String(Encoding.UTF8.GetBytes(JsonSerializer.Serialize(dockerConfig)));
+
+                        var secret = new V1Secret
+                        {
+                            ApiVersion = "v1",
+                            Kind = "Secret",
+                            Metadata = new V1ObjectMeta { Name = resourceName },
+                            Type = "kubernetes.io/dockerconfigjson",
+                            Data = new Dictionary<string, byte[]>
+                            {
+                                [".dockerconfigjson"] = Encoding.UTF8.GetBytes(dockerConfigEncoded),
+                            },
+                        };
+
+                        kubernetesObjects.Add(secret);
+                    }
+                }
+            }
+        }
+
         return kubernetesObjects;
     }
 
