@@ -7,6 +7,8 @@ Aspir8 which uses AesGcm encryption to encrypt the secret's file using a passwor
 The user supplies this password during the `generate` and `apply` processes.
 It's generated using Pbkdf2 with SHA256, one million iterations by default, and the hash and salt are stored in the secret file.
 Secrets protected by this provider are only accessible to users who know the password, and are completely safe to store in a Git repository.
+All credentials, including those for private container registries, are stored encrypted in
+`aspirate-state.json`.
 
 The iteration count can be tuned for stronger or faster hashing by setting the `ASPIRATE_PBKDF2_ITERATIONS` environment variable or passing `--pbkdf2-iterations` on the command line:
 
