@@ -10,8 +10,8 @@ public class KustomizeServiceTests : AspirateTestBase
     public async Task WriteSecretsOutToTempFiles_AndCleanupSecretEnvFiles_WorkTogether()
     {
         // Arrange
-        var fs = new MockFileSystem();
-        fs.AddDirectory(fs.Path.GetTempPath());
+        var fs = new FileSystem();
+        fs.Directory.CreateDirectory(fs.Path.GetTempPath());
 
         var shellExecutionService = Substitute.For<IShellExecutionService>();
         var console = Substitute.For<IAnsiConsole>();
@@ -50,8 +50,8 @@ public class KustomizeServiceTests : AspirateTestBase
     [Fact]
     public async Task WriteImagePullSecretToTempFile_CreatesFile()
     {
-        var fs = new MockFileSystem();
-        fs.AddDirectory(fs.Path.GetTempPath());
+        var fs = new FileSystem();
+        fs.Directory.CreateDirectory(fs.Path.GetTempPath());
 
         var shellExecutionService = Substitute.For<IShellExecutionService>();
         var console = Substitute.For<IAnsiConsole>();

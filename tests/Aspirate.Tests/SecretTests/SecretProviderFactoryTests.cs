@@ -9,6 +9,7 @@ public class SecretProviderFactoryTests
     private static ServiceProvider CreateServices()
     {
         var services = new ServiceCollection();
+        services.AddSingleton<IFileSystem, FileSystem>();
         services.AddSingleton<SecretProvider>();
         services.AddSingleton<Base64SecretProvider>();
         services.AddSingleton<EnvironmentSecretProvider>();

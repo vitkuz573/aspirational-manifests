@@ -16,7 +16,7 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         var initializeConfigurationAction = GetSystemUnderTest(serviceProvider);
 
         // Act
-        var act = () => initializeConfigurationAction.ValidateNonInteractiveState();
+        var act = initializeConfigurationAction.ValidateNonInteractiveState;
 
         // Assert
         act.Should().Throw<ActionCausesExitException>();
@@ -31,7 +31,7 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         var loadConfigurationAction = GetSystemUnderTest(serviceProvider);
 
         // Act
-        var act = () => loadConfigurationAction.ValidateNonInteractiveState();
+        var act = loadConfigurationAction.ValidateNonInteractiveState;
 
         // Assert
         act.Should().Throw<ActionCausesExitException>();
@@ -46,7 +46,7 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         var initializeConfigurationAction = GetSystemUnderTest(serviceProvider);
 
         // Act
-        var act = () => initializeConfigurationAction.ValidateNonInteractiveState();
+        var act = initializeConfigurationAction.ValidateNonInteractiveState;
 
         // Assert
         act.Should().Throw<ActionCausesExitException>();
@@ -63,7 +63,7 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         var initializeConfigurationAction = GetSystemUnderTest(serviceProvider);
 
         // Act
-        var act = () => initializeConfigurationAction.ValidateNonInteractiveState();
+        var act = initializeConfigurationAction.ValidateNonInteractiveState;
 
         // Assert
         act.Should().NotThrow<ActionCausesExitException>();
@@ -99,6 +99,7 @@ public class InitializeConfigurationActionTests : BaseActionTests<InitializeConf
         result.Should().BeTrue();
         var aspirateSettingsJson = await fileSystem.File.ReadAllTextAsync(fileSystem.Path.Combine(DefaultProjectPath, AspirateSettings.FileName));
         var aspirateSettings = JsonSerializer.Deserialize<AspirateSettings>(aspirateSettingsJson);
+        aspirateSettings.TemplatePath = aspirateSettings.TemplatePath.Replace("\\", "/");
         await Verify(aspirateSettings)
             .UseDirectory("VerifyResults");
     }

@@ -1,7 +1,8 @@
-using System.Threading.Tasks;
+using System;
+using System.Linq;
 using System.Security.AccessControl;
 using System.Security.Principal;
-using System.Linq;
+using System.Threading.Tasks;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
@@ -12,13 +13,13 @@ public class StateServiceTests : BaseServiceTests<IStateService>
     public async Task SaveState_WritesFile_ToStatePath()
     {
         // Arrange
-        var fs = new MockFileSystem();
+        var fs = new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = fs.Path.Combine("/custom", "state");
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), Guid.NewGuid().ToString());
+        fs.Directory.CreateDirectory(statePath);
 
         var state = CreateAspirateState();
 
@@ -43,13 +44,13 @@ public class StateServiceTests : BaseServiceTests<IStateService>
     public async Task RestoreState_ReadsFile_FromStatePath()
     {
         // Arrange
-        var fs = new MockFileSystem();
+        var fs = new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = fs.Path.Combine("/custom", "state");
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), Guid.NewGuid().ToString());
+        fs.Directory.CreateDirectory(statePath);
 
         var initialState = CreateAspirateState();
         var saveOptions = new StateManagementOptions
@@ -82,13 +83,13 @@ public class StateServiceTests : BaseServiceTests<IStateService>
     [Fact]
     public async Task SaveState_SetsSecurePermissions()
     {
-        var fs = new MockFileSystem(new Dictionary<string, MockFileData>(), "/");
+        var fs = new FileSystem();
         var console = new TestConsole();
         var secretProvider = new SecretProvider(fs);
         var sut = new StateService(fs, console, secretProvider);
 
-        var statePath = "/state";
-        fs.AddDirectory(statePath);
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), Guid.NewGuid().ToString());
+        fs.Directory.CreateDirectory(statePath);
 
         var state = CreateAspirateState();
         var options = new StateManagementOptions
