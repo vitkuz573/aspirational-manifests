@@ -126,6 +126,14 @@ public class AspirateState :
     public bool? IncludeDashboard { get; set; }
 
     [RestorableStateProperty]
+    [JsonPropertyName("withIngress")]
+    public bool? WithIngress { get; set; }
+
+    [RestorableStateProperty]
+    [JsonPropertyName("ingressDefinitions")]
+    public Dictionary<string, IngressDefinition> IngressDefinitions { get; set; } = new();
+
+    [RestorableStateProperty]
     [JsonPropertyName("useCustomNamespace")]
     public bool? UseCustomNamespace { get; set; }
 

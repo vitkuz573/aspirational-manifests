@@ -110,6 +110,33 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
         return true;
     }
 
+    public async Task<bool> ApplyManifestFile(string context, string manifestFile)
+    {
+        if (!EnsureActiveContextIsSet(context))
+        {
+            return false;
+        }
+
+        var fullPath = filesystem.GetFullPath(manifestFile);
+
+        var argumentsBuilder = ArgumentsBuilder.Create()
+            .AppendArgument(KubeCtlLiterals.KubeCtlApplyArgument, string.Empty, quoteValue: false)
+            .AppendArgument(KubeCtlLiterals.KubeCtlFileArgument, fullPath, quoteValue: false);
+
+        var executionOptions = new ShellCommandOptions
+        {
+            Command = KubeCtlLiterals.KubeCtlCommand,
+            ArgumentsBuilder = argumentsBuilder,
+            PreCommandMessage = $"[cyan]Executing: [green]{KubeCtlLiterals.KubeCtlCommand} {argumentsBuilder.RenderArguments()}[/] against kubernetes context [blue]{context}[/][/]",
+            FailureCommandMessage = $"[red]Failed to apply manifest [blue]{fullPath}[/][/]",
+            ShowOutput = true,
+        };
+
+        _ = await shellExecutionService.ExecuteCommand(executionOptions);
+
+        return true;
+    }
+
     private async Task<IReadOnlyCollection<string?>> GatherContexts()
     {
         var argumentsBuilder = ArgumentsBuilder.Create()
