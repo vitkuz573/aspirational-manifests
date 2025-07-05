@@ -1,3 +1,4 @@
+using Aspirate.Shared.Models.AspireManifests.Components.V1.Project;
 using Volume = Aspirate.Shared.Models.AspireManifests.Components.Common.Volume;
 using BindMount = Aspirate.Shared.Models.AspireManifests.Components.Common.BindMount;
 
@@ -9,14 +10,28 @@ public static class ResourceExtensions
     {
         var environment = new Dictionary<string, string?>();
 
-        if (resource.Value is not IResourceWithEnvironmentalVariables { Env: not null } resourceWithEnv)
+        if (resource.Value is ProjectV1Resource projectV1)
+        {
+            var envVars = projectV1.Deployment?.Env ?? projectV1.Env;
+
+            if (envVars != null)
+            {
+                foreach (var entry in envVars.Where(entry => !string.IsNullOrEmpty(entry.Value)))
+                {
+                    environment.Add(entry.Key, entry.Value);
+                }
+            }
+        }
+        else if (resource.Value is IResourceWithEnvironmentalVariables { Env: not null } resourceWithEnv)
+        {
+            foreach (var entry in resourceWithEnv.Env.Where(entry => !string.IsNullOrEmpty(entry.Value)))
+            {
+                environment.Add(entry.Key, entry.Value);
+            }
+        }
+        else
         {
             return environment;
-        }
-
-        foreach (var entry in resourceWithEnv.Env.Where(entry => !string.IsNullOrEmpty(entry.Value)))
-        {
-            environment.Add(entry.Key, entry.Value);
         }
 
         if (withDashboard == true)
@@ -93,12 +108,23 @@ public static class ResourceExtensions
 
     public static List<Ports> MapBindingsToPorts(this KeyValuePair<string, Resource> resource)
     {
-        if (resource.Value is not IResourceWithBinding resourceWithBinding)
+        Dictionary<string, Binding>? bindings = null;
+
+        if (resource.Value is ProjectV1Resource projectV1)
         {
-            return [];
+            bindings = projectV1.Deployment?.Bindings ?? projectV1.Bindings;
+        }
+        else if (resource.Value is IResourceWithBinding resourceWithBinding)
+        {
+            bindings = resourceWithBinding.Bindings;
         }
 
-        return resourceWithBinding.Bindings?.Select(b => new Ports { Name = b.Key, InternalPort = b.Value.TargetPort.GetValueOrDefault(), ExternalPort = b.Value.Port.GetValueOrDefault() }).ToList() ?? [];
+        return bindings?.Select(b => new Ports
+            {
+                Name = b.Key,
+                InternalPort = b.Value.TargetPort.GetValueOrDefault(),
+                ExternalPort = b.Value.Port.GetValueOrDefault()
+            }).ToList() ?? [];
     }
 
     public static Port[] MapPortsToDockerComposePorts(this List<Ports> ports) =>

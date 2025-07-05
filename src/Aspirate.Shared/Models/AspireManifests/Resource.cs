@@ -6,6 +6,7 @@ namespace Aspirate.Shared.Models.AspireManifests;
 [ExcludeFromCodeCoverage]
 [JsonPolymorphic]
 [JsonDerivedType(typeof(ProjectResource), typeDiscriminator: "aspire.project")]
+[JsonDerivedType(typeof(ProjectV1Resource), typeDiscriminator: "aspire.project.v1")]
 [JsonDerivedType(typeof(DockerfileResource), typeDiscriminator: "aspire.dockerfile")]
 [JsonDerivedType(typeof(ContainerResource), typeDiscriminator: "aspire.container")]
 [JsonDerivedType(typeof(ContainerV1Resource), typeDiscriminator: "aspire.container.v1")]
