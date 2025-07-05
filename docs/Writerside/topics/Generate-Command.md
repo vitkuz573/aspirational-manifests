@@ -57,6 +57,10 @@ can deploy them alongside other components.
 
 AWS CloudFormation templates can be referenced in your manifest using `aws.cloudformation.stack.v0` or `aws.cloudformation.template.v0` resources. These entries are also preserved during generation so you can deploy them alongside other components. Unknown properties on these resources are retained when parsing the manifest.
 
+## Manifest extensions
+
+`aspirate` accepts additional fields beyond the official .NET Aspire schema. For example, container and project resources can include an `annotations` object which is used to apply Kubernetes annotations to generated manifests. These extra fields are treated as extensions and are preserved when reading and writing manifest files.
+
 ##Specify components when running with `--non-interactive`
 When ran non-interactively, you can specify which components to build with `-c` or `--components`. Example: `-c webApi -c frontend -c sql -c redis`.
 
