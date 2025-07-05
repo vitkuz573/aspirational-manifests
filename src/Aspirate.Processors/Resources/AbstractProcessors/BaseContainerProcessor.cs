@@ -20,6 +20,40 @@ public abstract class BaseContainerProcessor<TContainerResource>(
 
     private readonly Dictionary<string, List<string>> _containerImageCache = [];
 
+    private static void ValidateContainerResource(TContainerResource? container, string name)
+    {
+        if (container is null)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} not found.");
+        }
+
+        if (container is ContainerResource containerV0 && string.IsNullOrWhiteSpace(containerV0.Image))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} missing required property 'image'.");
+        }
+
+        if (container is ContainerV1Resource containerV1)
+        {
+            if (containerV1.Image is null && containerV1.Build is null)
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.ContainerV1} must have image or build property.");
+            }
+
+            if (containerV1.Build is not null)
+            {
+                if (string.IsNullOrWhiteSpace(containerV1.Build.Context))
+                {
+                    throw new InvalidOperationException($"{AspireComponentLiterals.ContainerV1} {name} missing required build context.");
+                }
+
+                if (string.IsNullOrWhiteSpace(containerV1.Build.Dockerfile))
+                {
+                    throw new InvalidOperationException($"{AspireComponentLiterals.ContainerV1} {name} missing required build dockerfile.");
+                }
+            }
+        }
+    }
+
     public override Task<bool> CreateManifests(CreateManifestsOptions options)
     {
         var resourceOutputPath = Path.Combine(options.OutputPath, options.Resource.Key);
@@ -27,6 +61,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         _manifestWriter.EnsureOutputDirectoryExistsAndIsClean(resourceOutputPath);
 
         var container = options.Resource.Value as TContainerResource;
+        ValidateContainerResource(container, options.Resource.Key);
 
         var manifests = new List<string>
         {
@@ -115,6 +150,8 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             return;
         }
 
+        ValidateContainerResource(containerV1, resource.Key);
+
         await containerCompositionService.BuildAndPushContainerForDockerfile(containerV1, options, nonInteractive);
 
         _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Building and Pushing container for Dockerfile [blue]{resource.Key}[/]");
@@ -132,6 +169,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         var response = new ComposeService();
 
         var container = options.Resource.Value as TContainerResource;
+        ValidateContainerResource(container, options.Resource.Key);
 
         var service = Builder.MakeService(options.Resource.Key);
 
@@ -180,6 +218,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
     public override List<object> CreateKubernetesObjects(CreateKubernetesObjectsOptions options)
     {
         var container = options.Resource.Value as TContainerResource;
+        ValidateContainerResource(container, options.Resource.Key);
         var image = GetImageFromContainerResource(options.Resource);
         var data = PopulateKubernetesDeploymentData(options, image, container, []);
 
