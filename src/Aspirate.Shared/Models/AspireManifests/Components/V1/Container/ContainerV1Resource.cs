@@ -7,4 +7,7 @@ public class ContainerV1Resource : ContainerResourceBase
 
     [JsonPropertyName("build")]
     public Build? Build { get; set; }
+
+    [JsonPropertyName("deployment")]
+    public BicepV1Resource? Deployment { get; set; }
 }

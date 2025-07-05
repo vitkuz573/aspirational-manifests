@@ -144,6 +144,7 @@ public class ManifestFileParserServiceTest
     [InlineData("starter-with-redis.json", 3)]
     [InlineData("project-no-binding.json", 1)]
     [InlineData("project-v1-deployment.json", 1)]
+    [InlineData("container-v1-deployment.json", 1)]
     [InlineData("connectionstring-resource-expression.json", 5)]
     [InlineData("with-unsupported-resource.json", 6)]
     public async Task EndToEnd_ParsesSuccessfully(string manifestFile, int expectedCount)
@@ -222,6 +223,28 @@ public class ManifestFileParserServiceTest
         var proj = results["app"] as ProjectV1Resource;
         proj!.Deployment.Should().NotBeNull();
         proj.Env.Should().ContainKey("ASPNETCORE_ENVIRONMENT");
+    }
+
+    [Fact]
+    public async Task ContainerV1Deployment_ParsesSuccessfully()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-v1-deployment.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(await File.ReadAllTextAsync(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+        var inputPopulator = serviceProvider.GetRequiredKeyedService<IAction>(nameof(PopulateInputsAction));
+        var valueSubstitutor = serviceProvider.GetRequiredKeyedService<IAction>(nameof(SubstituteValuesAspireManifestAction));
+
+        var results = await PerformEndToEndTests(manifestFile, 1, serviceProvider, service, inputPopulator, valueSubstitutor);
+
+        results["cache"].Should().BeOfType<ContainerV1Resource>();
+        var container = results["cache"] as ContainerV1Resource;
+        container!.Deployment.Should().NotBeNull();
+        container.Deployment!.Path.Should().Be("./redis.bicep");
     }
 
     [Fact]
