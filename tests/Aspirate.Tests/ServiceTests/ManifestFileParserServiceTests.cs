@@ -118,6 +118,26 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_PreservesUnknownAwsProperties()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "aws.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"stack\": {\"type\": \"aws.cloudformation.stack.v0\", \"stack-name\": \"demo\", \"template-path\": \"./stack.yml\", \"extra\": \"val\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        var result = service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        result.Should().HaveCount(1);
+        var stack = result["stack"].As<CloudFormationStackResource>();
+        stack.StackName.Should().Be("demo");
+        stack.AdditionalProperties!["extra"].GetString().Should().Be("val");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ReturnsResource_WhenResourceTypeIsSupported()
     {
         // Arrange

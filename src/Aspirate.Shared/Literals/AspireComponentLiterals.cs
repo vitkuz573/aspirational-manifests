@@ -20,4 +20,7 @@ public static class AspireComponentLiterals
 
     public const string AzureBicep = "azure.bicep.v0";
     public const string AzureBicepV1 = "azure.bicep.v1";
+
+    public const string AwsCloudFormationStack = "aws.cloudformation.stack.v0";
+    public const string AwsCloudFormationTemplate = "aws.cloudformation.template.v0";
 }
