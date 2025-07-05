@@ -26,6 +26,8 @@ global using Aspirate.Shared.Models.AspireManifests.Components.V0.Container;
 global using Aspirate.Shared.Models.AspireManifests.Components.V0.Dapr;
 global using Aspirate.Shared.Models.AspireManifests.Components.V0.Parameters;
 global using Aspirate.Shared.Models.AspireManifests.Components.V1.Container;
+global using Aspirate.Shared.Models.AspireManifests.Components.V1.Project;
+global using Aspirate.Shared.Models.AspireManifests.Components.Azure;
 global using Aspirate.Shared.Models.AspireManifests.Interfaces;
 global using Aspirate.Shared.Models.MsBuild;
 global using Aspirate.Shared.Outputs;

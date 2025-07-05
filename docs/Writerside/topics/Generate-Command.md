@@ -47,6 +47,12 @@ Helm supports secrets, just like kustomize does, and so you will have to unlock 
 
 a Helm chart is what's classed as an "Ejected Deployment" and is not managed by Aspirate when you run it.
 
+## Azure Bicep
+
+Azure Bicep templates can be referenced in your manifest using `azure.bicep.v0` or
+`azure.bicep.v1` resources. These entries are preserved during generation so you
+can deploy them alongside other components.
+
 ##Specify components when running with `--non-interactive`
 When ran non-interactively, you can specify which components to build with `-c` or `--components`. Example: `-c webApi -c frontend -c sql -c redis`.
 

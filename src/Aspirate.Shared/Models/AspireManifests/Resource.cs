@@ -15,6 +15,8 @@ namespace Aspirate.Shared.Models.AspireManifests;
 [JsonDerivedType(typeof(ParameterResource), typeDiscriminator: "aspire.parameter")]
 [JsonDerivedType(typeof(ValueResource), typeDiscriminator: "aspire.value")]
 [JsonDerivedType(typeof(ExecutableResource), typeDiscriminator: "aspire.executable")]
+[JsonDerivedType(typeof(BicepResource), typeDiscriminator: "azure.bicep.v0")]
+[JsonDerivedType(typeof(BicepV1Resource), typeDiscriminator: "azure.bicep.v1")]
 public abstract class Resource : IResource
 {
     [JsonPropertyName("name")]
