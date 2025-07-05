@@ -1,4 +1,5 @@
 using Volume = Aspirate.Shared.Models.AspireManifests.Components.Common.Volume;
+using BindMount = Aspirate.Shared.Models.AspireManifests.Components.Common.BindMount;
 
 namespace Aspirate.Shared.Models.Aspirate;
 
@@ -11,6 +12,7 @@ public class KubernetesDeploymentData
     public Dictionary<string, string?> Secrets { get; private set; } = [];
     public Dictionary<string, string> Annotations { get; private set; } = [];
     public IReadOnlyCollection<Volume> Volumes { get; private set; } = [];
+    public IReadOnlyCollection<BindMount> BindMounts { get; private set; } = [];
     public IReadOnlyCollection<Ports> Ports { get; private set; } = [];
     public IReadOnlyCollection<string> Manifests { get; private set; } = [];
     public IReadOnlyCollection<string> Args { get; private set; } = [];
@@ -89,6 +91,12 @@ public class KubernetesDeploymentData
     public KubernetesDeploymentData SetVolumes(List<Volume>? volumes)
     {
         Volumes = volumes ?? [];
+        return this;
+    }
+
+    public KubernetesDeploymentData SetBindMounts(List<BindMount>? bindMounts)
+    {
+        BindMounts = bindMounts ?? [];
         return this;
     }
 
@@ -184,6 +192,7 @@ public class KubernetesDeploymentData
 
     public bool HasPorts => Ports.Count > 0;
     public bool HasVolumes => Volumes.Count > 0;
+    public bool HasBindMounts => BindMounts.Count > 0;
     public bool HasAnySecrets => Secrets.Count > 0 && SecretsDisabled != true;
     public bool HasAnyAnnotations => Annotations.Count > 0;
     public bool HasArgs => Args.Count > 0;
@@ -200,3 +209,4 @@ public class KubernetesDeploymentData
         return this;
     }
 }
+

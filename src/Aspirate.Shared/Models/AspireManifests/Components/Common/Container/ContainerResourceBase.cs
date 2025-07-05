@@ -1,3 +1,4 @@
+using System.Text.Json.Serialization;
 namespace Aspirate.Shared.Models.AspireManifests.Components.Common.Container;
 
 public class ContainerResourceBase : Resource,
@@ -6,7 +7,8 @@ public class ContainerResourceBase : Resource,
     IResourceWithArgs,
     IResourceWithAnnotations,
     IResourceWithEnvironmentalVariables,
-    IResourceWithVolumes
+    IResourceWithVolumes,
+    IResourceWithBindMounts
 {
     [JsonPropertyName("bindings")]
     public Dictionary<string, Binding>? Bindings { get; set; }
@@ -26,6 +28,10 @@ public class ContainerResourceBase : Resource,
     [JsonPropertyName("volumes")]
     public List<Volume>? Volumes { get; set; } = [];
 
+    [JsonPropertyName("bindMounts")]
+    public List<BindMount>? BindMounts { get; set; } = [];
+
     [JsonPropertyName("entrypoint")]
     public string? Entrypoint { get; set; }
 }
+

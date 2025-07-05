@@ -96,6 +96,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             .SetEnv(GetFilteredEnvironmentalVariables(options.Resource, options.DisableSecrets, options.WithDashboard))
             .SetAnnotations(container.Annotations)
             .SetVolumes(container.Volumes.KuberizeVolumeNames(options.Resource))
+            .SetBindMounts(container.BindMounts.KuberizeBindMountNames(options.Resource))
             .SetSecrets(GetSecretEnvironmentalVariables(options.Resource, options.DisableSecrets, options.WithDashboard))
             .SetSecretsFromSecretState(options.Resource, secretProvider, options.DisableSecrets)
             .SetPorts(options.Resource.MapBindingsToPorts())
