@@ -194,6 +194,44 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenParameterMissingValue()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "missing-parameter-value.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"inputs\": {\"value\": {}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'value'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenParameterMissingInputs()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "missing-parameter-inputs.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'inputs'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ReturnsResource_WhenResourceTypeIsSupported()
     {
         // Arrange
