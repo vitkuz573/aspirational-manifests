@@ -3,18 +3,21 @@
     "app": {
       "type": "project.v1",
       "path": "../TestApp.csproj",
-      "deployment": {
-        "bindings": {
-          "http": {
-            "scheme": "http",
-            "protocol": "tcp",
-            "transport": "http",
-            "targetPort": 5050
-          }
-        },
-        "env": {
-          "ASPNETCORE_ENVIRONMENT": "Development"
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "targetPort": 5050
         }
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "deployment": {
+        "type": "azure.bicep.v1",
+        "path": "./redis.bicep",
+        "scope": "resourceGroup"
       }
     }
   }

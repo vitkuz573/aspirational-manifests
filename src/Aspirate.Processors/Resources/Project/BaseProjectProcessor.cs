@@ -53,12 +53,6 @@ public abstract class BaseProjectProcessor(
         Dictionary<string, string>? annotations = project?.Annotations;
         List<string>? args = project?.Args;
 
-        if (project is ProjectV1Resource v1 && v1.Deployment != null)
-        {
-            annotations = v1.Deployment.Annotations ?? annotations;
-            args = v1.Deployment.Args ?? args;
-        }
-
         return new KubernetesDeploymentData()
             .SetWithDashboard(options.WithDashboard.GetValueOrDefault())
             .SetName(options.Resource.Key)
@@ -72,6 +66,7 @@ public abstract class BaseProjectProcessor(
             .SetIsProject(true)
             .SetPorts(options.Resource.MapBindingsToPorts())
             .SetManifests(_manifests)
+            .SetDeployment((project as ProjectV1Resource)?.Deployment)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
             .ApplyIngress(options)
             .Validate();
