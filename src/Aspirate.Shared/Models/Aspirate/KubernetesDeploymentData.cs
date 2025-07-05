@@ -28,7 +28,7 @@ public class KubernetesDeploymentData
     public string? IngressHost { get; private set; }
     public string? IngressTlsSecret { get; private set; }
     public string? IngressPath { get; private set; }
-    public BicepV1Resource? Deployment { get; private set; }
+    public BicepResource? Deployment { get; private set; }
 
     public KubernetesDeploymentData SetName(string name)
     {
@@ -161,7 +161,7 @@ public class KubernetesDeploymentData
         return this;
     }
 
-    public KubernetesDeploymentData SetDeployment(BicepV1Resource? deployment)
+    public KubernetesDeploymentData SetDeployment(BicepResource? deployment)
     {
         Deployment = deployment;
         return this;

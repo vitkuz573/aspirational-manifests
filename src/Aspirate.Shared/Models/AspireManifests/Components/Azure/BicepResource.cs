@@ -1,4 +1,5 @@
 using System.Text.Json;
+using System.Text.Json.Serialization;
 
 namespace Aspirate.Shared.Models.AspireManifests.Components.Azure;
 
