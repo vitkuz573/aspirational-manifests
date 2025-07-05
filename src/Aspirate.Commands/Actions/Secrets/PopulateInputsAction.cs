@@ -11,6 +11,8 @@ public sealed class PopulateInputsAction(
 
         var parameterResources = CurrentState.LoadedAspireManifestResources.Where(x => x.Value is ParameterResource).ToArray();
 
+        ValidateInputTypes(parameterResources);
+
         if (parameterResources.Length == 0)
         {
             return Task.FromResult(true);
@@ -174,6 +176,27 @@ public sealed class PopulateInputsAction(
             AddParameterInputToSecretStore(input, parameterResource, parameterResource.Value);
 
             Logger.MarkupLine($"Successfully [green]generated[/] a value for [blue]{parameterResource.Name}'s[/] Input Value [blue]'{input.Key}'[/]");
+        }
+    }
+
+    private void ValidateInputTypes(KeyValuePair<string, Resource>[] parameterResources)
+    {
+        foreach (var parameterResource in parameterResources)
+        {
+            var resource = parameterResource.Value as ParameterResource;
+
+            if (resource.Inputs is null)
+            {
+                continue;
+            }
+
+            foreach (var input in resource.Inputs)
+            {
+                if (!string.Equals(input.Value.Type, "string", StringComparison.OrdinalIgnoreCase))
+                {
+                    Logger.ValidationFailed($"Invalid parameter input type '{input.Value.Type}' for '{resource.Name}.{input.Key}'. Only 'string' is supported.");
+                }
+            }
         }
     }
 }
