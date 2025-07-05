@@ -32,6 +32,7 @@
     <toc-element topic="Configurable-State-Path.md"/>
     <toc-element topic="File-Permissions.md"/>
     <toc-element topic="External-Providers.md"/>
+    <toc-element topic="Dapr-Support.md"/>
     <toc-element topic="Security-Best-Practices.md"/>
     <toc-element topic="Troubleshooting.md"/>
 </instance-profile>

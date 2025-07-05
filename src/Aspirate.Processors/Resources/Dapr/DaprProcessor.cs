@@ -17,11 +17,40 @@ public class DaprProcessor(
 
     public override List<object> CreateKubernetesObjects(CreateKubernetesObjectsOptions options) => [];
 
+    private static void ValidateDaprResource(DaprResource? resource, string name)
+    {
+        if (resource == null)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.DaprSystem} {name} not found.");
+        }
+
+        if (resource.Metadata is null)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.DaprSystem} {name} missing required property 'metadata'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(resource.Metadata.Application))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.DaprSystem} {name} missing required property 'application'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(resource.Metadata.AppId))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.DaprSystem} {name} missing required property 'appId'.");
+        }
+
+        if (resource.Metadata.Components is null || resource.Metadata.Components.Count == 0)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.DaprSystem} {name} missing required property 'components'.");
+        }
+    }
+
     public override ComposeService CreateComposeEntry(CreateComposeEntryOptions options)
     {
         var response = new ComposeService();
 
         var daprResource = options.Resource.Value as DaprResource;
+        ValidateDaprResource(daprResource, options.Resource.Key);
 
         var commands = new List<string>
         {
