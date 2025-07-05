@@ -39,3 +39,12 @@ When ran non-interactively, you can specify which components to build with `-c` 
 | --container-build-context     | -cbc  | `ASPIRATE_CONTAINER_BUILD_CONTEXT`     | The Container Build Context to use when Dockerfile is used to build projects.                                                                                                                |
 | --container-build-arg         | -cba  | `ASPIRATE_CONTAINER_BUILD_ARGS`        | The Container Build Arguments to use for all projects with custom Dockerfile. In `key=value` format. Can include multiple times.                                                             |
 | --components                  | -c    | `ASPIRATE_COMPONENTS`                  | The components/resources to process. Example: -c webApi -c frontend -c sql -c redis . Components must be written exactly as they appear in manifest.json. Only works when ran non-interactive|
+
+## Build Secrets
+
+The `build` section in a manifest supports defining `secrets` to supply sensitive data during container builds. Each secret requires a `type` and either a `value` or `source` property depending on the chosen type:
+
+- `env` \- provide the secret via an environment variable by setting `value`.
+- `file` \- reference a file on disk using the `source` path.
+
+`env` secrets are exported to the environment before the container builder is invoked.

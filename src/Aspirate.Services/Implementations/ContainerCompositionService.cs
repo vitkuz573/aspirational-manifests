@@ -159,6 +159,7 @@ public sealed class ContainerCompositionService(
 
         if (secrets is not null)
         {
+            ValidateSecrets(secrets);
             AddDockerSecrets(buildArgumentBuilder, secrets);
         }
 
@@ -270,6 +271,29 @@ public sealed class ContainerCompositionService(
         foreach (var (key, value) in dockerfileEnv)
         {
             argumentsBuilder.AppendArgument(DockerLiterals.BuildArgArgument, $"{key}=\"{value}\"", quoteValue: false, allowDuplicates: true);
+        }
+    }
+
+    private static void ValidateSecrets(Dictionary<string, BuildSecret> secrets)
+    {
+        foreach (var (key, secret) in secrets)
+        {
+            if (string.Equals(secret.Type, "env", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(secret.Value))
+                {
+                    throw new InvalidOperationException($"Build secret '{key}' of type 'env' requires a value.");
+                }
+
+                Environment.SetEnvironmentVariable(key, secret.Value);
+            }
+            else if (string.Equals(secret.Type, "file", StringComparison.OrdinalIgnoreCase))
+            {
+                if (string.IsNullOrWhiteSpace(secret.Source))
+                {
+                    throw new InvalidOperationException($"Build secret '{key}' of type 'file' requires a source.");
+                }
+            }
         }
     }
 
