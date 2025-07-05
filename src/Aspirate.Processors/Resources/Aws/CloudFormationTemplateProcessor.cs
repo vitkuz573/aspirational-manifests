@@ -11,8 +11,30 @@ public class CloudFormationTemplateProcessor(IFileSystem fileSystem, IAnsiConsol
     public override string ResourceType => AspireComponentLiterals.AwsCloudFormationTemplate;
 
     /// <inheritdoc />
-    public override Resource? Deserialize(ref Utf8JsonReader reader) =>
-        JsonSerializer.Deserialize<CloudFormationTemplateResource>(ref reader);
+    public override Resource? Deserialize(ref Utf8JsonReader reader)
+    {
+        using var doc = JsonDocument.ParseValue(ref reader);
+        ValidateTemplate(doc.RootElement);
+
+        return doc.RootElement.Deserialize<CloudFormationTemplateResource>();
+    }
+
+    private static void ValidateTemplate(JsonElement element)
+    {
+        if (!element.TryGetProperty("stack-name", out var stackName) ||
+            string.IsNullOrWhiteSpace(stackName.GetString()))
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.AwsCloudFormationTemplate} missing required property 'stack-name'.");
+        }
+
+        if (!element.TryGetProperty("template-path", out var templatePath) ||
+            string.IsNullOrWhiteSpace(templatePath.GetString()))
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.AwsCloudFormationTemplate} missing required property 'template-path'.");
+        }
+    }
 
     /// <inheritdoc />
     public override Task<bool> CreateManifests(CreateManifestsOptions options) =>
