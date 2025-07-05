@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Linq;
+using k8s;
 using Xunit;
 
 namespace Aspirate.Tests.ExtensionTests;
@@ -190,6 +191,24 @@ public class KubernetesDeploymentDataExtensionTests
         // Assert
         result.Spec.Template.Spec.Volumes.Should().ContainSingle(v => v.Name == "host" && v.HostPath.Path == "/host");
         result.Spec.Template.Spec.Containers[0].VolumeMounts.Should().ContainSingle(v => v.Name == "host" && v.MountPath == "/data");
+    }
+
+    [Fact]
+    public void ToKubernetesStatefulSet_WithReadOnlyVolume_ShouldContainReadOnlyFlag()
+    {
+        // Arrange
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetContainerImage("test-image")
+            .SetVolumes(new List<Volume> { new Volume { Name = "test-volume", Target = "/data", ReadOnly = true } });
+
+        // Act
+        var result = data.ToKubernetesStatefulSet();
+        var yaml = KubernetesYaml.Serialize(result);
+
+        // Assert
+        result.Spec.Template.Spec.Containers[0].VolumeMounts[0].ReadOnlyProperty.Should().BeTrue();
+        yaml.Should().Contain("readOnly: true");
     }
 }
 

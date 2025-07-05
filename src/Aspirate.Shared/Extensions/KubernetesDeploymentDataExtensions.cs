@@ -92,10 +92,20 @@ public static class KubernetesDeploymentDataExtensions
 
         if (data.HasVolumes)
         {
-            volumeMounts.AddRange(data.Volumes.Select(x => new V1VolumeMount
+            volumeMounts.AddRange(data.Volumes.Select(x =>
             {
-                Name = x.Name,
-                MountPath = x.Target,
+                var mount = new V1VolumeMount
+                {
+                    Name = x.Name,
+                    MountPath = x.Target,
+                };
+
+                if (x.ReadOnly)
+                {
+                    mount.ReadOnlyProperty = true;
+                }
+
+                return mount;
             }));
         }
 

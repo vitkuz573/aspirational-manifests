@@ -66,6 +66,9 @@ spec:
           {{#each volumes}}
             - name: {{this.name}}
               mountPath: {{this.target}}
+            {{#if this.readOnly}}
+            readOnly: true
+            {{/if}}
           {{/each}}
       {{/if}}
   {{#if hasVolumes}}
