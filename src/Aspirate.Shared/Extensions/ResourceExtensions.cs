@@ -75,6 +75,8 @@ public static class ResourceExtensions
             return bindMounts;
         }
 
+        var usedNames = new HashSet<string>();
+
         foreach (var mount in bindMounts)
         {
             if (string.IsNullOrWhiteSpace(mount.Source))
@@ -89,10 +91,24 @@ public static class ResourceExtensions
 
             if (string.IsNullOrWhiteSpace(mount.Name))
             {
-                throw new InvalidOperationException($"BindMount missing required property 'name'.");
+                var generated = mount.Source
+                    .Replace("/", "-")
+                    .Replace(".", "-")
+                    .Trim('-')
+                    .ToLowerInvariant();
+
+                var baseName = generated;
+                var index = 1;
+                while (!usedNames.Add(generated))
+                {
+                    generated = $"{baseName}-{index++}";
+                }
+
+                mount.Name = generated;
             }
 
             mount.Name = mount.Name.Replace("/", "-").Replace(".", "-").Replace("--", "-").ToLowerInvariant();
+            usedNames.Add(mount.Name);
         }
 
         return bindMounts;
