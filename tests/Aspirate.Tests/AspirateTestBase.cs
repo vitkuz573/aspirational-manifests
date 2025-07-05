@@ -205,6 +205,9 @@ public abstract class AspirateTestBase
                         Generate = new Generate
                         {
                             MinLength = 22,
+                            MinLower = 1,
+                            MinUpper = 1,
+                            MinNumeric = 1,
                         },
                     }
                 }

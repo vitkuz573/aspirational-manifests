@@ -38,4 +38,5 @@ global using NSubstitute.ExceptionExtensions;
 global using Spectre.Console;
 global using Spectre.Console.Testing;
 global using ContainerResource = Aspirate.Shared.Models.AspireManifests.Components.V0.Container.ContainerResource;
+global using ContainerV1Resource = Aspirate.Shared.Models.AspireManifests.Components.V1.Container.ContainerV1Resource;
 global using Resource = Aspirate.Shared.Models.AspireManifests.Resource;
