@@ -7,6 +7,7 @@ global using Aspirate.Processors.Resources.AbstractProcessors;
 global using Aspirate.Processors.Resources.Dapr;
 global using Aspirate.Processors.Resources.Dockerfile;
 global using Aspirate.Processors.Resources.Project;
+global using Aspirate.Processors.Resources.Executable;
 global using Aspirate.Processors.Transformation.Bindings;
 global using Aspirate.Processors.Transformation.Json;
 global using Aspirate.Secrets.Protectors;

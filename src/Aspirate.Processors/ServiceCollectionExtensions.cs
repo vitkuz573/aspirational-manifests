@@ -22,6 +22,7 @@ public static class ServiceCollectionExtensions
             .RegisterProcessor<DaprComponentProcessor>(AspireComponentLiterals.DaprComponent)
             .RegisterProcessor<ParameterProcessor>(AspireComponentLiterals.Parameter)
             .RegisterProcessor<ValueProcessor>(AspireComponentLiterals.Value)
+            .RegisterProcessor<ExecutableProcessor>(AspireComponentLiterals.Executable)
             .RegisterProcessor<FinalProcessor>(AspireLiterals.Final);
 
     public static IServiceCollection AddPlaceholderTransformation(this IServiceCollection services) =>
