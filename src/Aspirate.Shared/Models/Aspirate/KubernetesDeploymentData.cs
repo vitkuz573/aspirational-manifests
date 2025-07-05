@@ -164,6 +164,21 @@ public class KubernetesDeploymentData
     public KubernetesDeploymentData SetDeployment(BicepResource? deployment)
     {
         Deployment = deployment;
+
+        if (deployment is BicepV1Resource v1 && v1.Scope?.ResourceGroup is { } rg)
+        {
+            Annotations ??= [];
+
+            if (!Annotations.ContainsKey("aspirate.io/bicep-resource-group"))
+            {
+                Annotations.Add("aspirate.io/bicep-resource-group", rg);
+            }
+            else
+            {
+                Annotations["aspirate.io/bicep-resource-group"] = rg;
+            }
+        }
+
         return this;
     }
 
