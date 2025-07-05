@@ -36,14 +36,8 @@ public sealed class ResourceExpressionProcessor(
                     resourceWithConnectionString.ConnectionString = rootNode[key]![Literals.ConnectionString]!.ToString();
                     break;
                 case ValueResource valueResource:
-                    {
-                        foreach (var resourceValue in valueResource.Values.ToList())
-                        {
-                            valueResource.Values[resourceValue.Key] = rootNode[key]![resourceValue.Key]!.ToString();
-                        }
-
-                        break;
-                    }
+                    valueResource.ConnectionString = rootNode[key]![Literals.ConnectionString]!.ToString();
+                    break;
             }
 
             if (value is IResourceWithEnvironmentalVariables resourceWithEnvVars && resourceWithEnvVars.Env is not null)
