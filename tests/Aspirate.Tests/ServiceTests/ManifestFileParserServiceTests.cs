@@ -194,6 +194,84 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Parses_CloudFormationStackReferences()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "stack-ref.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"stack\": {\"type\": \"aws.cloudformation.stack.v0\", \"stack-name\": \"demo\", \"template-path\": \"./stack.yml\", \"references\": [{\"target-resource\": \"app\"}]}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        var result = service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        var stack = result["stack"].As<CloudFormationStackResource>();
+        stack.References.Should().ContainSingle();
+        stack.References![0].TargetResource.Should().Be("app");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Parses_CloudFormationTemplateReferences()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "template-ref.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"tmpl\": {\"type\": \"aws.cloudformation.template.v0\", \"stack-name\": \"demo\", \"template-path\": \"./tmpl.yml\", \"references\": [{\"target-resource\": \"app\"}]}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        var result = service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        var template = result["tmpl"].As<CloudFormationTemplateResource>();
+        template.References.Should().ContainSingle();
+        template.References![0].TargetResource.Should().Be("app");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenCloudFormationStackReferenceMissingTarget()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "stack-ref-missing-target.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"stack\": {\"type\": \"aws.cloudformation.stack.v0\", \"stack-name\": \"demo\", \"template-path\": \"./stack.yml\", \"references\": [{ }]}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*reference missing required property 'target-resource'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenCloudFormationTemplateReferenceMissingTarget()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "template-ref-missing-target.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"tmpl\": {\"type\": \"aws.cloudformation.template.v0\", \"stack-name\": \"demo\", \"template-path\": \"./tmpl.yml\", \"references\": [{ }]}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*reference missing required property 'target-resource'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenParameterMissingValue()
     {
         // Arrange

@@ -53,7 +53,7 @@ public class RequiredPropertyValidationTests
     {
         var processor = new ContainerProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
 
-        var resource = new ContainerResource();
+        var resource = new ContainerResource { Image = null! };
         var options = new CreateComposeEntryOptions
         {
             Resource = new("cache", resource),
@@ -72,7 +72,7 @@ public class RequiredPropertyValidationTests
 
         var resource = new ContainerV1Resource
         {
-            Build = new Build { Dockerfile = "Dockerfile" },
+            Build = new Build { Dockerfile = "Dockerfile", Context = null! },
         };
 
         var options = new CreateComposeEntryOptions

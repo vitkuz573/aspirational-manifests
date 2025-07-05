@@ -34,6 +34,20 @@ public class CloudFormationStackProcessor(IFileSystem fileSystem, IAnsiConsole c
             throw new InvalidOperationException(
                 $"{AspireComponentLiterals.AwsCloudFormationStack} missing required property 'template-path'.");
         }
+
+        if (element.TryGetProperty("references", out var references) &&
+            references.ValueKind == JsonValueKind.Array)
+        {
+            foreach (var reference in references.EnumerateArray())
+            {
+                if (!reference.TryGetProperty("target-resource", out var targetResource) ||
+                    string.IsNullOrWhiteSpace(targetResource.GetString()))
+                {
+                    throw new InvalidOperationException(
+                        $"{AspireComponentLiterals.AwsCloudFormationStack} reference missing required property 'target-resource'.");
+                }
+            }
+        }
     }
 
     /// <inheritdoc />
