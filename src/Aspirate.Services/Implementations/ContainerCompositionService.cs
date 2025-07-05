@@ -1,3 +1,4 @@
+using Aspirate.Shared.Models.AspireManifests.Components.Common;
 namespace Aspirate.Services.Implementations;
 
 public sealed class ContainerCompositionService(
@@ -44,6 +45,7 @@ public sealed class ContainerCompositionService(
             dockerfileResource.Context,
             dockerfileResource.Env,
             dockerfileResource.BuildArgs,
+            null,
             dockerfileResource.Path,
             dockerfileResource.Name,
             options,
@@ -54,12 +56,21 @@ public sealed class ContainerCompositionService(
             containerV1Resource.Build.Context,
             containerV1Resource.Env,
             containerV1Resource.Build.Args,
+            containerV1Resource.Build.Secrets,
             containerV1Resource.Build.Dockerfile,
             containerV1Resource.Name,
             options,
             nonInteractive);
 
-    private async Task<bool> BuildAndPushContainerForDockerfile(string context, Dictionary<string, string>? env, Dictionary<string, string> buildArgs, string dockerfile, string resourceName, ContainerOptions options, bool? nonInteractive = false)
+    private async Task<bool> BuildAndPushContainerForDockerfile(
+        string context,
+        Dictionary<string, string>? env,
+        Dictionary<string, string>? buildArgs,
+        Dictionary<string, BuildSecret>? secrets,
+        string dockerfile,
+        string resourceName,
+        ContainerOptions options,
+        bool? nonInteractive = false)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
@@ -69,7 +80,7 @@ public sealed class ContainerCompositionService(
 
         var fullImages = options.ToImageNames(resourceName);
 
-        var result = await BuildContainer(context, env, buildArgs, options.ContainerBuilder, nonInteractive, fullImages, fullDockerfilePath);
+        var result = await BuildContainer(context, env, buildArgs, secrets, options.ContainerBuilder, nonInteractive, fullImages, fullDockerfilePath);
 
         CheckSuccess(result);
 
@@ -116,7 +127,15 @@ public sealed class ContainerCompositionService(
         return new ShellCommandResult(true, string.Empty, string.Empty, 0);
     }
 
-    private Task<ShellCommandResult> BuildContainer(string context, Dictionary<string, string>? env, Dictionary<string, string> buildArgs, string builder, bool? nonInteractive, List<string> tags, string fullDockerfilePath)
+    private Task<ShellCommandResult> BuildContainer(
+        string context,
+        Dictionary<string, string>? env,
+        Dictionary<string, string>? buildArgs,
+        Dictionary<string, BuildSecret>? secrets,
+        string builder,
+        bool? nonInteractive,
+        List<string> tags,
+        string fullDockerfilePath)
     {
         var command = GetContainerBuilderCommand(builder);
         var buildArgumentBuilder = ArgumentsBuilder
@@ -136,6 +155,11 @@ public sealed class ContainerCompositionService(
         if (buildArgs is not null)
         {
             AddDockerBuildArgs(buildArgumentBuilder, buildArgs);
+        }
+
+        if (secrets is not null)
+        {
+            AddDockerSecrets(buildArgumentBuilder, secrets);
         }
 
         buildArgumentBuilder
@@ -246,6 +270,21 @@ public sealed class ContainerCompositionService(
         foreach (var (key, value) in dockerfileEnv)
         {
             argumentsBuilder.AppendArgument(DockerLiterals.BuildArgArgument, $"{key}=\"{value}\"", quoteValue: false, allowDuplicates: true);
+        }
+    }
+
+    private static void AddDockerSecrets(ArgumentsBuilder argumentsBuilder, Dictionary<string, BuildSecret> secrets)
+    {
+        foreach (var (key, secret) in secrets)
+        {
+            if (string.Equals(secret.Type, "file", StringComparison.OrdinalIgnoreCase) && secret.Source is not null)
+            {
+                argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},src=\"{secret.Source}\"", quoteValue: false, allowDuplicates: true);
+            }
+            else if (string.Equals(secret.Type, "env", StringComparison.OrdinalIgnoreCase))
+            {
+                argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},env={key}", quoteValue: false, allowDuplicates: true);
+            }
         }
     }
 
