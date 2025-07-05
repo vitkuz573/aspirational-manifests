@@ -49,6 +49,13 @@ The following environment variable names are protected automatically when secret
 - `MONGODB_PASSWORD`
 - `RABBITMQ_PASSWORD`
 
+## Parameter Input `secret` Flag
+
+Parameter resources can mark an input with `secret: true`. When set, the value
+provided for that input is stored in the configured secret provider and
+encrypted in the secret state. Inputs with `secret: false` remain only in
+memory and are not written to the secret store.
+
 ## Password Handling
 
 Passwords entered at the CLI are stored using `SecureString` where available. On Windows this provides OS level protection for the in‑memory value. On Linux and macOS the data is still cleared after use but may not be encrypted in memory.
