@@ -210,5 +210,33 @@ public class KubernetesDeploymentDataExtensionTests
         result.Spec.Template.Spec.Containers[0].VolumeMounts[0].ReadOnlyProperty.Should().BeTrue();
         yaml.Should().Contain("readOnly: true");
     }
+
+    [Fact]
+    public void ToKubernetesStatefulSet_MissingVolumeName_Throws()
+    {
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetContainerImage("img")
+            .SetVolumes(new List<Volume> { new Volume { Target = "/data" } });
+
+        Action act = () => data.ToKubernetesStatefulSet();
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'name'");
+    }
+
+    [Fact]
+    public void ToKubernetesDeployment_MissingBindMountTarget_Throws()
+    {
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetContainerImage("img")
+            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host" } });
+
+        Action act = () => data.ToKubernetesDeployment();
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'target'");
+    }
 }
 

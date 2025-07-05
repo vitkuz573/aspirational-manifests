@@ -20,7 +20,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
 
     private readonly Dictionary<string, List<string>> _containerImageCache = [];
 
-    private static void ValidateContainerResource(TContainerResource? container, string name)
+    private static void ValidateContainerResource(ContainerResourceBase? container, string name)
     {
         if (container is null)
         {
@@ -50,6 +50,37 @@ public abstract class BaseContainerProcessor<TContainerResource>(
                 {
                     throw new InvalidOperationException($"{AspireComponentLiterals.ContainerV1} {name} missing required build dockerfile.");
                 }
+            }
+        }
+
+        foreach (var volume in container.Volumes)
+        {
+            if (string.IsNullOrWhiteSpace(volume.Name))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} volume missing required property 'name'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(volume.Target))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} volume missing required property 'target'.");
+            }
+        }
+
+        foreach (var mount in container.BindMounts)
+        {
+            if (string.IsNullOrWhiteSpace(mount.Name))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'name'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(mount.Source))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'source'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(mount.Target))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'target'.");
             }
         }
     }

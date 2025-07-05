@@ -52,9 +52,14 @@ public static class ResourceExtensions
 
         foreach (var volume in containerVolumes)
         {
-            if (string.IsNullOrEmpty(volume.Name))
+            if (string.IsNullOrWhiteSpace(volume.Target))
             {
-                volume.Name = $"{resource.Key}-{volume.Target}".ToLowerInvariant();
+                throw new InvalidOperationException($"Volume missing required property 'target'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(volume.Name))
+            {
+                throw new InvalidOperationException($"Volume missing required property 'name'.");
             }
 
             volume.Name = volume.Name.Replace("/", "-").Replace(".", "-").Replace("--", "-").ToLowerInvariant();
@@ -72,9 +77,19 @@ public static class ResourceExtensions
 
         foreach (var mount in bindMounts)
         {
-            if (string.IsNullOrEmpty(mount.Name))
+            if (string.IsNullOrWhiteSpace(mount.Source))
             {
-                mount.Name = $"{resource.Key}-{mount.Target}".ToLowerInvariant();
+                throw new InvalidOperationException($"BindMount missing required property 'source'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(mount.Target))
+            {
+                throw new InvalidOperationException($"BindMount missing required property 'target'.");
+            }
+
+            if (string.IsNullOrWhiteSpace(mount.Name))
+            {
+                throw new InvalidOperationException($"BindMount missing required property 'name'.");
             }
 
             mount.Name = mount.Name.Replace("/", "-").Replace(".", "-").Replace("--", "-").ToLowerInvariant();
