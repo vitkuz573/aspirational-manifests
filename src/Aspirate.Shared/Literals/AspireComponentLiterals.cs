@@ -17,4 +17,7 @@ public static class AspireComponentLiterals
     public const string Value = "value.v0";
     public const string Parameter = "parameter.v0";
     public const string Executable = "executable.v0";
+
+    public const string AzureBicep = "azure.bicep.v0";
+    public const string AzureBicepV1 = "azure.bicep.v1";
 }
