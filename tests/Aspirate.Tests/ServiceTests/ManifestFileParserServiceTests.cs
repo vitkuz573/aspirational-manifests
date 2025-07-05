@@ -139,6 +139,42 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenCloudFormationStackMissingStackName()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "missing-stack-name.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"stack\": {\"type\": \"aws.cloudformation.stack.v0\", \"template-path\": \"./stack.yml\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'stack-name'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenCloudFormationTemplateMissingTemplatePath()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "missing-template-path.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"tmpl\": {\"type\": \"aws.cloudformation.template.v0\", \"stack-name\": \"demo\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'template-path'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ReturnsResource_WhenResourceTypeIsSupported()
     {
         // Arrange
