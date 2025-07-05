@@ -68,11 +68,6 @@ public abstract class BaseContainerProcessor<TContainerResource>(
 
         foreach (var mount in container.BindMounts)
         {
-            if (string.IsNullOrWhiteSpace(mount.Name))
-            {
-                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'name'.");
-            }
-
             if (string.IsNullOrWhiteSpace(mount.Source))
             {
                 throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'source'.");

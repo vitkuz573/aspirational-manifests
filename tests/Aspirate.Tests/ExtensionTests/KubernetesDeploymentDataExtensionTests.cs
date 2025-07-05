@@ -194,6 +194,23 @@ public class KubernetesDeploymentDataExtensionTests
     }
 
     [Fact]
+    public void ToKubernetesDeployment_BindMountWithoutName_ShouldGenerateName()
+    {
+        // Arrange
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetContainerImage("test-image")
+            .SetBindMounts(new List<BindMount> { new BindMount { Source = "/logs", Target = "/data" } });
+
+        // Act
+        var result = data.ToKubernetesDeployment();
+
+        // Assert
+        result.Spec.Template.Spec.Volumes.Should().ContainSingle(v => v.Name == "logs" && v.HostPath.Path == "/logs");
+        result.Spec.Template.Spec.Containers[0].VolumeMounts.Should().ContainSingle(v => v.Name == "logs" && v.MountPath == "/data");
+    }
+
+    [Fact]
     public void ToKubernetesStatefulSet_WithReadOnlyVolume_ShouldContainReadOnlyFlag()
     {
         // Arrange
