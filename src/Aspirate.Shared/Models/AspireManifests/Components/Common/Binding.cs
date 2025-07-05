@@ -7,9 +7,9 @@ namespace Aspirate.Shared.Models.AspireManifests.Components.Common;
 public class Binding
 {
     /// <summary>
-    /// The schema of the binding.
+    /// The scheme of the binding.
     /// </summary>
-    [JsonPropertyName("schema")]
+    [JsonPropertyName("scheme")]
     public string? Scheme { get; set; } = "http";
 
     /// <summary>
