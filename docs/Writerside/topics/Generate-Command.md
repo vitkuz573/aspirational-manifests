@@ -53,6 +53,10 @@ Azure Bicep templates can be referenced in your manifest using `azure.bicep.v0` 
 `azure.bicep.v1` resources. These entries are preserved during generation so you
 can deploy them alongside other components.
 
+## AWS CloudFormation
+
+AWS CloudFormation templates can be referenced in your manifest using `aws.cloudformation.stack.v0` or `aws.cloudformation.template.v0` resources. These entries are also preserved during generation so you can deploy them alongside other components. Unknown properties on these resources are retained when parsing the manifest.
+
 ##Specify components when running with `--non-interactive`
 When ran non-interactively, you can specify which components to build with `-c` or `--components`. Example: `-c webApi -c frontend -c sql -c redis`.
 

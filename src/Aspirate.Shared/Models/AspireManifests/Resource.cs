@@ -17,6 +17,8 @@ namespace Aspirate.Shared.Models.AspireManifests;
 [JsonDerivedType(typeof(ExecutableResource), typeDiscriminator: "aspire.executable")]
 [JsonDerivedType(typeof(BicepResource), typeDiscriminator: "azure.bicep.v0")]
 [JsonDerivedType(typeof(BicepV1Resource), typeDiscriminator: "azure.bicep.v1")]
+[JsonDerivedType(typeof(CloudFormationStackResource), typeDiscriminator: "aws.cloudformation.stack.v0")]
+[JsonDerivedType(typeof(CloudFormationTemplateResource), typeDiscriminator: "aws.cloudformation.template.v0")]
 public abstract class Resource : IResource
 {
     [JsonPropertyName("name")]
