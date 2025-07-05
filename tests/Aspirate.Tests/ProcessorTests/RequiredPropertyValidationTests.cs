@@ -1,0 +1,107 @@
+using System;
+using Xunit;
+
+namespace Aspirate.Tests.ProcessorTests;
+
+public class RequiredPropertyValidationTests
+{
+    [Fact]
+    public void DockerfileProcessor_MissingPath_Throws()
+    {
+        var fs = Substitute.For<IFileSystem>();
+        var console = Substitute.For<IAnsiConsole>();
+        var secretProvider = Substitute.For<ISecretProvider>();
+        var comp = Substitute.For<IContainerCompositionService>();
+        var details = Substitute.For<IContainerDetailsService>();
+        var writer = Substitute.For<IManifestWriter>();
+
+        var processor = new DockerfileProcessor(fs, console, secretProvider, comp, details, writer);
+
+        var resource = new DockerfileResource { Context = "ctx" };
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("docker", resource),
+            ComposeBuilds = true,
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'path'");
+    }
+
+    [Fact]
+    public void DockerfileProcessor_MissingContext_Throws()
+    {
+        var processor = new DockerfileProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
+
+        var resource = new DockerfileResource { Path = "Dockerfile" };
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("docker", resource),
+            ComposeBuilds = true,
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'context'");
+    }
+
+    [Fact]
+    public void ContainerProcessor_MissingImage_Throws()
+    {
+        var processor = new ContainerProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ContainerResource();
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("cache", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'image'");
+    }
+
+    [Fact]
+    public void ContainerV1Processor_MissingBuildContext_Throws()
+    {
+        var processor = new ContainerV1Processor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ContainerV1Resource
+        {
+            Build = new Build { Dockerfile = "Dockerfile" },
+        };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("cache", resource),
+            ComposeBuilds = true,
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required build context*");
+    }
+
+    [Fact]
+    public void ExecutableProcessor_MissingCommand_Throws()
+    {
+        var processor = new ExecutableProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ExecutableResource();
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("exec", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'command'");
+    }
+}

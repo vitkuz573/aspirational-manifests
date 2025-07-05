@@ -23,6 +23,24 @@ public class DockerfileProcessor(
 
     private readonly Dictionary<string, List<string>> _containerImageCache = [];
 
+    private static void ValidateDockerfile(DockerfileResource? dockerfile, string name)
+    {
+        if (dockerfile == null)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Dockerfile} {name} not found.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dockerfile.Path))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Dockerfile} {name} missing required property 'path'.");
+        }
+
+        if (string.IsNullOrWhiteSpace(dockerfile.Context))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Dockerfile} {name} missing required property 'context'.");
+        }
+    }
+
     /// <inheritdoc />
     public override Resource? Deserialize(ref Utf8JsonReader reader) =>
         JsonSerializer.Deserialize<DockerfileResource>(ref reader);
@@ -34,6 +52,7 @@ public class DockerfileProcessor(
         _manifestWriter.EnsureOutputDirectoryExistsAndIsClean(resourceOutputPath);
 
         var dockerFile = options.Resource.Value as DockerfileResource;
+        ValidateDockerfile(dockerFile, options.Resource.Key);
 
         if (!_containerImageCache.TryGetValue(options.Resource.Key, out var containerImages))
         {
@@ -70,6 +89,7 @@ public class DockerfileProcessor(
     public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive)
     {
         var dockerfile = resource.Value as DockerfileResource;
+        ValidateDockerfile(dockerfile, resource.Key);
 
         await containerCompositionService.BuildAndPushContainerForDockerfile(dockerfile, options, nonInteractive);
 
@@ -88,6 +108,7 @@ public class DockerfileProcessor(
         var response = new ComposeService();
 
         var dockerfile = options.Resource.Value as DockerfileResource;
+        ValidateDockerfile(dockerfile, options.Resource.Key);
 
         var newService = Builder.MakeService(options.Resource.Key)
             .WithEnvironment(options.Resource.MapResourceToEnvVars(options.WithDashboard))
