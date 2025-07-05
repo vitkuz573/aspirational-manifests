@@ -6,5 +6,5 @@ namespace Aspirate.Shared.Models.AspireManifests.Components.Azure;
 public class BicepV1Resource : BicepResource
 {
     [JsonPropertyName("scope")]
-    public string? Scope { get; set; }
+    public BicepScope? Scope { get; set; }
 }
