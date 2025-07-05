@@ -64,4 +64,14 @@ spec:
         - secretRef:
             name: {{name}}-secrets
         {{/if}}
+        {{#if hasVolumes}}
+        volumeMounts:
+        {{#each volumes}}
+        - name: {{this.name}}
+          mountPath: {{this.target}}
+          {{#if this.readOnly}}
+          readOnly: true
+          {{/if}}
+        {{/each}}
+        {{/if}}
       terminationGracePeriodSeconds: 180
