@@ -262,6 +262,86 @@ public class ContainerCompositionServiceTest
         await action.Should().ThrowAsync<ActionCausesExitException>();
     }
 
+    [Theory]
+    [InlineData("docker")]
+    [InlineData("podman")]
+    [InlineData("nerdctl")]
+    public async Task BuildAndPushContainerForDockerfile_InvalidEnvSecret_Throws(string builder)
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("./Dockerfile", string.Empty);
+        var console = new TestConsole();
+        var projectPropertyService = Substitute.For<IProjectPropertyService>();
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+
+        var service = new ContainerCompositionService(fileSystem, console, projectPropertyService, shellExecutionService);
+
+        var resource = new ContainerV1Resource
+        {
+            Name = "testresource",
+            Build = new()
+            {
+                Context = "ctx",
+                Dockerfile = "./Dockerfile",
+                Secrets = new()
+                {
+                    ["MY_SECRET"] = new BuildSecret { Type = "env" }
+                }
+            }
+        };
+
+        shellExecutionService.IsCommandAvailable(Arg.Any<string>()).Returns(CommandAvailableResult.Available(builder));
+
+        var action = () => service.BuildAndPushContainerForDockerfile(resource, new()
+        {
+            ContainerBuilder = builder,
+            ImageName = "img",
+            Registry = "reg"
+        }, nonInteractive: true);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Theory]
+    [InlineData("docker")]
+    [InlineData("podman")]
+    [InlineData("nerdctl")]
+    public async Task BuildAndPushContainerForDockerfile_InvalidFileSecret_Throws(string builder)
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("./Dockerfile", string.Empty);
+        var console = new TestConsole();
+        var projectPropertyService = Substitute.For<IProjectPropertyService>();
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+
+        var service = new ContainerCompositionService(fileSystem, console, projectPropertyService, shellExecutionService);
+
+        var resource = new ContainerV1Resource
+        {
+            Name = "testresource",
+            Build = new()
+            {
+                Context = "ctx",
+                Dockerfile = "./Dockerfile",
+                Secrets = new()
+                {
+                    ["MY_SECRET"] = new BuildSecret { Type = "file" }
+                }
+            }
+        };
+
+        shellExecutionService.IsCommandAvailable(Arg.Any<string>()).Returns(CommandAvailableResult.Available(builder));
+
+        var action = () => service.BuildAndPushContainerForDockerfile(resource, new()
+        {
+            ContainerBuilder = builder,
+            ImageName = "img",
+            Registry = "reg"
+        }, nonInteractive: true);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+    }
+
    private static void VerifyDockerCall(ICall call, string expectedArgumentsOutput, string builder)
    {
         if (call.GetArguments()[0] is not ShellCommandOptions options)
