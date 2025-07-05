@@ -12,7 +12,7 @@ public class CloudFormationTemplateResource : Resource
     public string? TemplatePath { get; set; }
 
     [JsonPropertyName("references")]
-    public Dictionary<string, string>? References { get; set; }
+    public List<CloudFormationReference>? References { get; set; }
 
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? AdditionalProperties { get; set; }
