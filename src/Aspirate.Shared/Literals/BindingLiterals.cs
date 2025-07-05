@@ -9,5 +9,9 @@ public static class BindingLiterals
     public const string Udp = "udp";
     public const string Http2 = "http2";
 
-    public static readonly string[] ValidValues = [Http, Https, Tcp, Udp, Http2];
+    public static readonly string[] ValidSchemes = [Http, Https, Tcp, Udp];
+
+    public static readonly string[] ValidProtocols = [Tcp, Udp];
+
+    public static readonly string[] ValidTransports = [Http, Http2, Tcp];
 }

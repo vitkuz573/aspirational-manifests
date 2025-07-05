@@ -18,7 +18,7 @@ public class Binding
     public string? Scheme
     {
         get => _scheme;
-        set => _scheme = Validate(value, nameof(Scheme));
+        set => _scheme = Validate(value, nameof(Scheme), BindingLiterals.ValidSchemes);
     }
 
     /// <summary>
@@ -28,7 +28,7 @@ public class Binding
     public string? Protocol
     {
         get => _protocol;
-        set => _protocol = Validate(value, nameof(Protocol));
+        set => _protocol = Validate(value, nameof(Protocol), BindingLiterals.ValidProtocols);
     }
 
     /// <summary>
@@ -38,7 +38,7 @@ public class Binding
     public string? Transport
     {
         get => _transport;
-        set => _transport = Validate(value, nameof(Transport));
+        set => _transport = Validate(value, nameof(Transport), BindingLiterals.ValidTransports);
     }
 
     /// <summary>
@@ -59,16 +59,16 @@ public class Binding
     [JsonPropertyName("external")]
     public bool External { get; set; }
 
-    private static string? Validate(string? value, string propertyName)
+    private static string? Validate(string? value, string propertyName, IReadOnlyCollection<string> validValues)
     {
         if (value is null)
         {
             return null;
         }
 
-        if (!BindingLiterals.ValidValues.Contains(value, StringComparer.OrdinalIgnoreCase))
+        if (!validValues.Contains(value, StringComparer.OrdinalIgnoreCase))
         {
-            var allowed = string.Join("', '", BindingLiterals.ValidValues);
+            var allowed = string.Join("', '", validValues);
             throw new InvalidOperationException($"Binding {propertyName} must be one of: '{allowed}'.");
         }
 
