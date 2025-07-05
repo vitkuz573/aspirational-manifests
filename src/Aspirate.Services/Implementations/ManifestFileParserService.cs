@@ -1,3 +1,6 @@
+using Aspirate.Shared.Models.AspireManifests.Components;
+using System.Text.Json.Nodes;
+
 namespace Aspirate.Services.Implementations;
 
 /// <inheritdoc />
@@ -58,8 +61,9 @@ public class ManifestFileParserService(
             }
             else
             {
-                console.MarkupLine($"[yellow]Resource '{resourceName}' is unsupported type '{type}'. Skipping as UnsupportedResource.[/]");
-                resource = new UnsupportedResource();
+                console.MarkupLine($"[yellow]Resource '{resourceName}' is unsupported type '{type}'. Preserving as ExtensionResource.[/]");
+                var jsonNode = JsonNode.Parse(resourceElement.GetRawText());
+                resource = new ExtensionResource(jsonNode!, type);
             }
 
             if (resource != null)
