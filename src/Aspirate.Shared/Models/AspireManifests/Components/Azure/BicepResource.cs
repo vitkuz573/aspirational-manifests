@@ -1,3 +1,5 @@
+using System.Text.Json;
+
 namespace Aspirate.Shared.Models.AspireManifests.Components.Azure;
 
 /// <summary>
@@ -12,5 +14,5 @@ public class BicepResource : Resource, IResourceWithConnectionString
     public string? ConnectionString { get; set; }
 
     [JsonPropertyName("params")]
-    public Dictionary<string, string>? Params { get; set; }
+    public Dictionary<string, JsonElement>? Params { get; set; }
 }
