@@ -13,6 +13,7 @@ namespace Aspirate.Shared.Models.AspireManifests;
 [JsonDerivedType(typeof(DaprComponentResource), typeDiscriminator: "aspire.daprcomponent")]
 [JsonDerivedType(typeof(ParameterResource), typeDiscriminator: "aspire.parameter")]
 [JsonDerivedType(typeof(ValueResource), typeDiscriminator: "aspire.value")]
+[JsonDerivedType(typeof(ExecutableResource), typeDiscriminator: "aspire.executable")]
 public abstract class Resource : IResource
 {
     [JsonPropertyName("name")]
