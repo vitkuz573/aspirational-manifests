@@ -104,4 +104,76 @@ public class RequiredPropertyValidationTests
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'command'");
     }
+
+    [Fact]
+    public void DaprProcessor_MissingMetadata_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new DaprResource();
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("dapr", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'metadata'");
+    }
+
+    [Fact]
+    public void DaprProcessor_MissingApplication_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new DaprResource { Metadata = new() { AppId = "id", Components = ["comp"] } };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("dapr", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'application'");
+    }
+
+    [Fact]
+    public void DaprProcessor_MissingAppId_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new DaprResource { Metadata = new() { Application = "app", Components = ["comp"] } };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("dapr", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'appId'");
+    }
+
+    [Fact]
+    public void DaprProcessor_MissingComponents_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new DaprResource { Metadata = new() { Application = "app", AppId = "id" } };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("dapr", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'components'");
+    }
 }
