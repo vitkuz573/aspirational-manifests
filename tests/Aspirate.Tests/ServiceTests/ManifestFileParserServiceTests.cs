@@ -243,6 +243,7 @@ public class ManifestFileParserServiceTest
         var proj = results["app"] as ProjectV1Resource;
         proj!.Deployment.Should().NotBeNull();
         proj.Deployment!.Path.Should().Be("./redis.bicep");
+        proj.Deployment!.Scope!.ResourceGroup.Should().Be("rg-name");
         proj.Env.Should().ContainKey("ASPNETCORE_ENVIRONMENT");
     }
 
@@ -266,6 +267,7 @@ public class ManifestFileParserServiceTest
         var container = results["cache"] as ContainerV1Resource;
         container!.Deployment.Should().NotBeNull();
         container.Deployment!.Path.Should().Be("./redis.bicep");
+        container.Deployment!.Scope!.ResourceGroup.Should().Be("rg-name");
     }
 
     [Fact]

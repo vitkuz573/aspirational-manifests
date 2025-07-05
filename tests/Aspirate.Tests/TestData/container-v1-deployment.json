@@ -6,7 +6,9 @@
       "deployment": {
         "type": "azure.bicep.v1",
         "path": "./redis.bicep",
-        "scope": "resourceGroup"
+        "scope": {
+          "resourceGroup": "rg-name"
+        }
       }
     }
   }
