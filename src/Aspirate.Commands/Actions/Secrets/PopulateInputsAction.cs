@@ -119,7 +119,7 @@ public sealed class PopulateInputsAction(
 
     private bool AssignExistingSecret(KeyValuePair<string, ParameterInput> input, ParameterResource parameterResource)
     {
-        if (CurrentState.ReplaceSecrets == true || CurrentState.DisableSecrets == true || !secretProvider.SecretStateExists(CurrentState) || !secretProvider.ResourceExists(parameterResource.Name) ||
+        if (!input.Value.Secret || CurrentState.ReplaceSecrets == true || CurrentState.DisableSecrets == true || !secretProvider.SecretStateExists(CurrentState) || !secretProvider.ResourceExists(parameterResource.Name) ||
             !secretProvider.SecretExists(parameterResource.Name, input.Key))
         {
             return false;
@@ -134,7 +134,7 @@ public sealed class PopulateInputsAction(
 
     private void AddParameterInputToSecretStore(KeyValuePair<string, ParameterInput> input, ParameterResource parameterResource, string valueToStore)
     {
-        if (CurrentState.DisableSecrets == true)
+        if (CurrentState.DisableSecrets == true || !input.Value.Secret)
         {
             return;
         }

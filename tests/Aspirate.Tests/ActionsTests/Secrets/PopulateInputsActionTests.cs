@@ -32,6 +32,100 @@ public class PopulateInputsActionTests : BaseActionTests<PopulateInputsAction>
     }
 
     [Fact]
+    public async Task PopulateInputs_SecretFlagTrue_StoresValueInSecretProvider()
+    {
+        // Arrange
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = false;
+        var fileSystem = new MockFileSystem();
+        var secretProvider = new SecretProvider(fileSystem);
+        var state = CreateAspirateState(nonInteractive: true);
+        state.SecretState = new SecretState();
+        var parameter = new ParameterResource
+        {
+            Name = "paramsecret",
+            Type = "string",
+            Inputs = new Dictionary<string, ParameterInput>
+            {
+                ["value"] = new()
+                {
+                    Secret = true,
+                    Default = new ParameterDefault
+                    {
+                        Generate = new Generate { MinLength = 8 }
+                    }
+                }
+            }
+        };
+        state.LoadedAspireManifestResources = new Dictionary<string, Resource>
+        {
+            ["paramsecret"] = parameter
+        };
+        state.AspireComponentsToProcess = ["paramsecret"];
+
+        secretProvider.LoadState(state);
+        secretProvider.SetPassword("pwd");
+
+        var serviceProvider = CreateServiceProvider(state, console, fileSystem, secretProvider);
+        var action = GetSystemUnderTest(serviceProvider);
+
+        // Act
+        var result = await action.ExecuteAsync();
+
+        // Assert
+        result.Should().BeTrue();
+        secretProvider.State.Secrets.Should().ContainKey("paramsecret");
+        secretProvider.GetSecret("paramsecret", "value").Should().Be(parameter.Value);
+    }
+
+    [Fact]
+    public async Task PopulateInputs_SecretFlagFalse_DoesNotStoreValue()
+    {
+        // Arrange
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = false;
+        var fileSystem = new MockFileSystem();
+        var secretProvider = new SecretProvider(fileSystem);
+        var state = CreateAspirateState(nonInteractive: true);
+        state.SecretState = new SecretState();
+        var parameter = new ParameterResource
+        {
+            Name = "plaintext",
+            Type = "string",
+            Inputs = new Dictionary<string, ParameterInput>
+            {
+                ["value"] = new()
+                {
+                    Secret = false,
+                    Default = new ParameterDefault
+                    {
+                        Generate = new Generate { MinLength = 8 }
+                    }
+                }
+            }
+        };
+        state.LoadedAspireManifestResources = new Dictionary<string, Resource>
+        {
+            ["plaintext"] = parameter
+        };
+        state.AspireComponentsToProcess = ["plaintext"];
+
+        secretProvider.LoadState(state);
+        secretProvider.SetPassword("pwd");
+
+        var serviceProvider = CreateServiceProvider(state, console, fileSystem, secretProvider);
+        var action = GetSystemUnderTest(serviceProvider);
+
+        // Act
+        var result = await action.ExecuteAsync();
+
+        // Assert
+        result.Should().BeTrue();
+        secretProvider.State.Secrets.Should().NotContainKey("plaintext");
+        parameter.Value.Should().NotBeNullOrEmpty();
+    }
+
+    [Fact]
     public async Task ExecuteAsync_NonInteractiveMode_ReturnsCorrectResult()
     {
         // Arrange
