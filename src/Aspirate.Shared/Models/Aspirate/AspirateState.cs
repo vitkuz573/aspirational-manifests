@@ -1,3 +1,4 @@
+using Aspirate.Shared.Models.AspireManifests.Components;
 namespace Aspirate.Shared.Models.Aspirate;
 
 public class AspirateState :
@@ -199,7 +200,7 @@ public class AspirateState :
     [JsonIgnore]
     public List<KeyValuePair<string, Resource>> AllSelectedSupportedComponents =>
         LoadedAspireManifestResources
-            .Where(x => x.Value is not UnsupportedResource && AspireComponentsToProcess.Contains(x.Key))
+            .Where(x => x.Value is not UnsupportedResource && x.Value is not ExtensionResource && AspireComponentsToProcess.Contains(x.Key))
             .ToList();
 
     [JsonIgnore]

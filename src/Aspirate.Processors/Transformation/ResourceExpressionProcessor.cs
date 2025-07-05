@@ -1,3 +1,4 @@
+using Aspirate.Shared.Models.AspireManifests.Components;
 namespace Aspirate.Processors.Transformation;
 
 public sealed class ResourceExpressionProcessor(
@@ -14,7 +15,8 @@ public sealed class ResourceExpressionProcessor(
     {
         resources.EnsureBindingsHavePorts();
 
-        var jsonDocument = resources.Where(r => r.Value is not UnsupportedResource)
+        var jsonDocument = resources
+            .Where(r => r.Value is not UnsupportedResource && r.Value is not ExtensionResource)
             .ToDictionary(p => p.Key, p => p.Value)
             .TryParseAsJsonNode();
 

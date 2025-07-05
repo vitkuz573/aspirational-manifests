@@ -80,7 +80,7 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
-    public void LoadAndParseAspireManifest_ReturnsUnsupportedResource_WhenResourceTypeIsUnsupported()
+    public void LoadAndParseAspireManifest_ReturnsExtensionResource_WhenResourceTypeIsUnsupported()
     {
         // Arrange
         var fileSystem = new MockFileSystem();
@@ -94,7 +94,27 @@ public class ManifestFileParserServiceTest
 
         // Assert
         result.Should().HaveCount(1);
-        result["resource1"].Should().BeOfType<UnsupportedResource>();
+        result["resource1"].Should().BeOfType<ExtensionResource>();
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_PreservesUnknownResourceTypeJson()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "unknown.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"res\": {\"type\": \"custom.v0\", \"foo\": \"bar\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        var result = service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        result.Should().HaveCount(1);
+        var ext = result["res"].As<ExtensionResource>();
+        ext.Type.Should().Be("custom.v0");
+        ext.RawJson!["foo"]!.ToString().Should().Be("bar");
     }
 
     [Fact]
