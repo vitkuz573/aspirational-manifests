@@ -8,6 +8,7 @@ public static class DockerLiterals
     // Docker build arguments
     public const string DockerFileArgument = "--file";
     public const string BuildArgArgument = "--build-arg";
+    public const string SecretArgument = "--secret";
     public const string CacheFromArgument = "--cache-from";
     public const string NoCacheArgument = "--no-cache";
     public const string PullArgument = "--pull";

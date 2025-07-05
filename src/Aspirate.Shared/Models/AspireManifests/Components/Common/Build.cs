@@ -1,3 +1,5 @@
+using System.Text.Json.Serialization;
+
 namespace Aspirate.Shared.Models.AspireManifests.Components.Common;
 
 public class Build
@@ -10,4 +12,7 @@ public class Build
 
     [JsonPropertyName("args")]
     public Dictionary<string, string>? Args { get; set; }
+
+    [JsonPropertyName("secrets")]
+    public Dictionary<string, BuildSecret>? Secrets { get; set; }
 }

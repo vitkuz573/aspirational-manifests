@@ -172,6 +172,64 @@ public class ContainerCompositionServiceTest
     [InlineData("docker")]
     [InlineData("podman")]
     [InlineData("nerdctl")]
+    public async Task BuildAndPushContainerForDockerfile_ShouldSetSecrets_WhenProvided(string builder)
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("./Dockerfile", string.Empty);
+        fileSystem.AddFile("./secret.txt", string.Empty);
+        var console = new TestConsole();
+        var projectPropertyService = Substitute.For<IProjectPropertyService>();
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+
+        var service = new ContainerCompositionService(fileSystem, console, projectPropertyService, shellExecutionService);
+
+        var resource = new ContainerV1Resource
+        {
+            Name = "testresource",
+            Build = new()
+            {
+                Context = "testContext",
+                Dockerfile = "./Dockerfile",
+                Secrets = new()
+                {
+                    ["MY_SECRET"] = new BuildSecret { Type = "file", Source = "./secret.txt" }
+                }
+            }
+        };
+
+        var response = builder == "podman" ? PodmanInfoOutput : DockerInfoOutput;
+
+        shellExecutionService.ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null))
+            .Returns(Task.FromResult(new ShellCommandResult(true, response, string.Empty, 0)));
+
+        shellExecutionService.ExecuteCommandWithEnvironmentNoOutput(Arg.Any<string>(), Arg.Any<ArgumentsBuilder>(),Arg.Any<Dictionary<string, string?>>())
+            .Returns(Task.FromResult(true));
+
+        shellExecutionService.IsCommandAvailable(Arg.Any<string>())
+            .Returns(CommandAvailableResult.Available(builder));
+
+        // Act
+        await service.BuildAndPushContainerForDockerfile(resource, new()
+        {
+            ContainerBuilder = builder,
+            ImageName = "testimage",
+            Registry = "testregistry",
+        }, nonInteractive: true);
+
+        // Assert
+        var dockerfilePath = fileSystem.Path.GetFullPath("./Dockerfile");
+        var calls = shellExecutionService.ReceivedCalls().ToArray();
+        calls.Length.Should().Be(4);
+
+        var buildCall = calls[2];
+        VerifyDockerCall(buildCall, $"build --tag \"testregistry/testimage:latest\" --secret id=MY_SECRET,src=\"./secret.txt\" --file \"{dockerfilePath}\" testContext", builder);
+    }
+
+    [Theory]
+    [InlineData("docker")]
+    [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_BuilderOffline_ThrowsExitException(string builder)
     {
         // Arrange
