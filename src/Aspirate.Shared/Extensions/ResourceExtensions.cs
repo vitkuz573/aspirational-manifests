@@ -12,7 +12,7 @@ public static class ResourceExtensions
 
         if (resource.Value is ProjectV1Resource projectV1)
         {
-            var envVars = projectV1.Deployment?.Env ?? projectV1.Env;
+            var envVars = projectV1.Env;
 
             if (envVars != null)
             {
@@ -112,7 +112,7 @@ public static class ResourceExtensions
 
         if (resource.Value is ProjectV1Resource projectV1)
         {
-            bindings = projectV1.Deployment?.Bindings ?? projectV1.Bindings;
+            bindings = projectV1.Bindings;
         }
         else if (resource.Value is IResourceWithBinding resourceWithBinding)
         {

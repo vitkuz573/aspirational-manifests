@@ -222,6 +222,7 @@ public class ManifestFileParserServiceTest
         results["app"].Should().BeOfType<ProjectV1Resource>();
         var proj = results["app"] as ProjectV1Resource;
         proj!.Deployment.Should().NotBeNull();
+        proj.Deployment!.Path.Should().Be("./redis.bicep");
         proj.Env.Should().ContainKey("ASPNETCORE_ENVIRONMENT");
     }
 
