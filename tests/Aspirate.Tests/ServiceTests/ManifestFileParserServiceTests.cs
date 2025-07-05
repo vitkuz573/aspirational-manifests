@@ -139,6 +139,25 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_PreservesAnnotations()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "annotations.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v0\", \"image\": \"img\", \"annotations\": {\"key\": \"val\"}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        var result = service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        result.Should().HaveCount(1);
+        var container = result["svc"].As<ContainerResource>();
+        container.Annotations.Should().ContainKey("key").WhoseValue.Should().Be("val");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenCloudFormationStackMissingStackName()
     {
         // Arrange
