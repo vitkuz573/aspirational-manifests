@@ -2,5 +2,7 @@ namespace Aspirate.Shared.Interfaces.Secrets;
 
 public interface IPasswordGenerator
 {
-    string Generate(int length = 24);
+    string Generate(Generate options);
+
+    bool Validate(string value, Generate options);
 }

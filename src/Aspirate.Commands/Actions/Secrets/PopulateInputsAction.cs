@@ -160,8 +160,17 @@ public sealed class PopulateInputsAction(
             {
                 continue;
             }
-            var minimumLength = input.Value.Default?.Generate?.MinLength ?? 22;
-            parameterResource.Value = passwordGenerator.Generate(minimumLength);
+
+            if (!string.IsNullOrEmpty(input.Value.Default?.Value))
+            {
+                parameterResource.Value = input.Value.Default!.Value;
+            }
+            else
+            {
+                var options = input.Value.Default?.Generate ?? new Generate { MinLength = 22 };
+                parameterResource.Value = passwordGenerator.Generate(options);
+            }
+
             AddParameterInputToSecretStore(input, parameterResource, parameterResource.Value);
 
             Logger.MarkupLine($"Successfully [green]generated[/] a value for [blue]{parameterResource.Name}'s[/] Input Value [blue]'{input.Key}'[/]");

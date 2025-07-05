@@ -3,6 +3,9 @@
 [ExcludeFromCodeCoverage]
 public class ParameterInput
 {
+    [JsonPropertyName("type")]
+    public string? Type { get; set; }
+
     [JsonPropertyName("default")]
     public ParameterDefault? Default { get; set; }
 
