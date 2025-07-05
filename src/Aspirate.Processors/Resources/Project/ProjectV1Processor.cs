@@ -1,3 +1,4 @@
+using Aspirate.Shared.Models.AspireManifests.Components.V1.Project;
 ﻿namespace Aspirate.Processors.Resources.Project;
 
 /// <summary>
@@ -20,4 +21,8 @@ public sealed class ProjectV1Processor(
 {
     /// <inheritdoc />
     public override string ResourceType => AspireComponentLiterals.ProjectV1;
+
+    /// <inheritdoc />
+    public override Resource? Deserialize(ref Utf8JsonReader reader) =>
+        JsonSerializer.Deserialize<ProjectV1Resource>(ref reader);
 }

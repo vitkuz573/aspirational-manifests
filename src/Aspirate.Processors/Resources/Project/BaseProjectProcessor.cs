@@ -48,15 +48,25 @@ public abstract class BaseProjectProcessor(
         return Task.FromResult(true);
     }
 
-    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, MsBuildContainerProperties containerDetails, ProjectResource? project) =>
-        new KubernetesDeploymentData()
+    private KubernetesDeploymentData PopulateKubernetesDeploymentData(BaseKubernetesCreateOptions options, MsBuildContainerProperties containerDetails, ProjectResource? project)
+    {
+        Dictionary<string, string>? annotations = project?.Annotations;
+        List<string>? args = project?.Args;
+
+        if (project is ProjectV1Resource v1 && v1.Deployment != null)
+        {
+            annotations = v1.Deployment.Annotations ?? annotations;
+            args = v1.Deployment.Args ?? args;
+        }
+
+        return new KubernetesDeploymentData()
             .SetWithDashboard(options.WithDashboard.GetValueOrDefault())
             .SetName(options.Resource.Key)
             .SetContainerImage(containerDetails.FullContainerImage)
             .SetImagePullPolicy(options.ImagePullPolicy)
             .SetEnv(GetFilteredEnvironmentalVariables(options.Resource, options.DisableSecrets, options.WithDashboard))
-            .SetAnnotations(project.Annotations)
-            .SetArgs(project.Args)
+            .SetAnnotations(annotations)
+            .SetArgs(args)
             .SetSecrets(GetSecretEnvironmentalVariables(options.Resource, options.DisableSecrets, options.WithDashboard))
             .SetSecretsFromSecretState(options.Resource, secretProvider, options.DisableSecrets)
             .SetIsProject(true)
@@ -65,6 +75,7 @@ public abstract class BaseProjectProcessor(
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
             .ApplyIngress(options)
             .Validate();
+    }
 
     public async Task BuildAndPushProjectContainer(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? runtimeIdentifier, bool preferDockerfile)
     {
