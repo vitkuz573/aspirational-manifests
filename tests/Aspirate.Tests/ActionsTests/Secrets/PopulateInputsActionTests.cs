@@ -162,4 +162,40 @@ public class PopulateInputsActionTests : BaseActionTests<PopulateInputsAction>
         console.Input.PushTextWithEnter(password);
         console.Input.PushKey(ConsoleKey.Enter);
     }
+
+    [Fact]
+    public async Task ExecuteAsync_InvalidInputType_ThrowsActionCausesExitException()
+    {
+        // Arrange
+        var console = new TestConsole();
+        console.Profile.Capabilities.Interactive = false;
+        var state = CreateAspirateState(nonInteractive: true);
+        var parameter = new ParameterResource
+        {
+            Name = "badparam",
+            Type = "string",
+            Inputs = new Dictionary<string, ParameterInput>
+            {
+                ["value"] = new()
+                {
+                    Type = "number"
+                }
+            }
+        };
+        state.LoadedAspireManifestResources = new Dictionary<string, Resource>
+        {
+            ["badparam"] = parameter
+        };
+        state.AspireComponentsToProcess = ["badparam"];
+
+        var serviceProvider = CreateServiceProvider(state, console);
+        var action = GetSystemUnderTest(serviceProvider);
+
+        // Act
+        var act = () => action.ExecuteAsync();
+
+        // Assert
+        await act.Should().ThrowAsync<ActionCausesExitException>();
+        console.Output.Should().Contain("Invalid parameter input type 'number'");
+    }
 }
