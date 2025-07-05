@@ -330,6 +330,26 @@ public class ManifestFileParserServiceTest
         result["resource1"].Should().BeOfType<ContainerResource>();
     }
 
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenContainerV0HasBuildSection()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-with-build.json";
+        fileSystem.AddFile(
+            manifestFile,
+            new("{\"resources\": {\"svc\": {\"type\": \"container.v0\", \"image\": \"img\", \"build\": {\"context\": \"./\", \"dockerfile\": \"Dockerfile\"}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*does not support property 'build'.");
+    }
+
     [Theory]
     [InlineData("pg-endtoend.json", 22)]
     [InlineData("sqlserver-endtoend.json", 4)]

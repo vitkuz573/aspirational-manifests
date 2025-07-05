@@ -48,6 +48,11 @@ public class ManifestFileParserService(
                 continue;
             }
 
+            if (type == AspireComponentLiterals.Container && resourceElement.TryGetProperty("build", out _))
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {resourceName} does not support property 'build'.");
+            }
+
             var rawBytes = Encoding.UTF8.GetBytes(resourceElement.GetRawText());
             var reader = new Utf8JsonReader(rawBytes);
 
