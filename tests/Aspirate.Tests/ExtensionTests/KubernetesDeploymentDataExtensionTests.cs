@@ -174,4 +174,22 @@ public class KubernetesDeploymentDataExtensionTests
         result.Spec.Template.Spec.Containers[0].VolumeMounts[0].MountPath.Should().Be("/data");
         result.Spec.VolumeClaimTemplates[0].Metadata.Name.Should().Be("test-volume");
     }
+
+    [Fact]
+    public void ToKubernetesDeployment_WithBindMounts_ShouldReturnCorrectVolumes()
+    {
+        // Arrange
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetContainerImage("test-image")
+            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host", Target = "/data" } });
+
+        // Act
+        var result = data.ToKubernetesDeployment();
+
+        // Assert
+        result.Spec.Template.Spec.Volumes.Should().ContainSingle(v => v.Name == "host" && v.HostPath.Path == "/host");
+        result.Spec.Template.Spec.Containers[0].VolumeMounts.Should().ContainSingle(v => v.Name == "host" && v.MountPath == "/data");
+    }
 }
+

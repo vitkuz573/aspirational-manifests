@@ -1,4 +1,5 @@
 using Volume = Aspirate.Shared.Models.AspireManifests.Components.Common.Volume;
+using BindMount = Aspirate.Shared.Models.AspireManifests.Components.Common.BindMount;
 
 namespace Aspirate.Shared.Extensions;
 
@@ -47,19 +48,45 @@ public static class ResourceExtensions
         return containerVolumes;
     }
 
+    public static List<BindMount> KuberizeBindMountNames(this List<BindMount> bindMounts,  KeyValuePair<string, Resource> resource)
+    {
+        if (bindMounts.Count == 0)
+        {
+            return bindMounts;
+        }
+
+        foreach (var mount in bindMounts)
+        {
+            if (string.IsNullOrEmpty(mount.Name))
+            {
+                mount.Name = $"{resource.Key}-{mount.Target}".ToLowerInvariant();
+            }
+
+            mount.Name = mount.Name.Replace("/", "-").Replace(".", "-").Replace("--", "-").ToLowerInvariant();
+        }
+
+        return bindMounts;
+    }
+
     public static string[] MapComposeVolumes(this KeyValuePair<string, Resource> resource)
     {
         var composeVolumes = new List<string>();
 
-        if (resource.Value is not IResourceWithVolumes resourceWithVolumes)
+        if (resource.Value is IResourceWithVolumes resourceWithVolumes)
         {
-            return[];
+            KuberizeVolumeNames(resourceWithVolumes.Volumes, resource);
+            composeVolumes.AddRange(resourceWithVolumes.Volumes
+                .Where(x => !string.IsNullOrWhiteSpace(x.Name))
+                .Select(volume => $"{volume.Name}:{volume.Target}"));
         }
 
-
-        KuberizeVolumeNames(resourceWithVolumes.Volumes, resource);
-
-        composeVolumes.AddRange(resourceWithVolumes.Volumes.Where(x=>!string.IsNullOrWhiteSpace(x.Name)).Select(volume => $"{volume.Name}:{volume.Target}"));
+        if (resource.Value is IResourceWithBindMounts resourceWithBindMounts)
+        {
+            KuberizeBindMountNames(resourceWithBindMounts.BindMounts, resource);
+            composeVolumes.AddRange(resourceWithBindMounts.BindMounts?
+                .Where(x => !string.IsNullOrWhiteSpace(x.Source) && !string.IsNullOrWhiteSpace(x.Target))
+                .Select(m => $"{m.Source}:{m.Target}{(m.ReadOnly ? ":ro" : string.Empty)}") ?? []);
+        }
 
         return composeVolumes.ToArray();
     }

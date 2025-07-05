@@ -87,13 +87,31 @@ public static class KubernetesDeploymentDataExtensions
             SetContainerEnvironment(data, useConfigMap, useSecrets, container);
         }
 
+
+        var volumeMounts = new List<V1VolumeMount>();
+
         if (data.HasVolumes)
         {
-            container.VolumeMounts = data.Volumes.Select(x => new V1VolumeMount
+            volumeMounts.AddRange(data.Volumes.Select(x => new V1VolumeMount
             {
                 Name = x.Name,
                 MountPath = x.Target,
-            }).ToList();
+            }));
+        }
+
+        if (data.HasBindMounts)
+        {
+            volumeMounts.AddRange(data.BindMounts.Select(x => new V1VolumeMount
+            {
+                Name = x.Name,
+                MountPath = x.Target,
+                ReadOnlyProperty = x.ReadOnly,
+            }));
+        }
+
+        if (volumeMounts.Count > 0)
+        {
+            container.VolumeMounts = volumeMounts;
         }
 
         return container;
@@ -157,6 +175,13 @@ public static class KubernetesDeploymentDataExtensions
                     {
                         Containers = new List<V1Container> { container },
                         TerminationGracePeriodSeconds = 180,
+                        Volumes = data.HasBindMounts
+                            ? data.BindMounts.Select(x => new V1Volume
+                                {
+                                    Name = x.Name,
+                                    HostPath = new V1HostPathVolumeSource { Path = x.Source }
+                                }).ToList()
+                            : null,
                     },
                 },
             },
@@ -199,6 +224,13 @@ public static class KubernetesDeploymentDataExtensions
                     {
                         Containers = new List<V1Container> { data.ToKubernetesContainer(useConfigMap, useSecrets) },
                         TerminationGracePeriodSeconds = 180,
+                        Volumes = data.HasBindMounts
+                            ? data.BindMounts.Select(x => new V1Volume
+                                {
+                                    Name = x.Name,
+                                    HostPath = new V1HostPathVolumeSource { Path = x.Source }
+                                }).ToList()
+                            : null,
                     },
                 },
             },
