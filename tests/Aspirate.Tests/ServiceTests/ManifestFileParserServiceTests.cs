@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 using Aspirate.Cli;
+using Aspirate.Shared.Models.AspireManifests.Components.Azure;
 using Xunit;
 
 namespace Aspirate.Tests.ServiceTests;
@@ -243,7 +244,8 @@ public class ManifestFileParserServiceTest
         var proj = results["app"] as ProjectV1Resource;
         proj!.Deployment.Should().NotBeNull();
         proj.Deployment!.Path.Should().Be("./redis.bicep");
-        proj.Deployment!.Scope!.ResourceGroup.Should().Be("rg-name");
+        var projDeployment = proj.Deployment.Should().BeOfType<BicepV1Resource>().Subject;
+        projDeployment.Scope!.ResourceGroup.Should().Be("rg-name");
         proj.Env.Should().ContainKey("ASPNETCORE_ENVIRONMENT");
     }
 
@@ -267,7 +269,56 @@ public class ManifestFileParserServiceTest
         var container = results["cache"] as ContainerV1Resource;
         container!.Deployment.Should().NotBeNull();
         container.Deployment!.Path.Should().Be("./redis.bicep");
-        container.Deployment!.Scope!.ResourceGroup.Should().Be("rg-name");
+        var containerDeployment = container.Deployment.Should().BeOfType<BicepV1Resource>().Subject;
+        containerDeployment.Scope!.ResourceGroup.Should().Be("rg-name");
+    }
+
+    [Fact]
+    public async Task ProjectV1Deployment_BicepV0_ParsesSuccessfully()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "project-v1-deployment-v0.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(await File.ReadAllTextAsync(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+        var inputPopulator = serviceProvider.GetRequiredKeyedService<IAction>(nameof(PopulateInputsAction));
+        var valueSubstitutor = serviceProvider.GetRequiredKeyedService<IAction>(nameof(SubstituteValuesAspireManifestAction));
+
+        var results = await PerformEndToEndTests(manifestFile, 1, serviceProvider, service, inputPopulator, valueSubstitutor);
+
+        results["app"].Should().BeOfType<ProjectV1Resource>();
+        var proj = results["app"] as ProjectV1Resource;
+        proj!.Deployment.Should().NotBeNull();
+        proj.Deployment!.Path.Should().Be("./redis.bicep");
+        proj.Deployment.Should().BeOfType<BicepResource>();
+        proj.Deployment.Should().NotBeOfType<BicepV1Resource>();
+    }
+
+    [Fact]
+    public async Task ContainerV1Deployment_BicepV0_ParsesSuccessfully()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-v1-deployment-v0.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(await File.ReadAllTextAsync(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+        var inputPopulator = serviceProvider.GetRequiredKeyedService<IAction>(nameof(PopulateInputsAction));
+        var valueSubstitutor = serviceProvider.GetRequiredKeyedService<IAction>(nameof(SubstituteValuesAspireManifestAction));
+
+        var results = await PerformEndToEndTests(manifestFile, 1, serviceProvider, service, inputPopulator, valueSubstitutor);
+
+        results["cache"].Should().BeOfType<ContainerV1Resource>();
+        var container = results["cache"] as ContainerV1Resource;
+        container!.Deployment.Should().NotBeNull();
+        container.Deployment!.Path.Should().Be("./redis.bicep");
+        container.Deployment.Should().BeOfType<BicepResource>();
+        container.Deployment.Should().NotBeOfType<BicepV1Resource>();
     }
 
     [Fact]

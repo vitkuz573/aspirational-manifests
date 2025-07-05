@@ -1,0 +1,12 @@
+{
+  "resources": {
+    "cache": {
+      "type": "container.v1",
+      "image": "redis:7.2.4",
+      "deployment": {
+        "type": "azure.bicep.v0",
+        "path": "./redis.bicep"
+      }
+    }
+  }
+}
