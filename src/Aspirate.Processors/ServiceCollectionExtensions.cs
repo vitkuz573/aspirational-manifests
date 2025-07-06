@@ -26,8 +26,7 @@ public static class ServiceCollectionExtensions
             .RegisterProcessor<BicepProcessor>(AspireComponentLiterals.AzureBicep)
             .RegisterProcessor<BicepV1Processor>(AspireComponentLiterals.AzureBicepV1)
             .RegisterProcessor<CloudFormationStackProcessor>(AspireComponentLiterals.AwsCloudFormationStack)
-            .RegisterProcessor<CloudFormationTemplateProcessor>(AspireComponentLiterals.AwsCloudFormationTemplate)
-            .RegisterProcessor<FinalProcessor>(AspireLiterals.Final);
+            .RegisterProcessor<CloudFormationTemplateProcessor>(AspireComponentLiterals.AwsCloudFormationTemplate);
 
     public static IServiceCollection AddPlaceholderTransformation(this IServiceCollection services) =>
         services
