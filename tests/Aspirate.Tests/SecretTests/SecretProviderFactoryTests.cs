@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Extensions.DependencyInjection;
 using System.IO.Abstractions;
+using Aspirate.Processors.Transformation;
 using Xunit;
 
 namespace Aspirate.Tests.SecretTests;
@@ -30,7 +31,7 @@ public class SecretProviderFactoryTests
     public void GetProvider_Env_ReturnsEnvironmentProvider()
     {
         var factory = CreateServices().GetRequiredService<SecretProviderFactory>();
-        var provider = factory.GetProvider("env");
+        var provider = factory.GetProvider(Literals.Env);
         Assert.IsType<EnvironmentSecretProvider>(provider);
     }
 

@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Xunit;
+using Aspirate.Processors.Transformation;
 
 namespace Aspirate.Tests.ModelTests;
 
@@ -23,7 +24,7 @@ public class DaprComponentSerializationTests
 
         resource.DaprComponentProperty!.Type.Should().Be("state.redis");
         resource.DaprComponentProperty.Version.Should().Be("v1");
-        resource.DaprComponentProperty.Metadata.Should().ContainKey("connectionString");
+        resource.DaprComponentProperty.Metadata.Should().ContainKey(Literals.ConnectionString);
 
         var serialized = JsonSerializer.Serialize(resource);
 
@@ -32,7 +33,7 @@ public class DaprComponentSerializationTests
 
         var roundTrip = JsonSerializer.Deserialize<DaprComponentResource>(serialized)!;
         roundTrip.DaprComponentProperty!.Version.Should().Be("v1");
-        roundTrip.DaprComponentProperty.Metadata.Should().ContainKey("connectionString");
+        roundTrip.DaprComponentProperty.Metadata.Should().ContainKey(Literals.ConnectionString);
     }
 }
 
