@@ -179,7 +179,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             .ApplyIngress(options)
             .Validate();
 
-    public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive)
+    public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? basePath = null)
     {
         if (resource.Value is not ContainerV1Resource containerV1 || containerV1.Build == null)
         {
@@ -188,7 +188,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
 
         ValidateContainerResource(containerV1, resource.Key);
 
-        await containerCompositionService.BuildAndPushContainerForDockerfile(containerV1, options, nonInteractive);
+        await containerCompositionService.BuildAndPushContainerForDockerfile(containerV1, options, nonInteractive, basePath);
 
         _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Building and Pushing container for Dockerfile [blue]{resource.Key}[/]");
     }
@@ -223,8 +223,8 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             {
                 service.WithBuild(builder =>
                     builder
-                        .WithContext(_fileSystem.GetFullPath(containerV1.Build.Context))
-                        .WithDockerfile(_fileSystem.GetFullPath(containerV1.Build.Dockerfile))
+                        .WithContext(_fileSystem.GetFullPath(containerV1.Build.Context, options.CurrentState?.ManifestDirectory))
+                        .WithDockerfile(_fileSystem.GetFullPath(containerV1.Build.Dockerfile, options.CurrentState?.ManifestDirectory))
                         .Build());
             }
         }

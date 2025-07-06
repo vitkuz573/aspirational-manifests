@@ -89,7 +89,7 @@ public abstract class BaseProjectProcessor(
             .Validate();
     }
 
-    public async Task BuildAndPushProjectContainer(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? runtimeIdentifier, bool preferDockerfile)
+    public async Task BuildAndPushProjectContainer(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? runtimeIdentifier, bool preferDockerfile, string? basePath = null)
     {
         var project = resource.Value as ProjectResource;
 
@@ -114,21 +114,21 @@ public abstract class BaseProjectProcessor(
                 BuildArgs = options.BuildArgs
             };
 
-            await containerCompositionService.BuildAndPushContainerForDockerfile(dockerfileResource, options, nonInteractive);
+            await containerCompositionService.BuildAndPushContainerForDockerfile(dockerfileResource, options, nonInteractive, basePath);
         }
         else
         {
-            await containerCompositionService.BuildAndPushContainerForProject(project, containerDetails, options, nonInteractive, runtimeIdentifier);
+            await containerCompositionService.BuildAndPushContainerForProject(project, containerDetails, options, nonInteractive, runtimeIdentifier, basePath);
         }
 
         _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Building and Pushing container for project [blue]{resource.Key}[/]");
     }
 
-    public async Task PopulateContainerDetailsCacheForProject(KeyValuePair<string, Resource> resource, ContainerOptions options)
+    public async Task PopulateContainerDetailsCacheForProject(KeyValuePair<string, Resource> resource, ContainerOptions options, string? basePath = null)
     {
         var project = resource.Value as ProjectResource;
 
-        var details = await containerDetailsService.GetContainerDetails(resource.Key, project, options);
+        var details = await containerDetailsService.GetContainerDetails(resource.Key, project, options, basePath);
 
         var success = _containerDetailsCache.TryAdd(resource.Key, details);
 

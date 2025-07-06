@@ -18,14 +18,23 @@ public class ContainerDetailsServiceTests
         // Arrange
         var projectPropertyService = Substitute.For<IProjectPropertyService>();
         var testConsole = new TestConsole();
+        var fileSystem = Substitute.For<IFileSystem>();
 
         var responseJson = JsonSerializer.Serialize(properties.Properties);
 
         projectPropertyService
-            .GetProjectPropertiesAsync(Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>(), Arg.Any<string>())
+            .GetProjectPropertiesAsync(
+                Arg.Any<string>(),
+                Arg.Any<string?>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>(),
+                Arg.Any<string>())
             .ReturnsForAnyArgs(responseJson);
 
-        var containerDetailsService = new ContainerDetailsService(projectPropertyService, testConsole);
+        var containerDetailsService = new ContainerDetailsService(projectPropertyService, testConsole, fileSystem);
 
         if (properties.Parameters is null)
         {
@@ -33,7 +42,7 @@ public class ContainerDetailsServiceTests
         }
 
         // Act
-        var containerDetails = await containerDetailsService.GetContainerDetails("test-service", new(), properties.Parameters);
+        var containerDetails = await containerDetailsService.GetContainerDetails("test-service", new(), properties.Parameters, null);
 
         // Assert
         await Verify(containerDetails)

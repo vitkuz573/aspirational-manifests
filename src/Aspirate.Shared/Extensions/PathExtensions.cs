@@ -2,26 +2,26 @@ namespace Aspirate.Shared.Extensions;
 
 public static class PathExtensions
 {
-    public static string NormalizePath(this IFileSystem fileSystem, string pathToTarget)
+    public static string NormalizePath(this IFileSystem fileSystem, string pathToTarget, string? basePath = null)
     {
         if (string.IsNullOrEmpty(pathToTarget))
         {
-            return fileSystem.Directory.GetCurrentDirectory();
+            return basePath ?? fileSystem.Directory.GetCurrentDirectory();
         }
 
-        if (!pathToTarget.StartsWith('.'))
+        if (fileSystem.Path.IsPathRooted(pathToTarget))
         {
             return pathToTarget;
         }
 
-        var currentDirectory = fileSystem.Directory.GetCurrentDirectory();
-
         var normalizedProjectPath = pathToTarget.Replace('\\', fileSystem.Path.DirectorySeparatorChar);
 
-        return fileSystem.Path.Combine(currentDirectory, normalizedProjectPath);
+        var root = basePath ?? fileSystem.Directory.GetCurrentDirectory();
+
+        return fileSystem.Path.Combine(root, normalizedProjectPath);
     }
 
-    public static string GetFullPath(this IFileSystem fileSystem, string path)
+    public static string GetFullPath(this IFileSystem fileSystem, string path, string? basePath = null)
     {
         if (fileSystem.Path.IsPathRooted(path))
         {
@@ -29,11 +29,13 @@ public static class PathExtensions
         }
 
         string homePath = Environment.GetFolderPath(Environment.SpecialFolder.UserProfile);
-        return path.StartsWith($"~{fileSystem.Path.DirectorySeparatorChar}") ?
-            // The path is relative to the user's home directory
-            fileSystem.Path.Combine(homePath, path.TrimStart('~', fileSystem.Path.DirectorySeparatorChar)) :
-            // The path is relative to the current working directory
-            fileSystem.Path.GetFullPath(path);
+        if (path.StartsWith($"~{fileSystem.Path.DirectorySeparatorChar}"))
+        {
+            return fileSystem.Path.Combine(homePath, path.TrimStart('~', fileSystem.Path.DirectorySeparatorChar));
+        }
+
+        var root = basePath ?? fileSystem.Directory.GetCurrentDirectory();
+        return fileSystem.Path.GetFullPath(fileSystem.Path.Combine(root, path));
     }
 
     public static string AspirateAppDataFolder(this IFileSystem fileSystem)

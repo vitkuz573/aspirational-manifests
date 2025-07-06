@@ -12,11 +12,12 @@ public sealed class ContainerCompositionService(
         MsBuildContainerProperties containerDetails,
         ContainerOptions options,
         bool nonInteractive = false,
-        string? runtimeIdentifier = null)
+        string? runtimeIdentifier = null,
+        string? basePath = null)
     {
         await CheckIfBuilderIsRunning(options.ContainerBuilder);
 
-        var fullProjectPath = filesystem.NormalizePath(projectResource.Path);
+        var fullProjectPath = filesystem.NormalizePath(projectResource.Path, basePath);
 
         var argumentsBuilder = ArgumentsBuilder.Create();
 
@@ -40,7 +41,7 @@ public sealed class ContainerCompositionService(
         return true;
     }
 
-    public async Task<bool> BuildAndPushContainerForDockerfile(DockerfileResource dockerfileResource, ContainerOptions options, bool? nonInteractive = false) =>
+    public async Task<bool> BuildAndPushContainerForDockerfile(DockerfileResource dockerfileResource, ContainerOptions options, bool? nonInteractive = false, string? basePath = null) =>
         await BuildAndPushContainerForDockerfile(
             dockerfileResource.Context,
             dockerfileResource.Env,
@@ -49,9 +50,10 @@ public sealed class ContainerCompositionService(
             dockerfileResource.Path,
             dockerfileResource.Name,
             options,
-            nonInteractive);
+            nonInteractive,
+            basePath);
 
-    public async Task<bool> BuildAndPushContainerForDockerfile(ContainerV1Resource containerV1Resource, ContainerOptions options, bool? nonInteractive = false) =>
+    public async Task<bool> BuildAndPushContainerForDockerfile(ContainerV1Resource containerV1Resource, ContainerOptions options, bool? nonInteractive = false, string? basePath = null) =>
         await BuildAndPushContainerForDockerfile(
             containerV1Resource.Build.Context,
             containerV1Resource.Env,
@@ -60,7 +62,8 @@ public sealed class ContainerCompositionService(
             containerV1Resource.Build.Dockerfile,
             containerV1Resource.Name,
             options,
-            nonInteractive);
+            nonInteractive,
+            basePath);
 
     private async Task<bool> BuildAndPushContainerForDockerfile(
         string context,
@@ -70,17 +73,30 @@ public sealed class ContainerCompositionService(
         string dockerfile,
         string resourceName,
         ContainerOptions options,
-        bool? nonInteractive = false)
+        bool? nonInteractive = false,
+        string? basePath = null)
     {
         ArgumentNullException.ThrowIfNull(options, nameof(options));
 
         await CheckIfBuilderIsRunning(options.ContainerBuilder);
 
-        var fullDockerfilePath = filesystem.GetFullPath(dockerfile);
+        var fullDockerfilePath = filesystem.GetFullPath(dockerfile, basePath);
+        var fullContextPath = filesystem.GetFullPath(context, basePath);
+
+        if (secrets is not null)
+        {
+            foreach (var secret in secrets.Values)
+            {
+                if (secret.Type == BuildSecretType.File && secret.Source is not null)
+                {
+                    secret.Source = filesystem.GetFullPath(secret.Source, basePath);
+                }
+            }
+        }
 
         var fullImages = options.ToImageNames(resourceName);
 
-        var result = await BuildContainer(context, env, buildArgs, secrets, options.ContainerBuilder, nonInteractive, fullImages, fullDockerfilePath);
+        var result = await BuildContainer(fullContextPath, env, buildArgs, secrets, options.ContainerBuilder, nonInteractive, fullImages, fullDockerfilePath);
 
         CheckSuccess(result);
 

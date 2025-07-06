@@ -2,9 +2,9 @@ namespace Aspirate.Services.Implementations;
 
 public sealed class ProjectPropertyService(IFileSystem filesystem, IShellExecutionService shellExecutionService, IAnsiConsole console) : IProjectPropertyService
 {
-    public async Task<string?> GetProjectPropertiesAsync(string projectPath, params string[] propertyNames)
+    public async Task<string?> GetProjectPropertiesAsync(string projectPath, string? basePath = null, params string[] propertyNames)
     {
-        var fullProjectPath = filesystem.NormalizePath(projectPath);
+        var fullProjectPath = filesystem.NormalizePath(projectPath, basePath);
         var propertyValues = await ExecuteDotnetMsBuildGetPropertyCommand(fullProjectPath, propertyNames);
 
         return propertyValues ?? null;
