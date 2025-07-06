@@ -138,7 +138,7 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
-    public void LoadAndParseAspireManifest_PreservesAnnotations()
+    public void LoadAndParseAspireManifest_UnknownContainerProperty_Throws()
     {
         // Arrange
         var fileSystem = new MockFileSystem();
@@ -148,12 +148,11 @@ public class ManifestFileParserServiceTest
         var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
 
         // Act
-        var result = service.LoadAndParseAspireManifest(manifestFile);
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
 
         // Assert
-        result.Should().HaveCount(1);
-        var container = result["svc"].As<ContainerResource>();
-        container.Annotations.Should().ContainKey("key").WhoseValue.Should().Be("val");
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'annotations'*");
     }
 
     [Fact]

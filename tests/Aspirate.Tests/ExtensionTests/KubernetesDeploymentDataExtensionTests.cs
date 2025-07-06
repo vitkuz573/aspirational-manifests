@@ -229,17 +229,16 @@ public class KubernetesDeploymentDataExtensionTests
     }
 
     [Fact]
-    public void ToKubernetesStatefulSet_MissingVolumeName_Throws()
+    public void ToKubernetesStatefulSet_MissingVolumeName_DoesNotThrow()
     {
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("img")
             .SetVolumes(new List<Volume> { new Volume { Target = "/data", ReadOnly = false } });
 
-        Action act = () => data.ToKubernetesStatefulSet();
+        var result = data.ToKubernetesStatefulSet();
 
-        act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'name'");
+        result.Spec.VolumeClaimTemplates[0].Metadata.Name.Should().BeNull();
     }
 
     [Fact]
