@@ -1,6 +1,6 @@
 namespace Aspirate.Shared.Models.AspireManifests.Components.V0.Dapr;
 
-public class Metadata
+public class Metadata : IJsonOnDeserialized
 {
     [JsonPropertyName("application")]
     public string Application { get; set; } = default!;
@@ -17,4 +17,13 @@ public class Metadata
     /// </summary>
     [JsonExtensionData]
     public Dictionary<string, JsonElement>? ExtensionData { get; set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (ExtensionData is not null && ExtensionData.Count > 0)
+        {
+            var unexpected = ExtensionData.Keys.First();
+            throw new InvalidOperationException($"Dapr metadata unexpected property '{unexpected}'.");
+        }
+    }
 }

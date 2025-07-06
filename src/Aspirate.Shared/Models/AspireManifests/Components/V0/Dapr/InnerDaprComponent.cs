@@ -1,6 +1,6 @@
 namespace Aspirate.Shared.Models.AspireManifests.Components.V0.Dapr;
 
-public sealed class InnerDaprComponent
+public sealed class InnerDaprComponent : IJsonOnDeserialized
 {
     [JsonPropertyName("type")]
     public string? Type { get; set; }
@@ -66,6 +66,25 @@ public sealed class InnerDaprComponent
 
             AdditionalProperties ??= new();
             AdditionalProperties["metadata"] = JsonDocument.Parse(JsonSerializer.Serialize(value)).RootElement.Clone();
+        }
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (AdditionalProperties is null)
+        {
+            return;
+        }
+
+        foreach (var key in AdditionalProperties.Keys)
+        {
+            if (string.Equals(key, "version", StringComparison.OrdinalIgnoreCase) ||
+                string.Equals(key, "metadata", StringComparison.OrdinalIgnoreCase))
+            {
+                continue;
+            }
+
+            throw new InvalidOperationException($"Dapr component unexpected property '{key}'.");
         }
     }
 }
