@@ -51,7 +51,23 @@ public class CloudFormationTemplateProcessor(IFileSystem fileSystem, IAnsiConsol
     }
 
     /// <inheritdoc />
-    public override Task<bool> CreateManifests(CreateManifestsOptions options) =>
-        // Do nothing, these resources are preserved only.
-        Task.FromResult(true);
+    public override Task<bool> CreateManifests(CreateManifestsOptions options)
+    {
+        var resourceOutputPath = Path.Combine(options.OutputPath, options.Resource.Key);
+
+        _manifestWriter.EnsureOutputDirectoryExistsAndIsClean(resourceOutputPath);
+
+        var template = options.Resource.Value as CloudFormationTemplateResource;
+
+        _manifestWriter.CreateCustomManifest(
+            resourceOutputPath,
+            $"{TemplateLiterals.CloudFormationTemplateType}.yaml",
+            TemplateLiterals.CloudFormationTemplateType,
+            template!,
+            options.TemplatePath);
+
+        LogCompletion(resourceOutputPath);
+
+        return Task.FromResult(true);
+    }
 }

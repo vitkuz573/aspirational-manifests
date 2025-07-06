@@ -12,4 +12,6 @@ public static class TemplateLiterals
     public const string NamespaceType = "namespace";
     public const string DashboardType = "dashboard";
     public const string ImagePullSecretType = "image-pull-secret";
+    public const string CloudFormationStackType = "cloudformation-stack";
+    public const string CloudFormationTemplateType = "cloudformation-template";
 }
