@@ -1,0 +1,28 @@
+using Xunit;
+
+namespace Aspirate.Tests.ModelTests;
+
+public class ParameterInputSerializationTests
+{
+    [Theory]
+    [InlineData("number")]
+    [InlineData("bool")]
+    public void Setting_Invalid_Type_Throws(string value)
+    {
+        var input = new ParameterInput();
+        var act = () => input.Type = value;
+
+        act.Should().Throw<InvalidOperationException>();
+    }
+
+    [Fact]
+    public void Deserializing_Invalid_Type_Throws()
+    {
+        var json = "{\"type\":\"number\"}";
+
+        var act = () => JsonSerializer.Deserialize<ParameterInput>(json);
+
+        act.Should().Throw<JsonException>()
+            .WithInnerException<InvalidOperationException>();
+    }
+}
