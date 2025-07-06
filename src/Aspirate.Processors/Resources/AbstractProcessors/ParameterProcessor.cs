@@ -36,6 +36,51 @@ public class ParameterProcessor(IFileSystem fileSystem, IAnsiConsole console,
             throw new InvalidOperationException(
                 $"{AspireComponentLiterals.Parameter} {parameter.Name} missing required property 'inputs'.");
         }
+
+        foreach (var input in parameter.Inputs)
+        {
+            ValidateInput(parameter.Name, input.Key, input.Value);
+        }
+    }
+
+    private static void ValidateInput(string parameterName, string inputName, ParameterInput? input)
+    {
+        if (input == null)
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' not found.");
+        }
+
+        if (string.IsNullOrWhiteSpace(input.Type))
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' missing required property 'type'.");
+        }
+
+        ValidateDefault(parameterName, inputName, input.Default);
+    }
+
+    private static void ValidateDefault(string parameterName, string inputName, ParameterDefault? defaultValue)
+    {
+        if (defaultValue == null)
+        {
+            return;
+        }
+
+        var hasGenerate = defaultValue.Generate is not null;
+        var hasValue = defaultValue.Value is not null;
+
+        if (hasGenerate == hasValue)
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' default must specify either 'generate' or 'value'.");
+        }
+
+        if (hasGenerate && defaultValue.Generate!.MinLength <= 0)
+        {
+            throw new InvalidOperationException(
+                $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minLength must be greater than 0.");
+        }
     }
 
     public override Task<bool> CreateManifests(CreateManifestsOptions options) =>
