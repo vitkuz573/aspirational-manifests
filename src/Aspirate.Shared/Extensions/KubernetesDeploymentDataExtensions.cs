@@ -379,7 +379,7 @@ public static class KubernetesDeploymentDataExtensions
 
     private static List<V1LocalObjectReference> SetKubernetesImagePullSecrets =>
     [
-        new V1LocalObjectReference { Name = "image-pull-secret", }
+        new V1LocalObjectReference { Name = TemplateLiterals.ImagePullSecretType, }
     ];
 
     private static void SetContainerEnvironment(KubernetesDeploymentData data, bool useConfigMap, bool useSecrets, V1Container container)
