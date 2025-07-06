@@ -5,10 +5,10 @@ namespace Aspirate.Shared.Models.AspireManifests.Components.Common;
 /// </summary>
 
 [ExcludeFromCodeCoverage]
-public class Binding
+public class Binding : IJsonOnDeserialized
 {
-    private string? _scheme = BindingLiterals.Http;
-    private string? _protocol = BindingLiterals.Tcp;
+    private string? _scheme;
+    private string? _protocol;
     private string? _transport;
 
     /// <summary>
@@ -58,6 +58,24 @@ public class Binding
     /// </summary>
     [JsonPropertyName("external")]
     public bool External { get; set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (string.IsNullOrWhiteSpace(_scheme))
+        {
+            throw new InvalidOperationException("Scheme is required for a binding.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_protocol))
+        {
+            throw new InvalidOperationException("Protocol is required for a binding.");
+        }
+
+        if (string.IsNullOrWhiteSpace(_transport))
+        {
+            throw new InvalidOperationException("Transport is required for a binding.");
+        }
+    }
 
     private static string? Validate(string? value, string propertyName, IReadOnlyCollection<string> validValues)
     {
