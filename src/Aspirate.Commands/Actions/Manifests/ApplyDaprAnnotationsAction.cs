@@ -1,3 +1,5 @@
+using Aspirate.Shared.Literals;
+
 namespace Aspirate.Commands.Actions.Manifests;
 
 public class ApplyDaprAnnotationsAction(IServiceProvider serviceProvider, IAnsiConsole console) : BaseAction(serviceProvider)
@@ -52,7 +54,7 @@ public class ApplyDaprAnnotationsAction(IServiceProvider serviceProvider, IAnsiC
             return;
         }
 
-        if (!container.Bindings.TryGetValue("tcp", out var binding))
+        if (!container.Bindings.TryGetValue(BindingLiterals.Tcp, out var binding))
         {
             return;
         }
