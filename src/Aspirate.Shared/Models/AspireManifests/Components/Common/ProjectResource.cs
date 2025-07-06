@@ -21,7 +21,7 @@ public class ProjectResource : Resource, IResourceWithBinding, IResourceWithAnno
     [JsonPropertyName("annotations")]
     public Dictionary<string, string>? Annotations { get; set; } = [];
 
-    [JsonPropertyName("env")]
+    [JsonPropertyName(Aspirate.Processors.Transformation.Literals.Env)]
     public Dictionary<string, string>? Env { get; set; } = [];
 
     [JsonPropertyName("args")]

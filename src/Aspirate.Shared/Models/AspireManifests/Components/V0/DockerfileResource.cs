@@ -24,7 +24,7 @@ public class DockerfileResource : Resource, IResourceWithBinding, IResourceWithE
     [JsonPropertyName("bindings")]
     public Dictionary<string, Binding>? Bindings { get; set; }
 
-    [JsonPropertyName("env")]
+    [JsonPropertyName(Aspirate.Processors.Transformation.Literals.Env)]
     public Dictionary<string, string>? Env { get; set; }
 
     [JsonPropertyName("buildArgs")]
