@@ -173,9 +173,10 @@ public sealed class ContainerCompositionService(
             AddDockerBuildArgs(buildArgumentBuilder, buildArgs);
         }
 
+        List<string>? envVariables = null;
         if (secrets is not null)
         {
-            ValidateSecrets(secrets);
+            envVariables = ValidateSecrets(secrets).ToList();
             AddDockerSecrets(buildArgumentBuilder, secrets);
         }
 
@@ -183,13 +184,26 @@ public sealed class ContainerCompositionService(
             .AppendArgument(DockerLiterals.DockerFileArgument, fullDockerfilePath)
             .AppendArgument(context, string.Empty, quoteValue: false);
 
-        return shellExecutionService.ExecuteCommand(new()
+        try
         {
-            Command = command,
-            ArgumentsBuilder = buildArgumentBuilder,
-            NonInteractive = nonInteractive.GetValueOrDefault(),
-            ShowOutput = true,
-        });
+            return shellExecutionService.ExecuteCommand(new()
+            {
+                Command = command,
+                ArgumentsBuilder = buildArgumentBuilder,
+                NonInteractive = nonInteractive.GetValueOrDefault(),
+                ShowOutput = true,
+            });
+        }
+        finally
+        {
+            if (envVariables is not null)
+            {
+                foreach (var variable in envVariables)
+                {
+                    Environment.SetEnvironmentVariable(variable, null);
+                }
+            }
+        }
     }
 
     private async Task HandleBuildErrors(string command, ArgumentsBuilder argumentsBuilder, bool nonInteractive, string errors)
@@ -290,8 +304,9 @@ public sealed class ContainerCompositionService(
         }
     }
 
-    private void ValidateSecrets(Dictionary<string, BuildSecret> secrets)
+    private IEnumerable<string> ValidateSecrets(Dictionary<string, BuildSecret> secrets)
     {
+        List<string> envVars = new();
         foreach (var (key, secret) in secrets)
         {
             switch (secret.Type)
@@ -307,6 +322,7 @@ public sealed class ContainerCompositionService(
                     }
 
                     Environment.SetEnvironmentVariable(key, secret.Value);
+                    envVars.Add(key);
                     break;
                 case BuildSecretType.File:
                     if (!string.IsNullOrWhiteSpace(secret.Value))
@@ -326,6 +342,8 @@ public sealed class ContainerCompositionService(
                     throw new InvalidOperationException($"Build secret '{key}' has unsupported type '{secret.Type}'.");
             }
         }
+
+        return envVars;
     }
 
     private static void AddDockerSecrets(ArgumentsBuilder argumentsBuilder, Dictionary<string, BuildSecret> secrets)
