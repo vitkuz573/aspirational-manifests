@@ -193,7 +193,7 @@ public class ContainerCompositionServiceTest
                 Dockerfile = "./Dockerfile",
                 Secrets = new()
                 {
-                    ["MY_SECRET"] = new BuildSecret { Type = "file", Source = "./secret.txt" }
+                    ["MY_SECRET"] = new BuildSecret { Type = BuildSecretType.File, Source = "./secret.txt" }
                 }
             }
         };
@@ -285,7 +285,7 @@ public class ContainerCompositionServiceTest
                 Dockerfile = "./Dockerfile",
                 Secrets = new()
                 {
-                    ["MY_SECRET"] = new BuildSecret { Type = "env" }
+                    ["MY_SECRET"] = new BuildSecret { Type = BuildSecretType.Env }
                 }
             }
         };
@@ -325,7 +325,7 @@ public class ContainerCompositionServiceTest
                 Dockerfile = "./Dockerfile",
                 Secrets = new()
                 {
-                    ["MY_SECRET"] = new BuildSecret { Type = "file" }
+                    ["MY_SECRET"] = new BuildSecret { Type = BuildSecretType.File }
                 }
             }
         };
