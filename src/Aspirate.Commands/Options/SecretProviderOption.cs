@@ -4,7 +4,10 @@ public sealed class SecretProviderOption : BaseOption<string?>
 {
     private static readonly string[] _aliases = ["--secret-provider"];
 
-    private SecretProviderOption() : base(_aliases, "ASPIRATE_SECRET_PROVIDER", "file")
+    private SecretProviderOption() : base(
+        _aliases,
+        "ASPIRATE_SECRET_PROVIDER",
+        Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager)
     {
         Name = nameof(ICommandOptions.SecretProvider);
         Description = "The secret backend provider to use. Defaults to file.";
