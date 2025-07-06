@@ -62,6 +62,11 @@ public static class ResourceExtensions
                 throw new InvalidOperationException($"Volume missing required property 'name'.");
             }
 
+            if (volume.ReadOnly is null)
+            {
+                throw new InvalidOperationException($"Volume missing required property 'readOnly'.");
+            }
+
             volume.Name = volume.Name.Replace("/", "-").Replace(".", "-").Replace("--", "-").ToLowerInvariant();
         }
 
@@ -87,6 +92,11 @@ public static class ResourceExtensions
             if (string.IsNullOrWhiteSpace(mount.Target))
             {
                 throw new InvalidOperationException($"BindMount missing required property 'target'.");
+            }
+
+            if (mount.ReadOnly is null)
+            {
+                throw new InvalidOperationException($"BindMount missing required property 'readOnly'.");
             }
 
             if (string.IsNullOrWhiteSpace(mount.Name))
@@ -131,7 +141,7 @@ public static class ResourceExtensions
             KuberizeBindMountNames(resourceWithBindMounts.BindMounts, resource);
             composeVolumes.AddRange(resourceWithBindMounts.BindMounts?
                 .Where(x => !string.IsNullOrWhiteSpace(x.Source) && !string.IsNullOrWhiteSpace(x.Target))
-                .Select(m => $"{m.Source}:{m.Target}{(m.ReadOnly ? ":ro" : string.Empty)}") ?? []);
+                .Select(m => $"{m.Source}:{m.Target}{(m.ReadOnly == true ? ":ro" : string.Empty)}") ?? []);
         }
 
         return composeVolumes.ToArray();

@@ -9,5 +9,5 @@ public class Volume
     public string? Target { get; set; }
 
     [JsonPropertyName("readOnly")]
-    public bool ReadOnly { get; set; }
+    public bool? ReadOnly { get; set; }
 }

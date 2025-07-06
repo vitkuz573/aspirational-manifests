@@ -163,7 +163,7 @@ public class KubernetesDeploymentDataExtensionTests
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("test-image")
-            .SetVolumes(new List<Volume> { new Volume { Name = "test-volume", Target = "/data" } });
+            .SetVolumes(new List<Volume> { new Volume { Name = "test-volume", Target = "/data", ReadOnly = false } });
 
         // Act
         var result = data.ToKubernetesStatefulSet();
@@ -183,7 +183,7 @@ public class KubernetesDeploymentDataExtensionTests
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("test-image")
-            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host", Target = "/data" } });
+            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host", Target = "/data", ReadOnly = false } });
 
         // Act
         var result = data.ToKubernetesDeployment();
@@ -200,7 +200,7 @@ public class KubernetesDeploymentDataExtensionTests
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("test-image")
-            .SetBindMounts(new List<BindMount> { new BindMount { Source = "/logs", Target = "/data" } });
+            .SetBindMounts(new List<BindMount> { new BindMount { Source = "/logs", Target = "/data", ReadOnly = false } });
 
         // Act
         var result = data.ToKubernetesDeployment();
@@ -234,7 +234,7 @@ public class KubernetesDeploymentDataExtensionTests
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("img")
-            .SetVolumes(new List<Volume> { new Volume { Target = "/data" } });
+            .SetVolumes(new List<Volume> { new Volume { Target = "/data", ReadOnly = false } });
 
         Action act = () => data.ToKubernetesStatefulSet();
 
@@ -248,7 +248,7 @@ public class KubernetesDeploymentDataExtensionTests
         var data = new KubernetesDeploymentData()
             .SetName("test")
             .SetContainerImage("img")
-            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host" } });
+            .SetBindMounts(new List<BindMount> { new BindMount { Name = "host", Source = "/host", ReadOnly = false } });
 
         Action act = () => data.ToKubernetesDeployment();
 

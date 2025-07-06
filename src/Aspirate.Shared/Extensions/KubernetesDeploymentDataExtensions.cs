@@ -100,7 +100,7 @@ public static class KubernetesDeploymentDataExtensions
                     MountPath = x.Target,
                 };
 
-                if (x.ReadOnly)
+                if (x.ReadOnly == true)
                 {
                     mount.ReadOnlyProperty = true;
                 }
@@ -115,7 +115,7 @@ public static class KubernetesDeploymentDataExtensions
             {
                 Name = x.Name,
                 MountPath = x.Target,
-                ReadOnlyProperty = x.ReadOnly,
+                ReadOnlyProperty = x.ReadOnly == true,
             }));
         }
 
