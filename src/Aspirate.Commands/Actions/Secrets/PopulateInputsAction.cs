@@ -1,3 +1,5 @@
+using Aspirate.Shared.Literals;
+
 namespace Aspirate.Commands.Actions.Secrets;
 
 public sealed class PopulateInputsAction(
@@ -192,9 +194,9 @@ public sealed class PopulateInputsAction(
 
             foreach (var input in resource.Inputs)
             {
-                if (!string.Equals(input.Value.Type, "string", StringComparison.OrdinalIgnoreCase))
+                if (!string.Equals(input.Value.Type, ParameterInputLiterals.String, StringComparison.OrdinalIgnoreCase))
                 {
-                    Logger.ValidationFailed($"Invalid parameter input type '{input.Value.Type}' for '{resource.Name}.{input.Key}'. Only 'string' is supported.");
+                    Logger.ValidationFailed($"Invalid parameter input type '{input.Value.Type}' for '{resource.Name}.{input.Key}'. Only '{ParameterInputLiterals.String}' is supported.");
                 }
             }
         }
