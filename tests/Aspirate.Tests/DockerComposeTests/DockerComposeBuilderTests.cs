@@ -1,6 +1,7 @@
 using DockerComposeBuilder.Converters;
 using DockerComposeBuilder.Emitters;
 using DockerComposeBuilder.Model.Services;
+using Aspirate.Shared.Models.Compose;
 using YamlDotNet.Serialization;
 using YamlDotNet.Serialization.NamingConventions;
 
@@ -152,6 +153,31 @@ public class DockerComposeBuilderTests
                         .Add(new KeyValuePair<string, string>("ENV_2", "value"))
                         .Add(new BuildArgument("ENV_3", "value"))
                     )
+                )
+                .Build()
+            )
+            .Build();
+
+        var result = _serializer.Serialize(compose);
+
+        await Verify(result)
+            .UseDirectory("VerifyResults");
+    }
+
+    [Fact]
+    public async Task SerializeComposeFile_WithBuildSecrets_ShouldBeValid()
+    {
+        var compose = Builder.MakeCompose()
+            .WithServices(Builder.MakeService("a-service")
+                .WithImage("dotnetaspire/servicea")
+                .WithBuild(x => x
+                    .WithContext(".")
+                    .WithDockerfile("a.dockerfile")
+                    .WithSecrets(s =>
+                    {
+                        s["MY_SECRET"] = new ComposeBuildSecret { File = "./secret.txt" };
+                        s["ENV_SECRET"] = new ComposeBuildSecret { Environment = "ENV_SECRET" };
+                    })
                 )
                 .Build()
             )

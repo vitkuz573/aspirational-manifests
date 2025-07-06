@@ -1,3 +1,5 @@
+using Aspirate.Shared.Models.Compose;
+
 namespace Aspirate.Processors.Resources.AbstractProcessors;
 
 
@@ -222,10 +224,50 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             else if (containerV1.Build != null && options.ComposeBuilds == true)
             {
                 service.WithBuild(builder =>
+                {
                     builder
                         .WithContext(_fileSystem.GetFullPath(containerV1.Build.Context, options.CurrentState?.ManifestDirectory))
-                        .WithDockerfile(_fileSystem.GetFullPath(containerV1.Build.Dockerfile, options.CurrentState?.ManifestDirectory))
-                        .Build());
+                        .WithDockerfile(_fileSystem.GetFullPath(containerV1.Build.Dockerfile, options.CurrentState?.ManifestDirectory));
+
+                    if (containerV1.Build.Args is { Count: > 0 })
+                    {
+                        builder.WithArguments(argBuilder =>
+                        {
+                            foreach (var (key, value) in containerV1.Build.Args)
+                            {
+                                if (string.IsNullOrEmpty(value))
+                                {
+                                    argBuilder.AddWithoutValue(key);
+                                }
+                                else
+                                {
+                                    argBuilder.Add(new KeyValuePair<string, string>(key, value));
+                                }
+                            }
+                        });
+                    }
+
+                    if (containerV1.Build.Secrets is { Count: > 0 })
+                    {
+                        builder.WithSecrets(dict =>
+                        {
+                            foreach (var (key, secret) in containerV1.Build.Secrets)
+                            {
+                                var composeSecret = new ComposeBuildSecret();
+                                switch (secret.Type)
+                                {
+                                    case BuildSecretType.Env:
+                                        composeSecret.Environment = key;
+                                        break;
+                                    case BuildSecretType.File when secret.Source is not null:
+                                        composeSecret.File = _fileSystem.GetFullPath(secret.Source, options.CurrentState?.ManifestDirectory);
+                                        break;
+                                }
+                                dict[key] = composeSecret;
+                            }
+                        });
+                    }
+                });
             }
         }
 

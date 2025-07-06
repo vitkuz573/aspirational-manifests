@@ -1,12 +1,15 @@
 using DockerComposeBuilder.Builders.Base;
 using DockerComposeBuilder.Builders.Services;
 using DockerComposeBuilder.Enums;
+using Aspirate.Shared.Models.Compose;
+
+// Custom builder that supports build secrets
 
 namespace Aspirate.Shared.Models.Compose;
 
 public class ComposeServiceBuilder : BaseBuilder<ComposeServiceBuilder, ComposeService>
 {
-    protected BuildBuilder? BuildBuilder;
+    protected ComposeBuildBuilder? BuildBuilder;
 
     public ComposeServiceBuilder()
     {
@@ -112,9 +115,9 @@ public class ComposeServiceBuilder : BaseBuilder<ComposeServiceBuilder, ComposeS
         return this;
     }
 
-    public ComposeServiceBuilder WithBuild(Action<BuildBuilder> build)
+    public ComposeServiceBuilder WithBuild(Action<ComposeBuildBuilder> build)
     {
-        BuildBuilder ??= new BuildBuilder();
+        BuildBuilder ??= new ComposeBuildBuilder();
 
         build(BuildBuilder);
 
