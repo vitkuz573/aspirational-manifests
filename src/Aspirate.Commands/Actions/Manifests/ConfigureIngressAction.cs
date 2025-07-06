@@ -1,3 +1,5 @@
+using Aspirate.Shared.Literals;
+
 namespace Aspirate.Commands.Actions.Manifests;
 
 public class ConfigureIngressAction(
@@ -28,7 +30,7 @@ public class ConfigureIngressAction(
 
         var candidates = CurrentState.AllSelectedSupportedComponents
             .Where(r => r.Value is IResourceWithBinding res && res.Bindings != null &&
-                        res.Bindings.Any(b => b.Key.Equals("http", StringComparison.OrdinalIgnoreCase) && b.Value.External))
+                        res.Bindings.Any(b => b.Key.Equals(BindingLiterals.Http, StringComparison.OrdinalIgnoreCase) && b.Value.External))
             .Select(r => r.Key)
             .ToList();
 

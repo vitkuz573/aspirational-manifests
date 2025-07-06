@@ -1,6 +1,7 @@
 using Aspirate.Shared.Models.AspireManifests.Components.V1.Project;
 using Volume = Aspirate.Shared.Models.AspireManifests.Components.Common.Volume;
 using BindMount = Aspirate.Shared.Models.AspireManifests.Components.Common.BindMount;
+using Aspirate.Shared.Literals;
 
 namespace Aspirate.Shared.Extensions;
 
@@ -183,12 +184,12 @@ public static class ResourceExtensions
 
             foreach (var binding in bindingResource.Bindings)
             {
-                if (binding.Key.Equals("http", StringComparison.OrdinalIgnoreCase) && binding.Value.TargetPort is 0 or null)
+                if (binding.Key.Equals(BindingLiterals.Http, StringComparison.OrdinalIgnoreCase) && binding.Value.TargetPort is 0 or null)
                 {
                     binding.Value.TargetPort = 8080;
                 }
 
-                if (binding.Key.Equals("https", StringComparison.OrdinalIgnoreCase) && binding.Value.TargetPort is 0 or null)
+                if (binding.Key.Equals(BindingLiterals.Https, StringComparison.OrdinalIgnoreCase) && binding.Value.TargetPort is 0 or null)
                 {
                     binding.Value.TargetPort = 8443;
                 }
