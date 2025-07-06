@@ -76,10 +76,58 @@ public class ParameterProcessor(IFileSystem fileSystem, IAnsiConsole console,
                 $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' default must specify either 'generate' or 'value'.");
         }
 
-        if (hasGenerate && defaultValue.Generate!.MinLength <= 0)
+        if (hasGenerate)
         {
-            throw new InvalidOperationException(
-                $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minLength must be greater than 0.");
+            var generate = defaultValue.Generate!;
+
+            if (generate.MinLength <= 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minLength must be greater than 0.");
+            }
+
+            if (!generate.Lower && !generate.Upper && !generate.Numeric && !generate.Special)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate must allow at least one character type.");
+            }
+
+            if (generate.MinLower < 0 || generate.MinUpper < 0 || generate.MinNumeric < 0 || generate.MinSpecial < 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate minimum counts cannot be negative.");
+            }
+
+            if (!generate.Lower && generate.MinLower > 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minLower requires lower to be true.");
+            }
+
+            if (!generate.Upper && generate.MinUpper > 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minUpper requires upper to be true.");
+            }
+
+            if (!generate.Numeric && generate.MinNumeric > 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minNumeric requires numeric to be true.");
+            }
+
+            if (!generate.Special && generate.MinSpecial > 0)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' generate.minSpecial requires special to be true.");
+            }
+
+            var totalMin = generate.MinLower + generate.MinUpper + generate.MinNumeric + generate.MinSpecial;
+            if (totalMin > generate.MinLength)
+            {
+                throw new InvalidOperationException(
+                    $"{AspireComponentLiterals.Parameter} {parameterName} input '{inputName}' sum of minimum counts cannot exceed minLength.");
+            }
         }
     }
 
