@@ -109,7 +109,6 @@ public abstract class BaseProjectProcessor(
                 Path = dockerfileFile,
                 Name = !string.IsNullOrEmpty(containerDetails.ContainerRepository) ? containerDetails.ContainerRepository : project.Name,
                 Context = !string.IsNullOrEmpty(containerDetails.DockerfileContext) ? containerDetails.DockerfileContext : options.BuildContext,
-                Annotations = project.Annotations,
                 Bindings = project.Bindings,
                 Env = project.Env,
                 BuildArgs = options.BuildArgs

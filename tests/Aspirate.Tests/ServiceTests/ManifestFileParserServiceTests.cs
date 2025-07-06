@@ -156,6 +156,24 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_UnknownDockerfileProperty_Throws()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "dockerfile-unknown.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"dockerfile.v0\", \"path\": \"Dockerfile\", \"context\": \"./\", \"args\": []}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'args'*");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenCloudFormationStackMissingStackName()
     {
         // Arrange
