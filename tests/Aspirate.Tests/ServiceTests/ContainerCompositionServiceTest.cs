@@ -306,6 +306,87 @@ public class ContainerCompositionServiceTest
     [InlineData("docker")]
     [InlineData("podman")]
     [InlineData("nerdctl")]
+    public async Task BuildAndPushContainerForDockerfile_EnvSecretWithSource_Throws(string builder)
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("./Dockerfile", string.Empty);
+        var console = new TestConsole();
+        var projectPropertyService = Substitute.For<IProjectPropertyService>();
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+
+        var service = new ContainerCompositionService(fileSystem, console, projectPropertyService, shellExecutionService);
+
+        var resource = new ContainerV1Resource
+        {
+            Name = "testresource",
+            Build = new()
+            {
+                Context = "ctx",
+                Dockerfile = "./Dockerfile",
+                Secrets = new()
+                {
+                    ["MY_SECRET"] = new BuildSecret { Type = BuildSecretType.Env, Value = "val", Source = "./file.txt" }
+                }
+            }
+        };
+
+        shellExecutionService.IsCommandAvailable(Arg.Any<string>()).Returns(CommandAvailableResult.Available(builder));
+
+        var action = () => service.BuildAndPushContainerForDockerfile(resource, new()
+        {
+            ContainerBuilder = builder,
+            ImageName = "img",
+            Registry = "reg"
+        }, nonInteractive: true, basePath: null);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Theory]
+    [InlineData("docker")]
+    [InlineData("podman")]
+    [InlineData("nerdctl")]
+    public async Task BuildAndPushContainerForDockerfile_FileSecretWithValue_Throws(string builder)
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("./Dockerfile", string.Empty);
+        fileSystem.AddFile("./file.txt", string.Empty);
+        var console = new TestConsole();
+        var projectPropertyService = Substitute.For<IProjectPropertyService>();
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+
+        var service = new ContainerCompositionService(fileSystem, console, projectPropertyService, shellExecutionService);
+
+        var resource = new ContainerV1Resource
+        {
+            Name = "testresource",
+            Build = new()
+            {
+                Context = "ctx",
+                Dockerfile = "./Dockerfile",
+                Secrets = new()
+                {
+                    ["MY_SECRET"] = new BuildSecret { Type = BuildSecretType.File, Source = "./file.txt", Value = "val" }
+                }
+            }
+        };
+
+        shellExecutionService.IsCommandAvailable(Arg.Any<string>()).Returns(CommandAvailableResult.Available(builder));
+
+        var action = () => service.BuildAndPushContainerForDockerfile(resource, new()
+        {
+            ContainerBuilder = builder,
+            ImageName = "img",
+            Registry = "reg"
+        }, nonInteractive: true, basePath: null);
+
+        await action.Should().ThrowAsync<InvalidOperationException>();
+    }
+
+    [Theory]
+    [InlineData("docker")]
+    [InlineData("podman")]
+    [InlineData("nerdctl")]
     public async Task BuildAndPushContainerForDockerfile_InvalidFileSecret_Throws(string builder)
     {
         var fileSystem = new MockFileSystem();
