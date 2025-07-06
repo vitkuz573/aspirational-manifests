@@ -12,7 +12,7 @@ public enum BuildSecretType
     File,
 }
 
-public class BuildSecret
+public class BuildSecret : IJsonOnDeserialized
 {
     [JsonPropertyName("type")]
     [JsonConverter(typeof(JsonStringEnumConverter))]
@@ -23,4 +23,16 @@ public class BuildSecret
 
     [JsonPropertyName("source")]
     public string? Source { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? AdditionalProperties { get; set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (AdditionalProperties is not null && AdditionalProperties.Count > 0)
+        {
+            var unexpected = AdditionalProperties.Keys.First();
+            throw new InvalidOperationException($"Build secret unexpected property '{unexpected}'.");
+        }
+    }
 }

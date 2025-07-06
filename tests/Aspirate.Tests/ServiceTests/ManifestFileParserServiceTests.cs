@@ -188,6 +188,66 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenBuildHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "build-extra.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v1\", \"build\": {\"context\": \"./\", \"dockerfile\": \"Dockerfile\", \"extra\": true}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenBuildSecretHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "build-secret-extra.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v1\", \"build\": {\"context\": \"./\", \"dockerfile\": \"Dockerfile\", \"secrets\": {\"MY_SECRET\": {\"type\": \"env\", \"extra\": true}}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenVolumeHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "volume-extra.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v1\", \"image\": \"img\", \"volumes\": [{\"name\": \"data\", \"target\": \"/data\", \"readOnly\": false, \"extra\": 1}]}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenBindMountHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "bindmount-extra.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v1\", \"image\": \"img\", \"bindMounts\": [{\"source\": \"./src\", \"target\": \"/data\", \"readOnly\": true, \"extra\": 1}]}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenCloudFormationStackMissingStackName()
     {
         // Arrange
