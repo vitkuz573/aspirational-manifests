@@ -15,6 +15,136 @@ public class ManifestFileParserService(
     IAnsiConsole console,
     IServiceProvider serviceProvider) : IManifestFileParserService
 {
+    private static readonly Dictionary<string, HashSet<string>> _allowedProperties = new(StringComparer.OrdinalIgnoreCase)
+    {
+        [AspireComponentLiterals.Dockerfile] = new(
+        [
+            "type",
+            "path",
+            "context",
+            "env",
+            "bindings",
+            "buildArgs"
+        ]),
+        [AspireComponentLiterals.Container] = new(
+        [
+            "type",
+            "image",
+            "entrypoint",
+            "args",
+            "connectionString",
+            "env",
+            "bindings",
+            "bindMounts",
+            "volumes"
+        ]),
+        [AspireComponentLiterals.ContainerV1] = new(
+        [
+            "type",
+            "image",
+            "entrypoint",
+            "deployment",
+            "args",
+            "build",
+            "connectionString",
+            "env",
+            "bindings",
+            "bindMounts",
+            "volumes"
+        ]),
+        [AspireComponentLiterals.Project] = new(
+        [
+            "type",
+            "path",
+            "args",
+            "env",
+            "bindings"
+        ]),
+        [AspireComponentLiterals.ProjectV1] = new(
+        [
+            "type",
+            "path",
+            "deployment",
+            "args",
+            "env",
+            "bindings"
+        ]),
+        [AspireComponentLiterals.Executable] = new(
+        [
+            "type",
+            "command",
+            "workingDirectory",
+            "args",
+            "env",
+            "bindings"
+        ]),
+        [AspireComponentLiterals.Value] = new(
+        [
+            "type",
+            "connectionString"
+        ]),
+        [AspireComponentLiterals.Parameter] = new(
+        [
+            "type",
+            "value",
+            "connectionString",
+            "inputs"
+        ]),
+        [AspireComponentLiterals.DaprSystem] = new(
+        [
+            "type",
+            "dapr"
+        ]),
+        [AspireComponentLiterals.DaprComponent] = new(
+        [
+            "type",
+            "daprComponent"
+        ]),
+        [AspireComponentLiterals.AzureBicep] = new(
+        [
+            "type",
+            "path",
+            "connectionString",
+            "params"
+        ]),
+        [AspireComponentLiterals.AzureBicepV1] = new(
+        [
+            "type",
+            "path",
+            "connectionString",
+            "params",
+            "scope"
+        ]),
+        [AspireComponentLiterals.AwsCloudFormationStack] = new(
+        [
+            "type",
+            "stack-name",
+            "references"
+        ]),
+        [AspireComponentLiterals.AwsCloudFormationTemplate] = new(
+        [
+            "type",
+            "stack-name",
+            "template-path",
+            "references"
+        ])
+    };
+
+    private static void ValidateProperties(string resourceName, string type, JsonElement element)
+    {
+        if (!_allowedProperties.TryGetValue(type, out var allowed))
+        {
+            return;
+        }
+
+        foreach (var property in element.EnumerateObject())
+        {
+            if (!allowed.Contains(property.Name))
+            {
+                throw new InvalidOperationException($"{type} {resourceName} unexpected property '{property.Name}'.");
+            }
+        }
+    }
     /// <inheritdoc />
     public Dictionary<string, Resource> LoadAndParseAspireManifest(string manifestFile)
     {
@@ -52,6 +182,8 @@ public class ManifestFileParserService(
             {
                 throw new InvalidOperationException($"{AspireComponentLiterals.Container} {resourceName} does not support property 'build'.");
             }
+
+            ValidateProperties(resourceName, type, resourceElement);
 
             var rawBytes = Encoding.UTF8.GetBytes(resourceElement.GetRawText());
             var reader = new Utf8JsonReader(rawBytes);
