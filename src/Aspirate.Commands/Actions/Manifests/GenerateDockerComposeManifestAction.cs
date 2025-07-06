@@ -142,10 +142,10 @@ public sealed class GenerateDockerComposeManifestAction(IServiceProvider service
             new() { Published = 18888, Target = 18888 }
         };
 
-        var aspireDashboard = Builder.MakeService("aspire-dashboard")
+        var aspireDashboard = Builder.MakeService(AspireLiterals.DashboardName)
             .WithImage(AspireLiterals.DashboardImage)
             .WithEnvironment(environment)
-            .WithContainerName("aspire-dashboard")
+            .WithContainerName(AspireLiterals.DashboardName)
             .WithRestartPolicy(ERestartMode.UnlessStopped)
             .WithPortMappings(ports.ToArray())
             .Build();

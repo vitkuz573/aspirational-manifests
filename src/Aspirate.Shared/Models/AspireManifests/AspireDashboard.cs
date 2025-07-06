@@ -7,7 +7,7 @@ public static class AspireDashboard
         {
             ApiVersion = "apps/v1",
             Kind = "Deployment",
-            Metadata = new V1ObjectMeta { Name = "aspire-dashboard", Labels = labels, },
+            Metadata = new V1ObjectMeta { Name = AspireLiterals.DashboardName, Labels = labels, },
             Spec = new V1DeploymentSpec
             {
                 Replicas = 1,
@@ -24,7 +24,7 @@ public static class AspireDashboard
                         {
                             new()
                             {
-                                Name = "aspire-dashboard",
+                                Name = AspireLiterals.DashboardName,
                                 Image = AspireLiterals.DashboardImage,
                                 Resources =
                                     new V1ResourceRequirements
@@ -58,7 +58,7 @@ public static class AspireDashboard
         {
             ApiVersion = "v1",
             Kind = "Service",
-            Metadata = new V1ObjectMeta { Name = "aspire-dashboard" },
+            Metadata = new V1ObjectMeta { Name = AspireLiterals.DashboardName },
             Spec = new V1ServiceSpec
             {
                 Selector = labels,
