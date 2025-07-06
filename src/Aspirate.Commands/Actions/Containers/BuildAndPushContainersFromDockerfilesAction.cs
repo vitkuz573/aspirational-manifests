@@ -132,7 +132,7 @@ public sealed class BuildAndPushContainersFromDockerfilesAction(
                     Registry = CurrentState.ContainerRegistry,
                     Prefix = CurrentState.ContainerRepositoryPrefix,
                     Tags = CurrentState.ContainerImageTags
-                }, CurrentState.NonInteractive);
+                }, CurrentState.NonInteractive, CurrentState.ManifestDirectory);
         }
     }
 

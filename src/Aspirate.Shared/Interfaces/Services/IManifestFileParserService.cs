@@ -6,6 +6,11 @@ namespace Aspirate.Shared.Interfaces.Services;
 public interface IManifestFileParserService
 {
     /// <summary>
+    /// Gets the directory path of the loaded manifest file.
+    /// </summary>
+    string? ManifestDirectory { get; }
+
+    /// <summary>
     /// Loads and parses an Aspire manifest file.
     /// </summary>
     /// <param name="manifestFile">Path to the manifest file</param>

@@ -45,7 +45,7 @@ public class ContainerCompositionServiceTest
             ImageName = imageName,
             Registry = registry,
             Prefix = prefix,
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         // Assert
         shellExecutionService.Received(1).IsCommandAvailable(Arg.Any<string>());
@@ -96,7 +96,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = "testImageName",
             Registry = "testRegistry",
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         // Assert
         var testFile = fileSystem.Path.GetFullPath("./testDockerfile");
@@ -154,7 +154,7 @@ public class ContainerCompositionServiceTest
             ImageName = "testImageName",
             Registry = "testRegistry",
             Prefix = "testPrefix",
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         // Assert
         var testFile = fileSystem.Path.GetFullPath("./testDockerfile");
@@ -215,7 +215,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = "testimage",
             Registry = "testregistry",
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         // Assert
         var dockerfilePath = fileSystem.Path.GetFullPath("./Dockerfile");
@@ -256,7 +256,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = imageName,
             Registry = registry,
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         // Assert
         await action.Should().ThrowAsync<ActionCausesExitException>();
@@ -297,7 +297,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = "img",
             Registry = "reg"
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         await action.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -337,7 +337,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = "img",
             Registry = "reg"
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         await action.Should().ThrowAsync<InvalidOperationException>();
     }
@@ -377,7 +377,7 @@ public class ContainerCompositionServiceTest
             ContainerBuilder = builder,
             ImageName = "img",
             Registry = "reg"
-        }, nonInteractive: true);
+        }, nonInteractive: true, basePath: null);
 
         await action.Should().ThrowAsync<InvalidOperationException>();
     }

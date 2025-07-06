@@ -21,7 +21,7 @@ public class ProjectPropertyServiceTest
             .Returns(Task.FromResult(new ShellCommandResult(true, "test", string.Empty, 0)));
 
         // Act
-        var result = await service.GetProjectPropertiesAsync(projectPath, propertyNames);
+        var result = await service.GetProjectPropertiesAsync(projectPath, null, propertyNames);
 
         // Assert
         await shellExecutionService.Received(1).ExecuteCommand(Arg.Is<ShellCommandOptions>(options => options.Command != null && options.ArgumentsBuilder != null));

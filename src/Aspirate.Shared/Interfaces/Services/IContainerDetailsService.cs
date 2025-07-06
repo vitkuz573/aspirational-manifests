@@ -11,6 +11,7 @@ public interface IContainerDetailsService
     /// <param name="resourceName">The name of the resource.</param>
     /// <param name="projectResource">The project instance.</param>
     /// <param name="options">Container options.</param>
+    /// <param name="basePath">The base directory of the manifest.</param>
     /// <returns>A task that represents the asynchronous operation. The task result contains the <see cref="MsBuildContainerProperties"/> object.</returns>
-    Task<MsBuildContainerProperties> GetContainerDetails(string resourceName, ProjectResource projectResource, ContainerOptions options);
+    Task<MsBuildContainerProperties> GetContainerDetails(string resourceName, ProjectResource projectResource, ContainerOptions options, string? basePath = null);
 }

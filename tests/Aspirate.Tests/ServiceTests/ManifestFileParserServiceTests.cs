@@ -31,6 +31,20 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_SetsManifestDirectory()
+    {
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddFile("/manifests/manifest.json", new("{\"resources\": {}}"));
+        fileSystem.Directory.SetCurrentDirectory("/other");
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        service.LoadAndParseAspireManifest("/manifests/manifest.json");
+
+        service.ManifestDirectory.Should().Be("/manifests");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ThrowsException_WhenManifestFileDoesNotExist()
     {
         // Arrange

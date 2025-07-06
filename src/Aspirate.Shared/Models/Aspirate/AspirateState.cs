@@ -209,6 +209,9 @@ public class AspirateState :
     [JsonIgnore]
     public string? SecretPassword { get; set; }
 
+    [JsonIgnore]
+    public string? ManifestDirectory { get; set; }
+
     public void AppendToFinalResources(string key, Resource resource) =>
         FinalResources.Add(key, resource);
 

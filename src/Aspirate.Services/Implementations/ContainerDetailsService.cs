@@ -1,16 +1,17 @@
 namespace Aspirate.Services.Implementations;
 
-public class ContainerDetailsService(IProjectPropertyService propertyService, IAnsiConsole console) : IContainerDetailsService
+public class ContainerDetailsService(IProjectPropertyService propertyService, IAnsiConsole console, IFileSystem fileSystem) : IContainerDetailsService
 {
     private static readonly StringBuilder _imageBuilder = new();
 
     public async Task<MsBuildContainerProperties> GetContainerDetails(
         string resourceName,
         ProjectResource projectResource,
-        ContainerOptions options)
+        ContainerOptions options,
+        string? basePath = null)
     {
         var containerPropertiesJson = await propertyService.GetProjectPropertiesAsync(
-            projectResource.Path,
+            fileSystem.NormalizePath(projectResource.Path, basePath),
             ContainerBuilderLiterals.ContainerRegistry,
             ContainerBuilderLiterals.ContainerRepository,
             ContainerBuilderLiterals.ContainerImageName,

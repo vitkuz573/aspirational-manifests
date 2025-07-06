@@ -84,12 +84,12 @@ public class DockerfileProcessor(
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
             .Validate();
 
-    public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive)
+    public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? basePath = null)
     {
         var dockerfile = resource.Value as DockerfileResource;
         ValidateDockerfile(dockerfile, resource.Key);
 
-        await containerCompositionService.BuildAndPushContainerForDockerfile(dockerfile, options, nonInteractive);
+        await containerCompositionService.BuildAndPushContainerForDockerfile(dockerfile, options, nonInteractive, basePath);
 
         _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Building and Pushing container for Dockerfile [blue]{resource.Key}[/]");
     }
@@ -114,15 +114,15 @@ public class DockerfileProcessor(
             .WithRestartPolicy(ERestartMode.UnlessStopped)
             .WithPortMappings(options.Resource.MapBindingsToPorts().MapPortsToDockerComposePorts());
 
-        if (options.ComposeBuilds == true)
-        {
-            newService = newService.WithBuild(builder =>
+            if (options.ComposeBuilds == true)
             {
-                builder.WithContext(dockerfile.Context)
-                    .WithDockerfile(_fileSystem.GetFullPath(dockerfile.Path))
+                newService = newService.WithBuild(builder =>
+                {
+                builder.WithContext(_fileSystem.GetFullPath(dockerfile.Context, options.CurrentState?.ManifestDirectory))
+                    .WithDockerfile(_fileSystem.GetFullPath(dockerfile.Path, options.CurrentState?.ManifestDirectory))
                     .Build();
-            });
-        }
+                });
+            }
         else
         {
             if (!_containerImageCache.TryGetValue(options.Resource.Key, out var containerImage))

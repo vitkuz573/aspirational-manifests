@@ -13,6 +13,7 @@ public interface IContainerCompositionService
     /// <param name="options">Container options.</param>
     /// <param name="nonInteractive">Flag indicating whether the process should run in non-interactive mode.</param>
     /// <param name="runtimeIdentifier">The runtime identifier to use for project builds.</param>
+    /// <param name="basePath">The base directory of the manifest.</param>
     /// <returns>
     /// A task representing the asynchronous operation. The task result will be true if the container build and push was successful,
     /// or false if there was an error during the process.
@@ -21,7 +22,8 @@ public interface IContainerCompositionService
         MsBuildContainerProperties containerDetails,
         ContainerOptions options,
         bool nonInteractive = false,
-        string? runtimeIdentifier = null);
+        string? runtimeIdentifier = null,
+        string? basePath = null);
 
     /// <summary>
     /// Build and push a container for a Dockerfile.
@@ -39,7 +41,12 @@ public interface IContainerCompositionService
     /// It then pushes the created image to the specified registry.
     /// The nonInteractive parameter can be set to true to suppress any interactive prompts during the build process.
     /// </remarks>
-    Task<bool> BuildAndPushContainerForDockerfile(DockerfileResource dockerfileResource, ContainerOptions options, bool? nonInteractive);
+    /// <param name="basePath">The base directory of the manifest.</param>
+    Task<bool> BuildAndPushContainerForDockerfile(DockerfileResource dockerfileResource, ContainerOptions options, bool? nonInteractive, string? basePath = null);
 
-    Task<bool> BuildAndPushContainerForDockerfile(ContainerV1Resource containerV1Resource, ContainerOptions options, bool? nonInteractive);
+    /// <param name="containerV1Resource">The container resource to build.</param>
+    /// <param name="options">The build options.</param>
+    /// <param name="nonInteractive">Indicates if the build should be non-interactive.</param>
+    /// <param name="basePath">The base directory of the manifest.</param>
+    Task<bool> BuildAndPushContainerForDockerfile(ContainerV1Resource containerV1Resource, ContainerOptions options, bool? nonInteractive, string? basePath = null);
 }

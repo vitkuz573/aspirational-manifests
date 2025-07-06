@@ -15,6 +15,8 @@ public class ManifestFileParserService(
     IAnsiConsole console,
     IServiceProvider serviceProvider) : IManifestFileParserService
 {
+    public string? ManifestDirectory { get; private set; }
+
     private static readonly Dictionary<string, HashSet<string>> _allowedProperties = new(StringComparer.OrdinalIgnoreCase)
     {
         [AspireComponentLiterals.Dockerfile] = new(
@@ -154,6 +156,8 @@ public class ManifestFileParserService(
         {
             throw new InvalidOperationException($"The manifest file could not be loaded from: '{manifestFile}'");
         }
+
+        ManifestDirectory = fileSystem.Path.GetDirectoryName(fileSystem.GetFullPath(manifestFile));
 
         var inputJson = fileSystem.File.ReadAllText(manifestFile);
 

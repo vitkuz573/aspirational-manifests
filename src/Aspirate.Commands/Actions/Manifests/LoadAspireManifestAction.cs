@@ -10,6 +10,7 @@ public class LoadAspireManifestAction(
 
         var aspireManifest = manifestFileParserService.LoadAndParseAspireManifest(CurrentState.AspireManifest);
         CurrentState.LoadedAspireManifestResources = aspireManifest;
+        CurrentState.ManifestDirectory = manifestFileParserService.ManifestDirectory;
 
         SelectManifestItemsToProcess();
 

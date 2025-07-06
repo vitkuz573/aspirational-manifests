@@ -8,11 +8,13 @@ public interface IImageProcessor
     /// <param name="resource">The resource containing information about the docker file.</param>
     /// <param name="options">The container options.</param>
     /// <param name="nonInteractive">Flag indicating whether the process should run in non-interactive mode.</param>
+    /// <param name="basePath">The base directory of the manifest.</param>
     /// <returns>A task representing an asynchronous operation.</returns>
     Task BuildAndPushContainerForDockerfile(
         KeyValuePair<string, Resource> resource,
         ContainerOptions options,
-        bool nonInteractive);
+        bool nonInteractive,
+        string? basePath = null);
 
     /// <summary>
     /// Populates a container cache with names generated from options.
