@@ -218,6 +218,21 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenBuildFileSecretHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "build-file-secret-extra.json";
+        fileSystem.AddFile(manifestFile, new("{\"resources\": {\"svc\": {\"type\": \"container.v1\", \"build\": {\"context\": \"./\", \"dockerfile\": \"Dockerfile\", \"secrets\": {\"MY_SECRET\": {\"type\": \"file\", \"source\": \"./secret.txt\", \"extra\": true}}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenVolumeHasUnknownProperty()
     {
         var fileSystem = new MockFileSystem();
@@ -426,6 +441,22 @@ public class ManifestFileParserServiceTest
         var manifestFile = "parameter-default-extra.json";
         fileSystem.AddFile(manifestFile,
             new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\", \"inputs\": {\"value\": {\"type\": \"string\", \"default\": {\"value\": \"bar\", \"extra\": true}}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenParameterDefaultGenerateHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "parameter-default-generate-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\", \"inputs\": {\"value\": {\"type\": \"string\", \"default\": {\"generate\": {\"minLength\": 8}, \"extra\": true}}}}}}"));
         var serviceProvider = CreateServiceProvider(fileSystem);
         var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
 
