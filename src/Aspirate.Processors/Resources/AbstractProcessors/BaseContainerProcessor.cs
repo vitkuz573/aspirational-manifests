@@ -202,9 +202,9 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         _console.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Setting container details for Dockerfile [blue]{resource.Key}[/]");
     }
 
-    public override ComposeService CreateComposeEntry(CreateComposeEntryOptions options)
+    public override Aspirate.Shared.Models.Aspirate.ComposeService CreateComposeEntry(CreateComposeEntryOptions options)
     {
-        var response = new ComposeService();
+        var response = new Aspirate.Shared.Models.Aspirate.ComposeService();
 
         var container = options.Resource.Value as TContainerResource;
         ValidateContainerResource(container, options.Resource.Key);

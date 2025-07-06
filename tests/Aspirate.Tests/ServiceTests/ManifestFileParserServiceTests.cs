@@ -420,6 +420,38 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenDaprMetadataHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "dapr-metadata-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"dapr\": {\"type\": \"dapr.v0\", \"dapr\": {\"application\": \"app\", \"appId\": \"id\", \"components\": [], \"foo\": true}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'foo'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenDaprComponentHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "dapr-component-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"comp\": {\"type\": \"dapr.component.v0\", \"daprComponent\": {\"type\": \"state.redis\", \"foo\": \"bar\"}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'foo'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ReturnsResource_WhenResourceTypeIsSupported()
     {
         // Arrange
