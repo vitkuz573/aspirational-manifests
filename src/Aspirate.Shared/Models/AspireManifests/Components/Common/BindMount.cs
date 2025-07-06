@@ -16,6 +16,6 @@ public class BindMount
     public string? Target { get; set; }
 
     [JsonPropertyName("readOnly")]
-    public bool ReadOnly { get; set; }
+    public bool? ReadOnly { get; set; }
 }
 

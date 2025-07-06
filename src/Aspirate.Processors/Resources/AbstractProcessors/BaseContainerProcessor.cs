@@ -64,6 +64,11 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             {
                 throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} volume missing required property 'target'.");
             }
+
+            if (volume.ReadOnly is null)
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} volume missing required property 'readOnly'.");
+            }
         }
 
         foreach (var mount in container.BindMounts)
@@ -76,6 +81,11 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             if (string.IsNullOrWhiteSpace(mount.Target))
             {
                 throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'target'.");
+            }
+
+            if (mount.ReadOnly is null)
+            {
+                throw new InvalidOperationException($"{AspireComponentLiterals.Container} {name} bindMount missing required property 'readOnly'.");
             }
         }
     }

@@ -89,6 +89,50 @@ public class RequiredPropertyValidationTests
     }
 
     [Fact]
+    public void ContainerProcessor_MissingVolumeReadOnly_Throws()
+    {
+        var processor = new ContainerProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ContainerResource
+        {
+            Image = "img",
+            Volumes = new List<Volume> { new Volume { Name = "data", Target = "/data" } }
+        };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("cache", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'readOnly'");
+    }
+
+    [Fact]
+    public void ContainerProcessor_MissingBindMountReadOnly_Throws()
+    {
+        var processor = new ContainerProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<ISecretProvider>(), Substitute.For<IContainerCompositionService>(), Substitute.For<IContainerDetailsService>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ContainerResource
+        {
+            Image = "img",
+            BindMounts = new List<BindMount> { new BindMount { Source = "/host", Target = "/data" } }
+        };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("cache", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'readOnly'");
+    }
+
+    [Fact]
     public void ExecutableProcessor_MissingCommand_Throws()
     {
         var processor = new ExecutableProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
