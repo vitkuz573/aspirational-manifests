@@ -274,7 +274,7 @@ public sealed class ContainerCompositionService(
         }
     }
 
-    private static void ValidateSecrets(Dictionary<string, BuildSecret> secrets)
+    private void ValidateSecrets(Dictionary<string, BuildSecret> secrets)
     {
         foreach (var (key, secret) in secrets)
         {
@@ -292,6 +292,10 @@ public sealed class ContainerCompositionService(
                     if (string.IsNullOrWhiteSpace(secret.Source))
                     {
                         throw new InvalidOperationException($"Build secret '{key}' of type 'file' requires a source.");
+                    }
+                    if (!filesystem.File.Exists(secret.Source))
+                    {
+                        throw new InvalidOperationException($"Build secret '{key}' file '{secret.Source}' does not exist.");
                     }
                     break;
                 default:
