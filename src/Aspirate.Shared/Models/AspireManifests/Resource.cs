@@ -1,3 +1,5 @@
+using Aspirate.Shared.Literals;
+
 namespace Aspirate.Shared.Models.AspireManifests;
 
 /// <summary>
@@ -5,16 +7,16 @@ namespace Aspirate.Shared.Models.AspireManifests;
 /// </summary>
 [ExcludeFromCodeCoverage]
 [JsonPolymorphic]
-[JsonDerivedType(typeof(ProjectResource), typeDiscriminator: "aspire.project")]
-[JsonDerivedType(typeof(ProjectV1Resource), typeDiscriminator: "aspire.project.v1")]
-[JsonDerivedType(typeof(DockerfileResource), typeDiscriminator: "aspire.dockerfile")]
-[JsonDerivedType(typeof(ContainerResource), typeDiscriminator: "aspire.container")]
-[JsonDerivedType(typeof(ContainerV1Resource), typeDiscriminator: "aspire.container.v1")]
-[JsonDerivedType(typeof(DaprResource), typeDiscriminator: "aspire.dapr")]
-[JsonDerivedType(typeof(DaprComponentResource), typeDiscriminator: "aspire.daprcomponent")]
-[JsonDerivedType(typeof(ParameterResource), typeDiscriminator: "aspire.parameter")]
-[JsonDerivedType(typeof(ValueResource), typeDiscriminator: "aspire.value")]
-[JsonDerivedType(typeof(ExecutableResource), typeDiscriminator: "aspire.executable")]
+[JsonDerivedType(typeof(ProjectResource), typeDiscriminator: AspireComponentLiterals.Project)]
+[JsonDerivedType(typeof(ProjectV1Resource), typeDiscriminator: AspireComponentLiterals.ProjectV1)]
+[JsonDerivedType(typeof(DockerfileResource), typeDiscriminator: AspireComponentLiterals.Dockerfile)]
+[JsonDerivedType(typeof(ContainerResource), typeDiscriminator: AspireComponentLiterals.Container)]
+[JsonDerivedType(typeof(ContainerV1Resource), typeDiscriminator: AspireComponentLiterals.ContainerV1)]
+[JsonDerivedType(typeof(DaprResource), typeDiscriminator: AspireComponentLiterals.DaprSystem)]
+[JsonDerivedType(typeof(DaprComponentResource), typeDiscriminator: AspireComponentLiterals.DaprComponent)]
+[JsonDerivedType(typeof(ParameterResource), typeDiscriminator: AspireComponentLiterals.Parameter)]
+[JsonDerivedType(typeof(ValueResource), typeDiscriminator: AspireComponentLiterals.Value)]
+[JsonDerivedType(typeof(ExecutableResource), typeDiscriminator: AspireComponentLiterals.Executable)]
 [JsonDerivedType(typeof(BicepResource), typeDiscriminator: "azure.bicep.v0")]
 [JsonDerivedType(typeof(BicepV1Resource), typeDiscriminator: "azure.bicep.v1")]
 [JsonDerivedType(typeof(CloudFormationStackResource), typeDiscriminator: "aws.cloudformation.stack.v0")]
