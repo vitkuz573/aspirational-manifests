@@ -120,7 +120,7 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
-    public void LoadAndParseAspireManifest_PreservesUnknownAwsProperties()
+    public void LoadAndParseAspireManifest_Throws_WhenUnknownAwsProperty()
     {
         // Arrange
         var fileSystem = new MockFileSystem();
@@ -130,13 +130,11 @@ public class ManifestFileParserServiceTest
         var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
 
         // Act
-        var result = service.LoadAndParseAspireManifest(manifestFile);
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
 
         // Assert
-        result.Should().HaveCount(1);
-        var stack = result["stack"].As<CloudFormationStackResource>();
-        stack.StackName.Should().Be("demo");
-        stack.AdditionalProperties!["extra"].GetString().Should().Be("val");
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
     }
 
     [Fact]
@@ -349,6 +347,26 @@ public class ManifestFileParserServiceTest
         // Assert
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*does not support property 'build'.");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenContainerV0HasUnknownProperty()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-unknown.json";
+        fileSystem.AddFile(
+            manifestFile,
+            new("{\"resources\": {\"svc\": {\"type\": \"container.v0\", \"image\": \"img\", \"foo\": \"bar\"}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'foo'");
     }
 
     [Theory]
