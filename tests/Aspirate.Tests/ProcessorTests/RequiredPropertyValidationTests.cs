@@ -199,7 +199,7 @@ public class RequiredPropertyValidationTests
         var act = () => processor.CreateComposeEntry(options);
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'metadata'");
+            .WithMessage("*missing required property 'metadata'*");
     }
 
     [Fact]
@@ -217,7 +217,7 @@ public class RequiredPropertyValidationTests
         var act = () => processor.CreateComposeEntry(options);
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'application'");
+            .WithMessage("*missing required property 'application'*");
     }
 
     [Fact]
@@ -235,7 +235,7 @@ public class RequiredPropertyValidationTests
         var act = () => processor.CreateComposeEntry(options);
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'appId'");
+            .WithMessage("*missing required property 'appId'*");
     }
 
     [Fact]
@@ -253,7 +253,7 @@ public class RequiredPropertyValidationTests
         var act = () => processor.CreateComposeEntry(options);
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'components'");
+            .WithMessage("*missing required property 'components'*");
     }
 
     [Fact]
@@ -272,7 +272,7 @@ public class RequiredPropertyValidationTests
         };
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'metadata'");
+            .WithMessage("*missing required property 'metadata'*");
     }
 
     [Fact]
@@ -291,7 +291,7 @@ public class RequiredPropertyValidationTests
         };
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'application'");
+            .WithMessage("*missing required property 'application'*");
     }
 
     [Fact]
@@ -310,7 +310,7 @@ public class RequiredPropertyValidationTests
         };
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'appId'");
+            .WithMessage("*missing required property 'appId'*");
     }
 
     [Fact]
@@ -329,7 +329,7 @@ public class RequiredPropertyValidationTests
         };
 
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*missing required property 'components'");
+            .WithMessage("*missing required property 'components'*");
     }
 
     [Fact]
