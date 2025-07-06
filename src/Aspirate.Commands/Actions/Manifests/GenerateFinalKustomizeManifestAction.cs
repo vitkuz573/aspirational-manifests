@@ -47,13 +47,13 @@ public sealed class GenerateFinalKustomizeManifestAction(
         HandleDapr(CurrentState.OutputPath, manifests);
         HandleDashboard(CurrentState.IncludeDashboard, CurrentState.OutputPath, CurrentState.TemplatePath, templateDataBuilder, manifests);
 
-        Logger.MarkupLine("[bold]Generating final manifest with name [blue]'kustomization.yaml'[/][/]");
+        Logger.MarkupLine($"[bold]Generating final manifest with name [blue]'{TemplateLiterals.ComponentKustomizeType}.yaml'[/][/]");
 
         var templateData = templateDataBuilder.SetManifests(manifests);
 
         manifestWriter.CreateComponentKustomizeManifest(CurrentState.OutputPath, templateData, CurrentState.TemplatePath);
 
-        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{CurrentState.OutputPath}/kustomization.yaml[/]");
+        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{CurrentState.OutputPath}/{TemplateLiterals.ComponentKustomizeType}.yaml[/]");
 
         return Task.FromResult(true);
     }
@@ -78,7 +78,7 @@ public sealed class GenerateFinalKustomizeManifestAction(
         Logger.MarkupLine($"[bold]Generating namespace manifest with name [blue]'{@namespace}'[/][/]");
         manifestWriter.CreateNamespace(outputPath, templateDataBuilder, templatePath);
         manifests.Add($"{TemplateLiterals.NamespaceType}.yaml");
-        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{outputPath}/namespace.yaml[/]");
+        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{outputPath}/{TemplateLiterals.NamespaceType}.yaml[/]");
     }
 
     private void HandleDashboard(bool? withDashboard, string outputPath, string? templatePath, KubernetesDeploymentData templateDataBuilder, List<string> manifests)
@@ -93,7 +93,7 @@ public sealed class GenerateFinalKustomizeManifestAction(
         Logger.MarkupLine("[bold]Generating Aspire Dashboard manifest[/]");
         manifestWriter.CreateDashboard(outputPath, templateDataBuilder, templatePath);
         manifests.Add($"{TemplateLiterals.DashboardType}.yaml");
-        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{outputPath}/dashboard.yaml[/]");
+        Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done: [/] Generating [blue]{outputPath}/{TemplateLiterals.DashboardType}.yaml[/]");
     }
 
     private void HandleDapr(string outputPath, List<string> manifests)

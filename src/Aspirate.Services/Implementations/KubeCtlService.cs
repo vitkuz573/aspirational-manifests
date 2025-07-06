@@ -194,7 +194,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
 
     private async Task<string> ParseNamespace(string fullOutputPath)
     {
-        var namespaceFile = filesystem.GetFullPath(Path.Combine(fullOutputPath, "namespace.yaml"));
+        var namespaceFile = filesystem.GetFullPath(Path.Combine(fullOutputPath, $"{TemplateLiterals.NamespaceType}.yaml"));
 
         if (!filesystem.File.Exists(namespaceFile))
         {
