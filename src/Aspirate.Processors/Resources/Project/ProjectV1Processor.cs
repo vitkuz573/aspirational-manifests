@@ -23,6 +23,10 @@ public sealed class ProjectV1Processor(
     public override string ResourceType => AspireComponentLiterals.ProjectV1;
 
     /// <inheritdoc />
-    public override Resource? Deserialize(ref Utf8JsonReader reader) =>
-        JsonSerializer.Deserialize<ProjectV1Resource>(ref reader);
+    public override Resource? Deserialize(ref Utf8JsonReader reader)
+    {
+        var project = JsonSerializer.Deserialize<ProjectV1Resource>(ref reader);
+        ValidateProjectResource(project);
+        return project;
+    }
 }

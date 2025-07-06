@@ -21,8 +21,25 @@ public abstract class BaseProjectProcessor(
     private readonly Dictionary<string, MsBuildContainerProperties> _containerDetailsCache = [];
 
     /// <inheritdoc />
-    public override Resource? Deserialize(ref Utf8JsonReader reader) =>
-        JsonSerializer.Deserialize<ProjectResource>(ref reader);
+    public override Resource? Deserialize(ref Utf8JsonReader reader)
+    {
+        var project = JsonSerializer.Deserialize<ProjectResource>(ref reader);
+        ValidateProjectResource(project);
+        return project;
+    }
+
+    protected static void ValidateProjectResource(ProjectResource? project)
+    {
+        if (project is null)
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Project} not found.");
+        }
+
+        if (string.IsNullOrWhiteSpace(project.Path))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Project} {project.Name} missing required property 'path'.");
+        }
+    }
 
     public override Task<bool> CreateManifests(CreateManifestsOptions options)
     {

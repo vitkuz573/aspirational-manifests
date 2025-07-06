@@ -1,5 +1,6 @@
 using System;
 using Xunit;
+using Aspirate.Processors.Resources.Project;
 
 namespace Aspirate.Tests.ProcessorTests;
 
@@ -251,5 +252,30 @@ public class RequiredPropertyValidationTests
 
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'components'");
+    }
+
+    [Fact]
+    public void ProjectProcessor_DeserializeMissingPath_Throws()
+    {
+        var processor = new ProjectProcessor(
+            Substitute.For<IFileSystem>(),
+            Substitute.For<IAnsiConsole>(),
+            Substitute.For<ISecretProvider>(),
+            Substitute.For<IContainerCompositionService>(),
+            Substitute.For<IContainerDetailsService>(),
+            Substitute.For<IManifestWriter>());
+
+        var json = "{}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'path'");
     }
 }
