@@ -19,14 +19,15 @@ internal class BicepResourceConverter : JsonConverter<BicepResource>
         }
         if (!doc.RootElement.TryGetProperty("type", out var typeElement))
         {
-            return doc.RootElement.Deserialize<BicepResource>(newOptions);
+            throw new InvalidOperationException("Deployment missing required property 'type'.");
         }
 
         var type = typeElement.GetString();
         return type switch
         {
+            AspireComponentLiterals.AzureBicep => doc.RootElement.Deserialize<BicepResource>(newOptions),
             AspireComponentLiterals.AzureBicepV1 => doc.RootElement.Deserialize<BicepV1Resource>(newOptions),
-            _ => doc.RootElement.Deserialize<BicepResource>(newOptions)
+            _ => throw new InvalidOperationException($"Deployment type '{type}' must be '{AspireComponentLiterals.AzureBicep}' or '{AspireComponentLiterals.AzureBicepV1}'.")
         };
     }
 

@@ -539,6 +539,46 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void ProjectV1Deployment_InvalidType_Throws()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "project-v1-deployment-invalid-type.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(File.ReadAllText(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*Deployment type 'azure.bicep.bad' must be 'azure.bicep.v0' or 'azure.bicep.v1'.*");
+    }
+
+    [Fact]
+    public void ProjectV1Deployment_MissingType_Throws()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "project-v1-deployment-missing-type.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(File.ReadAllText(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*Deployment missing required property 'type'.*");
+    }
+
+    [Fact]
     public async Task ContainerV1Deployment_BicepV0_ParsesSuccessfully()
     {
         // Arrange
@@ -560,6 +600,46 @@ public class ManifestFileParserServiceTest
         container.Deployment!.Path.Should().Be("./redis.bicep");
         container.Deployment.Should().BeOfType<BicepResource>();
         container.Deployment.Should().NotBeOfType<BicepV1Resource>();
+    }
+
+    [Fact]
+    public void ContainerV1Deployment_InvalidType_Throws()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-v1-deployment-invalid-type.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(File.ReadAllText(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*Deployment type 'azure.bicep.bad' must be 'azure.bicep.v0' or 'azure.bicep.v1'.*");
+    }
+
+    [Fact]
+    public void ContainerV1Deployment_MissingType_Throws()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "container-v1-deployment-missing-type.json";
+        var testData = Path.Combine(AppContext.BaseDirectory, "TestData", manifestFile);
+        fileSystem.AddFile(manifestFile, new(File.ReadAllText(testData)));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*Deployment missing required property 'type'.*");
     }
 
     [Fact]

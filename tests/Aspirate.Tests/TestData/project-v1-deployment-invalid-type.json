@@ -1,0 +1,26 @@
+{
+  "resources": {
+    "app": {
+      "type": "project.v1",
+      "path": "../TestApp.csproj",
+      "bindings": {
+        "http": {
+          "scheme": "http",
+          "protocol": "tcp",
+          "transport": "http",
+          "targetPort": 5050
+        }
+      },
+      "env": {
+        "ASPNETCORE_ENVIRONMENT": "Development"
+      },
+      "deployment": {
+        "type": "azure.bicep.bad",
+        "path": "./redis.bicep",
+        "scope": {
+          "resourceGroup": "rg-name"
+        }
+      }
+    }
+  }
+}
