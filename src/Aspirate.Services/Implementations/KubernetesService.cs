@@ -284,7 +284,7 @@ public class KubernetesService(IAnsiConsole logger, IKubeCtlService kubeCtlServi
     {
         var labels = new Dictionary<string, string>
         {
-            ["app"] = "aspire-dashboard",
+            ["app"] = AspireLiterals.DashboardName,
         };
 
         var deployment = AspireDashboard.GetDeployment(labels);

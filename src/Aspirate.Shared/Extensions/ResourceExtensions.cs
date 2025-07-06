@@ -37,7 +37,7 @@ public static class ResourceExtensions
 
         if (withDashboard == true)
         {
-            environment.TryAdd("OTEL_EXPORTER_OTLP_ENDPOINT", "http://aspire-dashboard:18889");
+            environment.TryAdd("OTEL_EXPORTER_OTLP_ENDPOINT", $"http://{AspireLiterals.DashboardName}:18889");
             environment.TryAdd("OTEL_SERVICE_NAME", resource.Key);
         }
 
