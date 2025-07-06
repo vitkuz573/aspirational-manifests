@@ -1,4 +1,5 @@
 using Aspirate.Shared.Models.AspireManifests.Components;
+using Aspirate.Shared.Models.AspireManifests.Components.Aws;
 namespace Aspirate.Shared.Models.Aspirate;
 
 public class AspirateState :
@@ -219,10 +220,10 @@ public class AspirateState :
     {
         if (OutputFormat.Equals("compose", StringComparison.OrdinalIgnoreCase))
         {
-            return (resource is ParameterResource or ValueResource);
+            return resource is ParameterResource or ValueResource;
         }
 
-        return (resource is DaprResource or ParameterResource or ValueResource);
+        return resource is DaprResource or ParameterResource or ValueResource or CloudFormationStackResource or CloudFormationTemplateResource;
     }
 
     [JsonIgnore]

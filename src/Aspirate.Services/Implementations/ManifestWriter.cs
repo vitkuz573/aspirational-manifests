@@ -14,6 +14,8 @@ public class ManifestWriter(IFileSystem fileSystem) : IManifestWriter
         [TemplateLiterals.ComponentKustomizeType] = $"{TemplateLiterals.ComponentKustomizeType}.hbs",
         [TemplateLiterals.NamespaceType] = $"{TemplateLiterals.NamespaceType}.hbs",
         [TemplateLiterals.DashboardType] = $"{TemplateLiterals.DashboardType}.hbs",
+        [TemplateLiterals.CloudFormationStackType] = $"{TemplateLiterals.CloudFormationStackType}.hbs",
+        [TemplateLiterals.CloudFormationTemplateType] = $"{TemplateLiterals.CloudFormationTemplateType}.hbs",
     };
 
     /// <summary>

@@ -44,7 +44,23 @@ public class CloudFormationStackProcessor(IFileSystem fileSystem, IAnsiConsole c
     }
 
     /// <inheritdoc />
-    public override Task<bool> CreateManifests(CreateManifestsOptions options) =>
-        // Do nothing, these resources are preserved only.
-        Task.FromResult(true);
+    public override Task<bool> CreateManifests(CreateManifestsOptions options)
+    {
+        var resourceOutputPath = Path.Combine(options.OutputPath, options.Resource.Key);
+
+        _manifestWriter.EnsureOutputDirectoryExistsAndIsClean(resourceOutputPath);
+
+        var stack = options.Resource.Value as CloudFormationStackResource;
+
+        _manifestWriter.CreateCustomManifest(
+            resourceOutputPath,
+            $"{TemplateLiterals.CloudFormationStackType}.yaml",
+            TemplateLiterals.CloudFormationStackType,
+            stack!,
+            options.TemplatePath);
+
+        LogCompletion(resourceOutputPath);
+
+        return Task.FromResult(true);
+    }
 }

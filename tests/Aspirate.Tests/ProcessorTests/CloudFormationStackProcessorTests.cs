@@ -1,4 +1,8 @@
 using System.Text.Json;
+using System.IO;
+using Aspirate.Shared.Literals;
+using Aspirate.Shared.Inputs;
+using Aspirate.Shared.Models.AspireManifests.Components.Aws;
 using Aspirate.Processors.Resources.Aws;
 using Xunit;
 
@@ -22,5 +26,28 @@ public class CloudFormationStackProcessorTests
         resource.StackName.Should().Be("demo");
         resource.References.Should().BeNull();
         resource.AdditionalProperties.Should().BeNull();
+    }
+
+    [Fact]
+    public async Task CreateManifests_WritesStackFile()
+    {
+        var fs = new MockFileSystem();
+        var writer = Substitute.For<IManifestWriter>();
+        var processor = new CloudFormationStackProcessor(fs, Substitute.For<IAnsiConsole>(), writer);
+
+        var resource = new CloudFormationStackResource { StackName = "demo" };
+        var options = new CreateManifestsOptions
+        {
+            Resource = new("stack", resource),
+            OutputPath = "out",
+            ImagePullPolicy = "IfNotPresent"
+        };
+
+        await processor.CreateManifests(options);
+
+        var path = Path.Combine("out", "stack");
+
+        writer.Received().EnsureOutputDirectoryExistsAndIsClean(path);
+        writer.Received().CreateCustomManifest(path, $"{TemplateLiterals.CloudFormationStackType}.yaml", TemplateLiterals.CloudFormationStackType, resource, null);
     }
 }
