@@ -1,3 +1,5 @@
+using Aspirate.Shared.Literals;
+
 namespace Aspirate.Services.Implementations;
 
 public class KubernetesService(IAnsiConsole logger, IKubeCtlService kubeCtlService, IServiceProvider serviceProvider)
@@ -448,5 +450,5 @@ public class KubernetesService(IAnsiConsole logger, IKubeCtlService kubeCtlServi
 
     private Func<V1ServicePort, bool> ExposableAsNodePort =>
         servicePort =>
-            servicePort.Name.Equals("http", StringComparison.OrdinalIgnoreCase) || servicePort.Port is 80 or 8080 or 18888;
+            servicePort.Name.Equals(BindingLiterals.Http, StringComparison.OrdinalIgnoreCase) || servicePort.Port is 80 or 8080 or 18888;
 }
