@@ -340,6 +340,26 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenParameterInputHasUnknownProperty()
+    {
+        // Arrange
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "parameter-input-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\", \"inputs\": {\"value\": {\"type\": \"string\", \"extra\": true}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        // Act
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        // Assert
+        act.Should().Throw<JsonException>()
+            .WithInnerException<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_ReturnsResource_WhenResourceTypeIsSupported()
     {
         // Arrange

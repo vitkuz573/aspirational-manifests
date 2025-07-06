@@ -25,4 +25,16 @@ public class ParameterInputSerializationTests
         act.Should().Throw<JsonException>()
             .WithInnerException<InvalidOperationException>();
     }
+
+    [Fact]
+    public void Deserializing_With_Unknown_Property_Throws()
+    {
+        var json = "{\"type\":\"string\",\"extra\":true}";
+
+        var act = () => JsonSerializer.Deserialize<ParameterInput>(json);
+
+        act.Should().Throw<JsonException>()
+            .WithInnerException<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
 }

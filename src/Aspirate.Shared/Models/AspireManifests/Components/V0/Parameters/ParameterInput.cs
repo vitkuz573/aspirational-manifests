@@ -1,7 +1,7 @@
 ﻿namespace Aspirate.Shared.Models.AspireManifests.Components.V0.Parameters;
 
 [ExcludeFromCodeCoverage]
-public class ParameterInput
+public class ParameterInput : IJsonOnDeserialized
 {
     private string? _type;
 
@@ -18,6 +18,9 @@ public class ParameterInput
     [JsonPropertyName("secret")]
     public bool Secret { get; set; }
 
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? AdditionalProperties { get; set; }
+
     private static string? ValidateType(string? value)
     {
         if (value is null)
@@ -31,5 +34,14 @@ public class ParameterInput
         }
 
         return value;
+    }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (AdditionalProperties is not null && AdditionalProperties.Count > 0)
+        {
+            var unexpected = AdditionalProperties.Keys.First();
+            throw new InvalidOperationException($"Parameter input unexpected property '{unexpected}'.");
+        }
     }
 }
