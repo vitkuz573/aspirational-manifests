@@ -43,6 +43,7 @@ global using Aspirate.Processors.Resources.Dockerfile;
 global using Aspirate.Processors.Resources.AbstractProcessors;
 global using Aspirate.Processors.Resources.Executable;
 global using Aspirate.Processors.Resources.Dapr;
+global using Aspirate.Processors.Resources.Azure;
 global using ContainerResource = Aspirate.Shared.Models.AspireManifests.Components.V0.Container.ContainerResource;
 global using ContainerV1Resource = Aspirate.Shared.Models.AspireManifests.Components.V1.Container.ContainerV1Resource;
 global using ProjectV1Resource = Aspirate.Shared.Models.AspireManifests.Components.V1.Project.ProjectV1Resource;
