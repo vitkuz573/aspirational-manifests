@@ -1,0 +1,14 @@
+{
+  "resources": {
+    "cache": {
+      "type": "container.v1",
+      "image": "redis:7.2.4",
+      "deployment": {
+        "path": "./redis.bicep",
+        "scope": {
+          "resourceGroup": "rg-name"
+        }
+      }
+    }
+  }
+}
