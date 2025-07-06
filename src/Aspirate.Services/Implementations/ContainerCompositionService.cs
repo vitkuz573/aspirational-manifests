@@ -278,21 +278,24 @@ public sealed class ContainerCompositionService(
     {
         foreach (var (key, secret) in secrets)
         {
-            if (string.Equals(secret.Type, "env", StringComparison.OrdinalIgnoreCase))
+            switch (secret.Type)
             {
-                if (string.IsNullOrWhiteSpace(secret.Value))
-                {
-                    throw new InvalidOperationException($"Build secret '{key}' of type 'env' requires a value.");
-                }
+                case BuildSecretType.Env:
+                    if (string.IsNullOrWhiteSpace(secret.Value))
+                    {
+                        throw new InvalidOperationException($"Build secret '{key}' of type 'env' requires a value.");
+                    }
 
-                Environment.SetEnvironmentVariable(key, secret.Value);
-            }
-            else if (string.Equals(secret.Type, "file", StringComparison.OrdinalIgnoreCase))
-            {
-                if (string.IsNullOrWhiteSpace(secret.Source))
-                {
-                    throw new InvalidOperationException($"Build secret '{key}' of type 'file' requires a source.");
-                }
+                    Environment.SetEnvironmentVariable(key, secret.Value);
+                    break;
+                case BuildSecretType.File:
+                    if (string.IsNullOrWhiteSpace(secret.Source))
+                    {
+                        throw new InvalidOperationException($"Build secret '{key}' of type 'file' requires a source.");
+                    }
+                    break;
+                default:
+                    throw new InvalidOperationException($"Build secret '{key}' has unsupported type '{secret.Type}'.");
             }
         }
     }
@@ -301,13 +304,14 @@ public sealed class ContainerCompositionService(
     {
         foreach (var (key, secret) in secrets)
         {
-            if (string.Equals(secret.Type, "file", StringComparison.OrdinalIgnoreCase) && secret.Source is not null)
+            switch (secret.Type)
             {
-                argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},src=\"{secret.Source}\"", quoteValue: false, allowDuplicates: true);
-            }
-            else if (string.Equals(secret.Type, "env", StringComparison.OrdinalIgnoreCase))
-            {
-                argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},env={key}", quoteValue: false, allowDuplicates: true);
+                case BuildSecretType.File when secret.Source is not null:
+                    argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},src=\"{secret.Source}\"", quoteValue: false, allowDuplicates: true);
+                    break;
+                case BuildSecretType.Env:
+                    argumentsBuilder.AppendArgument(DockerLiterals.SecretArgument, $"id={key},env={key}", quoteValue: false, allowDuplicates: true);
+                    break;
             }
         }
     }
