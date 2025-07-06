@@ -46,7 +46,7 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
-    public void LoadAndParseAspireManifest_ReturnsEmptyDictionary_WhenManifestFileIsEmpty()
+    public void LoadAndParseAspireManifest_ThrowsException_WhenResourcesObjectMissing()
     {
         // Arrange
         var fileSystem = new MockFileSystem();
@@ -56,10 +56,11 @@ public class ManifestFileParserServiceTest
         var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
 
         // Act
-        var result = service.LoadAndParseAspireManifest(manifestFile);
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
 
         // Assert
-        result.Should().BeEmpty();
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("The manifest file does not contain a 'resources' object.");
     }
 
     [Fact]

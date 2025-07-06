@@ -31,7 +31,7 @@ public class ManifestFileParserService(
 
         if (!jsonObject.TryGetProperty("resources", out var resourcesElement) || resourcesElement.ValueKind != JsonValueKind.Object)
         {
-            return resources;
+            throw new InvalidOperationException("The manifest file does not contain a 'resources' object.");
         }
 
         foreach (var resourceProperty in resourcesElement.EnumerateObject())
