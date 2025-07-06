@@ -297,6 +297,10 @@ public sealed class ContainerCompositionService(
             switch (secret.Type)
             {
                 case BuildSecretType.Env:
+                    if (!string.IsNullOrWhiteSpace(secret.Source))
+                    {
+                        throw new InvalidOperationException($"Build secret '{key}' of type 'env' does not support 'source'.");
+                    }
                     if (string.IsNullOrWhiteSpace(secret.Value))
                     {
                         throw new InvalidOperationException($"Build secret '{key}' of type 'env' requires a value.");
@@ -305,6 +309,10 @@ public sealed class ContainerCompositionService(
                     Environment.SetEnvironmentVariable(key, secret.Value);
                     break;
                 case BuildSecretType.File:
+                    if (!string.IsNullOrWhiteSpace(secret.Value))
+                    {
+                        throw new InvalidOperationException($"Build secret '{key}' of type 'file' does not support 'value'.");
+                    }
                     if (string.IsNullOrWhiteSpace(secret.Source))
                     {
                         throw new InvalidOperationException($"Build secret '{key}' of type 'file' requires a source.");
