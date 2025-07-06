@@ -420,6 +420,38 @@ public class ManifestFileParserServiceTest
     }
 
     [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenParameterDefaultHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "parameter-default-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\", \"inputs\": {\"value\": {\"type\": \"string\", \"default\": {\"value\": \"bar\", \"extra\": true}}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenGenerateHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "generate-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"param\": {\"type\": \"parameter.v0\", \"value\": \"foo\", \"inputs\": {\"value\": {\"type\": \"string\", \"default\": {\"generate\": {\"minLength\": 8, \"extra\": true}}}}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
+    }
+
+    [Fact]
     public void LoadAndParseAspireManifest_Throws_WhenDaprMetadataHasUnknownProperty()
     {
         var fileSystem = new MockFileSystem();
@@ -752,6 +784,22 @@ public class ManifestFileParserServiceTest
         // Assert
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*Deployment missing required property 'type'.*");
+    }
+
+    [Fact]
+    public void LoadAndParseAspireManifest_Throws_WhenBicepScopeHasUnknownProperty()
+    {
+        var fileSystem = new MockFileSystem();
+        var manifestFile = "bicep-scope-extra.json";
+        fileSystem.AddFile(manifestFile,
+            new("{\"resources\": {\"bicep\": {\"type\": \"azure.bicep.v1\", \"path\": \"./b.bicep\", \"scope\": {\"resourceGroup\": \"rg\", \"extra\": true}}}}"));
+        var serviceProvider = CreateServiceProvider(fileSystem);
+        var service = serviceProvider.GetRequiredService<IManifestFileParserService>();
+
+        Action act = () => service.LoadAndParseAspireManifest(manifestFile);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*unexpected property 'extra'");
     }
 
     [Fact]
