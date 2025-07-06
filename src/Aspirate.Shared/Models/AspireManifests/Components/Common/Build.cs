@@ -2,7 +2,7 @@ using System.Text.Json.Serialization;
 
 namespace Aspirate.Shared.Models.AspireManifests.Components.Common;
 
-public class Build
+public class Build : IJsonOnDeserialized
 {
     [JsonPropertyName("context")]
     public required string Context { get; set; }
@@ -15,4 +15,16 @@ public class Build
 
     [JsonPropertyName("secrets")]
     public Dictionary<string, BuildSecret>? Secrets { get; set; }
+
+    [JsonExtensionData]
+    public Dictionary<string, JsonElement>? AdditionalProperties { get; set; }
+
+    void IJsonOnDeserialized.OnDeserialized()
+    {
+        if (AdditionalProperties is not null && AdditionalProperties.Count > 0)
+        {
+            var unexpected = AdditionalProperties.Keys.First();
+            throw new InvalidOperationException($"Build unexpected property '{unexpected}'.");
+        }
+    }
 }
