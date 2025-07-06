@@ -176,4 +176,80 @@ public class RequiredPropertyValidationTests
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'components'");
     }
+
+    [Fact]
+    public void DaprProcessor_DeserializeMissingMetadata_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var json = "{}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'metadata'");
+    }
+
+    [Fact]
+    public void DaprProcessor_DeserializeMissingApplication_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var json = "{\"dapr\":{\"appId\":\"id\",\"components\":[\"comp\"]}}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'application'");
+    }
+
+    [Fact]
+    public void DaprProcessor_DeserializeMissingAppId_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var json = "{\"dapr\":{\"application\":\"app\",\"components\":[\"comp\"]}}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'appId'");
+    }
+
+    [Fact]
+    public void DaprProcessor_DeserializeMissingComponents_Throws()
+    {
+        var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var json = "{\"dapr\":{\"application\":\"app\",\"appId\":\"id\"}}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'components'");
+    }
 }

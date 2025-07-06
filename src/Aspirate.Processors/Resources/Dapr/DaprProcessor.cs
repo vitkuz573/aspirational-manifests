@@ -8,8 +8,12 @@ public class DaprProcessor(
 {
     public override string ResourceType => AspireComponentLiterals.DaprSystem;
 
-    public override Resource? Deserialize(ref Utf8JsonReader reader) =>
-        JsonSerializer.Deserialize<DaprResource>(ref reader);
+    public override Resource? Deserialize(ref Utf8JsonReader reader)
+    {
+        var resource = JsonSerializer.Deserialize<DaprResource>(ref reader);
+        ValidateDaprResource(resource, string.Empty);
+        return resource;
+    }
 
     public override Task<bool> CreateManifests(CreateManifestsOptions options) =>
         // Do nothing for dapr, they are there for annotations on services.
