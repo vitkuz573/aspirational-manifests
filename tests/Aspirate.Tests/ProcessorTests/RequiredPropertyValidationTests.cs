@@ -340,4 +340,48 @@ public class RequiredPropertyValidationTests
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'path'");
     }
+
+    [Fact]
+    public void BicepProcessor_DeserializeMissingPath_Throws()
+    {
+        var processor = new BicepProcessor(
+            Substitute.For<IFileSystem>(),
+            Substitute.For<IAnsiConsole>(),
+            Substitute.For<IManifestWriter>());
+
+        var json = "{}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'path'");
+    }
+
+    [Fact]
+    public void BicepV1Processor_DeserializeMissingPath_Throws()
+    {
+        var processor = new BicepV1Processor(
+            Substitute.For<IFileSystem>(),
+            Substitute.For<IAnsiConsole>(),
+            Substitute.For<IManifestWriter>());
+
+        var json = "{}";
+
+        var act = () =>
+        {
+            var bytes = System.Text.Encoding.UTF8.GetBytes(json);
+            var r = new Utf8JsonReader(bytes);
+            r.Read();
+            processor.Deserialize(ref r);
+        };
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'path'");
+    }
 }
