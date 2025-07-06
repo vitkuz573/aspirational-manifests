@@ -1,4 +1,6 @@
 using System;
+using System.Text.Json.Nodes;
+using Aspirate.Processors.Transformation.Bindings;
 using Xunit;
 using Aspirate.Processors.Resources.Project;
 
@@ -130,6 +132,20 @@ public class RequiredPropertyValidationTests
 
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'readOnly'");
+    }
+
+    [Fact]
+    public void ContainerProcessor_DeserializeMissingTransport_Throws()
+    {
+        var bindingProcessor = new BindingProcessor();
+
+        var json = "{\"pg\":{\"image\":\"img\",\"bindings\":{\"tcp\":{\"scheme\":\"tcp\",\"protocol\":\"tcp\"}}}}";
+        var node = JsonNode.Parse(json);
+
+        var act = () => bindingProcessor.ParseBinding(["pg", "bindings", "tcp", "port"], node);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Transport is required for a binding.");
     }
 
     [Fact]
