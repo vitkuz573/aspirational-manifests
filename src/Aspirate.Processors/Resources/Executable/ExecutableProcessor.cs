@@ -22,6 +22,11 @@ public class ExecutableProcessor(
         {
             throw new InvalidOperationException($"{AspireComponentLiterals.Executable} {name} missing required property 'command'.");
         }
+
+        if (string.IsNullOrWhiteSpace(exec.WorkingDirectory))
+        {
+            throw new InvalidOperationException($"{AspireComponentLiterals.Executable} {name} missing required property 'workingDirectory'.");
+        }
     }
 
     public override Task<bool> CreateManifests(CreateManifestsOptions options) =>

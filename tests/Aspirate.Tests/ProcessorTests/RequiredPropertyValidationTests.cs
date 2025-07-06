@@ -151,6 +151,24 @@ public class RequiredPropertyValidationTests
     }
 
     [Fact]
+    public void ExecutableProcessor_MissingWorkingDirectory_Throws()
+    {
+        var processor = new ExecutableProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
+
+        var resource = new ExecutableResource { Command = "cmd" };
+
+        var options = new CreateComposeEntryOptions
+        {
+            Resource = new("exec", resource),
+        };
+
+        var act = () => processor.CreateComposeEntry(options);
+
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("*missing required property 'workingDirectory'");
+    }
+
+    [Fact]
     public void DaprProcessor_MissingMetadata_Throws()
     {
         var processor = new DaprProcessor(Substitute.For<IFileSystem>(), Substitute.For<IAnsiConsole>(), Substitute.For<IManifestWriter>());
