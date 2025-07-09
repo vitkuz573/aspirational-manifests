@@ -166,7 +166,7 @@ public class ManifestFileParserServiceTest
 
         // Assert
         act.Should().Throw<InvalidOperationException>()
-            .WithMessage("*unexpected property 'annotations'*");
+            .WithMessage("*unexpected property 'annotations'");
     }
 
     [Fact]

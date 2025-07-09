@@ -96,6 +96,7 @@ public abstract class BaseProjectProcessor(
             .SetManifests(_manifests)
             .SetDeployment((project as ProjectV1Resource)?.Deployment)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
+            .ApplyAnnotations(options)
             .ApplyIngress(options)
             .Validate();
     }

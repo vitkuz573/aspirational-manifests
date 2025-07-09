@@ -59,7 +59,9 @@ AWS CloudFormation templates can be referenced in your manifest using `aws.cloud
 
 ## Manifest extensions
 
-`aspirate` accepts additional fields beyond the official .NET Aspire schema. For example, container and project resources can include an `annotations` object which is used to apply Kubernetes annotations to generated manifests. These extra fields are treated as extensions and are preserved when reading and writing manifest files.
+`aspirate` accepts additional fields beyond the official .NET Aspire schema. These extra fields are treated as extensions and are preserved when reading and writing manifest files.
+
+When running interactively, `aspirate` will prompt for annotations for any selected resources. The supplied values are persisted in the state file so they can be reused on subsequent runs. Annotations are configured separately and are **not** read from `manifest.json`.
 
 ##Specify components when running with `--non-interactive`
 When ran non-interactively, you can specify which components to build with `-c` or `--components`. Example: `-c webApi -c frontend -c sql -c redis`.

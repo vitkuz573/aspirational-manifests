@@ -409,6 +409,20 @@ public static class KubernetesDeploymentDataExtensions
         }
     }
 
+    public static KubernetesDeploymentData ApplyAnnotations(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    {
+        var state = options.CurrentState;
+        if (state?.ResourceAnnotations != null && state.ResourceAnnotations.TryGetValue(options.Resource.Key, out var annotations))
+        {
+            foreach (var annotation in annotations)
+            {
+                data.Annotations[annotation.Key] = annotation.Value;
+            }
+        }
+
+        return data;
+    }
+
     public static KubernetesDeploymentData ApplyIngress(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
     {
         var state = options.CurrentState;
