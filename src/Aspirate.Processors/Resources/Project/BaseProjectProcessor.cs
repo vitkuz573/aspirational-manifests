@@ -56,8 +56,19 @@ public abstract class BaseProjectProcessor(
 
         var data = PopulateKubernetesDeploymentData(options, containerDetails, project);
 
+        var manifests = _manifests.ToList();
+        if (data.IngressEnabled == true)
+        {
+            manifests.Add($"{TemplateLiterals.IngressType}.yaml");
+            data.SetManifests(manifests);
+        }
+
         _manifestWriter.CreateDeployment(resourceOutputPath, data, options.TemplatePath);
         _manifestWriter.CreateService(resourceOutputPath, data, options.TemplatePath);
+        if (data.IngressEnabled == true)
+        {
+            _manifestWriter.CreateIngress(resourceOutputPath, data);
+        }
         _manifestWriter.CreateComponentKustomizeManifest(resourceOutputPath, data, options.TemplatePath);
 
         LogCompletion(resourceOutputPath);

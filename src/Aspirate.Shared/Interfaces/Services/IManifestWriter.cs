@@ -53,6 +53,13 @@ public interface IManifestWriter
     void CreateService<TTemplateData>(string outputPath, TTemplateData data, string? templatePath);
 
     /// <summary>
+    /// Creates an ingress manifest for the specified deployment data.
+    /// </summary>
+    /// <param name="outputPath">The path where the ingress manifest will be created.</param>
+    /// <param name="data">The deployment data containing ingress settings.</param>
+    void CreateIngress<TTemplateData>(string outputPath, TTemplateData data);
+
+    /// <summary>
     /// Creates a Kustomize manifest for a component.
     /// </summary>
     /// <param name="outputPath">The directory where the manifest file will be created.</param>
