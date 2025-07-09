@@ -10,6 +10,11 @@ public class ConfigureIngressAction(
     {
         Logger.WriteRuler("[purple]Configuring Ingress[/]");
 
+        if (PreviousStateWasRestored())
+        {
+            return true;
+        }
+
         if (CurrentState.WithIngress == null)
         {
             if (CurrentState.NonInteractive)
