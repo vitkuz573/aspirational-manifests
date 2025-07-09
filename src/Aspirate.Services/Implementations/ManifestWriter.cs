@@ -76,6 +76,20 @@ public class ManifestWriter(IFileSystem fileSystem) : IManifestWriter
     }
 
     /// <inheritdoc />
+    public void CreateIngress<TTemplateData>(string outputPath, TTemplateData data)
+    {
+        if (data is not KubernetesDeploymentData deploymentData)
+        {
+            throw new InvalidOperationException("Ingress generation requires KubernetesDeploymentData");
+        }
+
+        var ingress = deploymentData.ToKubernetesIngress();
+        var yaml = KubernetesYaml.Serialize(ingress);
+
+        fileSystem.File.WriteAllText(Path.Combine(outputPath, $"{TemplateLiterals.IngressType}.yaml"), yaml);
+    }
+
+    /// <inheritdoc />
     public void CreateComponentKustomizeManifest<TTemplateData>(
         string outputPath,
         TTemplateData data,

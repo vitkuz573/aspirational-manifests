@@ -112,6 +112,12 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         var image = GetImageFromContainerResource(options.Resource);
         var data = PopulateKubernetesDeploymentData(options, image, container, manifests);
 
+        if (data.IngressEnabled == true)
+        {
+            manifests.Add($"{TemplateLiterals.IngressType}.yaml");
+            data.SetManifests(manifests);
+        }
+
         if (container.Volumes.Count > 0)
         {
             _manifestWriter.CreateStatefulSet(resourceOutputPath, data, options.TemplatePath);
@@ -122,6 +128,10 @@ public abstract class BaseContainerProcessor<TContainerResource>(
         }
 
         _manifestWriter.CreateService(resourceOutputPath, data, options.TemplatePath);
+        if (data.IngressEnabled == true)
+        {
+            _manifestWriter.CreateIngress(resourceOutputPath, data);
+        }
         _manifestWriter.CreateComponentKustomizeManifest(resourceOutputPath, data, options.TemplatePath);
 
         LogCompletion(resourceOutputPath);
