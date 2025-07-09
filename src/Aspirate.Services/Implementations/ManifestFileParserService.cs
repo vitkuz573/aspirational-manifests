@@ -38,8 +38,7 @@ public class ManifestFileParserService(
             TransformationLiterals.Env,
             "bindings",
             "bindMounts",
-            "volumes",
-            "annotations"
+            "volumes"
         ]),
         [AspireComponentLiterals.ContainerV1] = new(
         [
@@ -53,8 +52,7 @@ public class ManifestFileParserService(
             TransformationLiterals.Env,
             "bindings",
             "bindMounts",
-            "volumes",
-            "annotations"
+            "volumes"
         ]),
         [AspireComponentLiterals.Project] = new(
         [
@@ -62,8 +60,7 @@ public class ManifestFileParserService(
             "path",
             "args",
             TransformationLiterals.Env,
-            "bindings",
-            "annotations"
+            "bindings"
         ]),
         [AspireComponentLiterals.ProjectV1] = new(
         [
@@ -72,8 +69,7 @@ public class ManifestFileParserService(
             "deployment",
             "args",
             TransformationLiterals.Env,
-            "bindings",
-            "annotations"
+            "bindings"
         ]),
         [AspireComponentLiterals.Executable] = new(
         [
