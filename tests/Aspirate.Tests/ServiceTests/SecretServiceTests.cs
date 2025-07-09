@@ -277,7 +277,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
             NonInteractive = true,
             DisableSecrets = false,
             SecretPassword = string.Empty,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             StatePath = statePath,
             Force = true
         });
@@ -310,7 +310,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
             NonInteractive = true,
             DisableSecrets = false,
             SecretPassword = string.Empty,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             StatePath = statePath
         });
 
@@ -513,7 +513,7 @@ public class SecretServiceTests : BaseServiceTests<ISecretService>
             NonInteractive = true,
             DisableSecrets = false,
             SecretPassword = string.Empty,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             StatePath = statePath,
             Force = true
         });

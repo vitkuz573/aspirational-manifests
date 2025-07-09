@@ -22,7 +22,7 @@ public class ContainerResourceBase : Resource,
     [JsonPropertyName("annotations")]
     public Dictionary<string, string>? Annotations { get; set; } = [];
 
-    [JsonPropertyName(Aspirate.Processors.Transformation.Literals.Env)]
+    [JsonPropertyName(TransformationLiterals.Env)]
     public Dictionary<string, string>? Env { get; set; } = [];
 
     [JsonPropertyName("volumes")]

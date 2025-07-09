@@ -170,15 +170,19 @@ public class DockerComposeBuilderTests
         var compose = Builder.MakeCompose()
             .WithServices(Builder.MakeService("a-service")
                 .WithImage("dotnetaspire/servicea")
-                .WithBuild(x => x
-                    .WithContext(".")
-                    .WithDockerfile("a.dockerfile")
-                    .WithSecrets(s =>
+                .WithBuild(x =>
+                {
+                    if (x is ComposeBuildBuilder cb)
                     {
-                        s["MY_SECRET"] = new ComposeBuildSecret { File = "./secret.txt" };
-                        s["ENV_SECRET"] = new ComposeBuildSecret { Environment = "ENV_SECRET" };
-                    })
-                )
+                        cb.WithContext(".");
+                        cb.WithDockerfile("a.dockerfile");
+                        cb.WithSecrets(s =>
+                        {
+                            s["MY_SECRET"] = new ComposeBuildSecret { File = "./secret.txt" };
+                            s["ENV_SECRET"] = new ComposeBuildSecret { Environment = "ENV_SECRET" };
+                        });
+                    }
+                })
                 .Build()
             )
             .Build();

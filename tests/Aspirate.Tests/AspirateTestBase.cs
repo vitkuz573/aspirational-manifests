@@ -36,7 +36,7 @@ public abstract class AspirateTestBase
             InputPath = inputPath,
             KubeContext = kubeContext,
             SecretPassword = password,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             OutputFormat = outputFormat,
         };
 
