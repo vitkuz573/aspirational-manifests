@@ -29,14 +29,15 @@ public class ConfigureIngressAction(
         CurrentState.IngressDefinitions ??= new();
 
         var candidates = CurrentState.AllSelectedSupportedComponents
-            .Where(r => r.Value is IResourceWithBinding res && res.Bindings != null &&
-                        res.Bindings.Any(b => b.Key.Equals(BindingLiterals.Http, StringComparison.OrdinalIgnoreCase) && b.Value.External))
+            .Where(r => r.Value is IResourceWithBinding res &&
+                        res.Bindings != null &&
+                        res.Bindings.Values.Any(b => b.External))
             .Select(r => r.Key)
             .ToList();
 
         if (candidates.Count == 0)
         {
-            Logger.MarkupLine("[yellow](!)[/] No HTTP services detected.");
+            Logger.MarkupLine("[yellow](!)[/] No services with external bindings detected.");
             return true;
         }
 
