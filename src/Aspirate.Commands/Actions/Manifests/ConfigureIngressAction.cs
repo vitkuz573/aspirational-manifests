@@ -29,8 +29,9 @@ public class ConfigureIngressAction(
         CurrentState.IngressDefinitions ??= new();
 
         var candidates = CurrentState.AllSelectedSupportedComponents
-            .Where(r => r.Value is IResourceWithBinding res && res.Bindings != null &&
-                        res.Bindings.Any(b => b.Key.Equals(BindingLiterals.Http, StringComparison.OrdinalIgnoreCase) && b.Value.External))
+            .Where(r => r.Value is IResourceWithBinding res &&
+                        res.Bindings != null &&
+                        res.Bindings.ContainsKey(BindingLiterals.Http))
             .Select(r => r.Key)
             .ToList();
 
