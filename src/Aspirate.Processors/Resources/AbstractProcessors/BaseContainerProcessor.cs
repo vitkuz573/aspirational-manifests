@@ -188,6 +188,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             .SetManifests(manifests)
             .SetDeployment((container as ContainerV1Resource)?.Deployment)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
+            .ApplyAnnotations(options)
             .ApplyIngress(options)
             .Validate();
 

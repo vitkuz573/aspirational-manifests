@@ -136,6 +136,10 @@ public class AspirateState :
     public Dictionary<string, IngressDefinition> IngressDefinitions { get; set; } = new();
 
     [RestorableStateProperty]
+    [JsonPropertyName("resourceAnnotations")]
+    public Dictionary<string, Dictionary<string, string>> ResourceAnnotations { get; set; } = new();
+
+    [RestorableStateProperty]
     [JsonPropertyName("useCustomNamespace")]
     public bool? UseCustomNamespace { get; set; }
 
