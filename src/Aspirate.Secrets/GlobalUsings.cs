@@ -8,6 +8,7 @@ global using System.Text.Json.Serialization;
 global using Aspirate.Secrets.Protectors;
 global using Aspirate.Shared.Attributes;
 global using Aspirate.Shared.Enums;
+global using Aspirate.Shared.Literals;
 global using Aspirate.Shared.Interfaces.Secrets;
 global using Aspirate.Shared.Interfaces.Services;
 global using Aspirate.Shared.Models.Aspirate;

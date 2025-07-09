@@ -5,10 +5,10 @@ namespace Aspirate.Shared.Models.AspireManifests.Components.Common;
 
 public enum BuildSecretType
 {
-    [EnumMember(Value = Aspirate.Shared.Literals.AspirateSecretLiterals.EnvironmentSecretsManager)]
+    [EnumMember(Value = AspirateSecretLiterals.EnvironmentSecretsManager)]
     Env,
 
-    [EnumMember(Value = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager)]
+    [EnumMember(Value = AspirateSecretLiterals.FileSecretsManager)]
     File,
 }
 

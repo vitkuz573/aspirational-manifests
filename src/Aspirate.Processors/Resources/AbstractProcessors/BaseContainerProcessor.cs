@@ -225,6 +225,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
             {
                 service.WithBuild(builder =>
                 {
+                    var composeBuilder = builder as ComposeBuildBuilder;
                     builder
                         .WithContext(_fileSystem.GetFullPath(containerV1.Build.Context, options.CurrentState?.ManifestDirectory))
                         .WithDockerfile(_fileSystem.GetFullPath(containerV1.Build.Dockerfile, options.CurrentState?.ManifestDirectory));
@@ -249,7 +250,7 @@ public abstract class BaseContainerProcessor<TContainerResource>(
 
                     if (containerV1.Build.Secrets is { Count: > 0 })
                     {
-                        builder.WithSecrets(dict =>
+                    composeBuilder?.WithSecrets(dict =>
                         {
                             foreach (var (key, secret) in containerV1.Build.Secrets)
                             {

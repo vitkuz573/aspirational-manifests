@@ -23,7 +23,7 @@ public class SecretProviderFactoryTests
     public void GetProvider_File_ReturnsFileProvider()
     {
         var factory = CreateServices().GetRequiredService<SecretProviderFactory>();
-        var provider = factory.GetProvider(Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager);
+        var provider = factory.GetProvider(AspirateSecretLiterals.FileSecretsManager);
         Assert.IsType<SecretProvider>(provider);
     }
 
@@ -39,7 +39,7 @@ public class SecretProviderFactoryTests
     public void GetProvider_Base64_ReturnsBase64Provider()
     {
         var factory = CreateServices().GetRequiredService<SecretProviderFactory>();
-        var provider = factory.GetProvider(Aspirate.Shared.Literals.AspirateSecretLiterals.Base64SecretsManager);
+        var provider = factory.GetProvider(AspirateSecretLiterals.Base64SecretsManager);
         Assert.IsType<Base64SecretProvider>(provider);
     }
 

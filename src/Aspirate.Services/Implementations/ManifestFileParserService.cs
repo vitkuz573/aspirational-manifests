@@ -24,7 +24,7 @@ public class ManifestFileParserService(
             "type",
             "path",
             "context",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings",
             "buildArgs"
         ]),
@@ -35,7 +35,7 @@ public class ManifestFileParserService(
             "entrypoint",
             "args",
             "connectionString",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings",
             "bindMounts",
             "volumes"
@@ -49,7 +49,7 @@ public class ManifestFileParserService(
             "args",
             "build",
             "connectionString",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings",
             "bindMounts",
             "volumes"
@@ -59,7 +59,7 @@ public class ManifestFileParserService(
             "type",
             "path",
             "args",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings"
         ]),
         [AspireComponentLiterals.ProjectV1] = new(
@@ -68,7 +68,7 @@ public class ManifestFileParserService(
             "path",
             "deployment",
             "args",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings"
         ]),
         [AspireComponentLiterals.Executable] = new(
@@ -77,7 +77,7 @@ public class ManifestFileParserService(
             "command",
             "workingDirectory",
             "args",
-            Aspirate.Processors.Transformation.Literals.Env,
+            TransformationLiterals.Env,
             "bindings"
         ]),
         [AspireComponentLiterals.Value] = new(

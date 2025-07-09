@@ -4,9 +4,9 @@ namespace Aspirate.Shared.Models.Compose;
 
 public class ComposeBuildSecret
 {
-    [YamlMember(Alias = Aspirate.Shared.Literals.AspirateSecretLiterals.EnvironmentSecretsManagerLong)]
+    [YamlMember(Alias = AspirateSecretLiterals.EnvironmentSecretsManagerLong)]
     public string? Environment { get; set; }
 
-    [YamlMember(Alias = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager)]
+    [YamlMember(Alias = AspirateSecretLiterals.FileSecretsManager)]
     public string? File { get; set; }
 }

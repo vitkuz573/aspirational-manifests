@@ -12,7 +12,7 @@ public class ExecutableResource : Resource,
     [JsonPropertyName("workingDirectory")]
     public string? WorkingDirectory { get; set; }
 
-    [JsonPropertyName(Aspirate.Processors.Transformation.Literals.Env)]
+    [JsonPropertyName(TransformationLiterals.Env)]
     public Dictionary<string, string>? Env { get; set; } = [];
 
     [JsonPropertyName("bindings")]

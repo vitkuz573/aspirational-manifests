@@ -41,7 +41,7 @@ public class ListSecretsCommandHandlerTests : AspirateTestBase
             NonInteractive = true,
             DisableSecrets = false,
             SecretPassword = state.SecretPassword,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             CommandUnlocksSecrets = true,
         });
 
@@ -76,7 +76,7 @@ public class ListSecretsCommandHandlerTests : AspirateTestBase
             NonInteractive = true,
             DisableSecrets = false,
             SecretPassword = state.SecretPassword,
-            SecretProvider = Aspirate.Shared.Literals.AspirateSecretLiterals.FileSecretsManager,
+            SecretProvider = AspirateSecretLiterals.FileSecretsManager,
             CommandUnlocksSecrets = true,
         });
 
