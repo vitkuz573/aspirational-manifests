@@ -274,8 +274,8 @@ public static class KubernetesDeploymentDataExtensions
                 Selector = labels,
                 Ports = data.Ports.Select(x => new V1ServicePort
                 {
-                    Port = x.InternalPort,
-                    TargetPort = x.ExternalPort,
+                    Port = x.ExternalPort,
+                    TargetPort = x.InternalPort,
                     Name = x.Name
                 }).ToList(),
                 Type = data.ServiceType,
