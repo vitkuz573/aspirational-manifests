@@ -303,32 +303,29 @@ public static class KubernetesDeploymentDataExtensions
             Spec = new V1IngressSpec
             {
                 IngressClassName = "nginx",
-                Rules =
-                [
-                    new V1IngressRule
+                Rules = data.IngressHosts.Select(h => new V1IngressRule
+                {
+                    Host = h,
+                    Http = new V1HTTPIngressRuleValue
                     {
-                        Host = data.IngressHost,
-                        Http = new V1HTTPIngressRuleValue
-                        {
-                            Paths =
-                            [
-                                new V1HTTPIngressPath
+                        Paths =
+                        [
+                            new V1HTTPIngressPath
+                            {
+                                Path = data.IngressPath ?? "/",
+                                PathType = "Prefix",
+                                Backend = new V1IngressBackend
                                 {
-                                    Path = data.IngressPath ?? "/",
-                                    PathType = "Prefix",
-                                    Backend = new V1IngressBackend
+                                    Service = new V1IngressServiceBackend
                                     {
-                                        Service = new V1IngressServiceBackend
-                                        {
-                                            Name = data.Name,
-                                            Port = new V1ServiceBackendPort { Number = servicePort }
-                                        }
+                                        Name = data.Name,
+                                        Port = new V1ServiceBackendPort { Number = servicePort }
                                     }
                                 }
-                            ]
-                        }
+                            }
+                        ]
                     }
-                ]
+                }).ToList()
             }
         };
 
@@ -339,7 +336,7 @@ public static class KubernetesDeploymentDataExtensions
                 new V1IngressTLS
                 {
                     SecretName = data.IngressTlsSecret,
-                    Hosts = [ data.IngressHost ]
+                    Hosts = data.IngressHosts.ToList(),
                 }
             ];
         }
@@ -434,7 +431,7 @@ public static class KubernetesDeploymentDataExtensions
         {
             data
                 .SetIngressEnabled(true)
-                .SetIngressHost(def.Host)
+                .SetIngressHosts(def.Hosts)
                 .SetIngressTlsSecret(def.TlsSecret)
                 .SetIngressPath(def.Path)
                 .SetIngressPortNumber(def.PortNumber);

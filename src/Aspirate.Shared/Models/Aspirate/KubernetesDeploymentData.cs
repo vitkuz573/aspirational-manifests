@@ -25,7 +25,7 @@ public class KubernetesDeploymentData
     public string? ImagePullPolicy {get; private set;}
     public string? ServiceType { get; private set; } = "ClusterIP";
     public bool? IngressEnabled { get; private set; } = false;
-    public string? IngressHost { get; private set; }
+    public IReadOnlyCollection<string> IngressHosts { get; private set; } = [];
     public string? IngressTlsSecret { get; private set; }
     public string? IngressPath { get; private set; }
     public int? IngressPortNumber { get; private set; }
@@ -144,9 +144,9 @@ public class KubernetesDeploymentData
         return this;
     }
 
-    public KubernetesDeploymentData SetIngressHost(string? host)
+    public KubernetesDeploymentData SetIngressHosts(IReadOnlyCollection<string> hosts)
     {
-        IngressHost = host;
+        IngressHosts = hosts;
         return this;
     }
 
