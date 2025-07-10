@@ -53,7 +53,6 @@ public sealed class GenerateCommandHandler(IServiceProvider serviceProvider) : B
     private Task<int> GenerateKustomizeManifests() =>
         BaseKubernetesActionSequence()
             .QueueAction(nameof(CustomNamespaceAction))
-            .QueueAction(nameof(ConfigureIngressAction))
             .QueueAction(nameof(GenerateKustomizeManifestsAction))
             .QueueAction(nameof(GenerateFinalKustomizeManifestAction))
             .ExecuteCommandsAsync();
