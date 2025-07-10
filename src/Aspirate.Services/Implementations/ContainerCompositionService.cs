@@ -389,6 +389,11 @@ public sealed class ContainerCompositionService(
 
     private void ValidateBuilderOutput(ShellCommandResult builderCheckResult)
     {
+        if (builderCheckResult == null)
+        {
+            throw new InvalidOperationException("Builder check result was null.");
+        }
+
         if (builderCheckResult.Success)
         {
             return;

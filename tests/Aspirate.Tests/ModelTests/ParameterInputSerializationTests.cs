@@ -12,7 +12,8 @@ public class ParameterInputSerializationTests
         var input = new ParameterInput();
         var act = () => input.Type = value;
 
-        act.Should().Throw<InvalidOperationException>();
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Parameter input type must be 'string'.");
     }
 
     [Fact]
@@ -22,8 +23,8 @@ public class ParameterInputSerializationTests
 
         var act = () => JsonSerializer.Deserialize<ParameterInput>(json);
 
-        act.Should().Throw<JsonException>()
-            .WithInnerException<InvalidOperationException>();
+        act.Should().Throw<InvalidOperationException>()
+            .WithMessage("Parameter input type must be 'string'.");
     }
 
     [Fact]
@@ -33,8 +34,7 @@ public class ParameterInputSerializationTests
 
         var act = () => JsonSerializer.Deserialize<ParameterInput>(json);
 
-        act.Should().Throw<JsonException>()
-            .WithInnerException<InvalidOperationException>()
-            .WithMessage("*unexpected property 'extra'");
+        act.Should().Throw<InvalidOperationException>()
+           .WithMessage("Parameter input unexpected property 'extra'.");
     }
 }
