@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Xunit;
 
 namespace Aspirate.Tests.ExtensionTests;
@@ -14,12 +15,14 @@ public class KubernetesIngressTests
             .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetIngressTlsSecret("tls")
-            .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080 } });
+            .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080 } })
+            .SetIngressAnnotations(new Dictionary<string, string> { { "test", "value" } });
 
         var ingress = data.ToKubernetesIngress();
 
         ingress.Spec.Rules.First().Host.Should().Be("example.com");
         ingress.Spec.Tls.First().SecretName.Should().Be("tls");
+        ingress.Metadata.Annotations.Should().ContainKey("test").WhoseValue.Should().Be("value");
     }
 
     [Fact]

@@ -11,6 +11,7 @@ public class KubernetesDeploymentData
     public Dictionary<string, string?> Env { get; private set; } = [];
     public Dictionary<string, string?> Secrets { get; private set; } = [];
     public Dictionary<string, string> Annotations { get; private set; } = [];
+    public Dictionary<string, string> IngressAnnotations { get; private set; } = [];
     public IReadOnlyCollection<Volume> Volumes { get; private set; } = [];
     public IReadOnlyCollection<BindMount> BindMounts { get; private set; } = [];
     public IReadOnlyCollection<Ports> Ports { get; private set; } = [];
@@ -63,6 +64,12 @@ public class KubernetesDeploymentData
     public KubernetesDeploymentData SetAnnotations(Dictionary<string, string>? annotations)
     {
         Annotations = annotations ?? [];
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressAnnotations(Dictionary<string, string>? annotations)
+    {
+        IngressAnnotations = annotations ?? [];
         return this;
     }
 
@@ -224,6 +231,7 @@ public class KubernetesDeploymentData
     public bool HasBindMounts => BindMounts.Count > 0;
     public bool HasAnySecrets => Secrets.Count > 0 && SecretsDisabled != true;
     public bool HasAnyAnnotations => Annotations.Count > 0;
+    public bool HasIngressAnnotations => IngressAnnotations.Count > 0;
     public bool HasArgs => Args.Count > 0;
     public bool HasAnyEnv => Env.Count > 0;
     public bool WithNamespace => !string.IsNullOrWhiteSpace(Namespace);

@@ -24,4 +24,9 @@ public sealed class IngressDefinition
     /// Optional service port number to use for the ingress backend.
     /// </summary>
     public int? PortNumber { get; set; }
+
+    /// <summary>
+    /// Optional annotations to apply to the ingress resource.
+    /// </summary>
+    public Dictionary<string, string>? Annotations { get; set; }
 }

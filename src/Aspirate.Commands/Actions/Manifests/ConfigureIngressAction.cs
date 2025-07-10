@@ -30,7 +30,6 @@ public class ConfigureIngressAction(
 
 
         CurrentState.IngressDefinitions ??= new();
-        CurrentState.ResourceAnnotations ??= new();
 
         if (!CurrentState.NonInteractive)
         {
@@ -107,17 +106,13 @@ public class ConfigureIngressAction(
                     annotations[key] = value;
                 }
 
-                if (annotations.Count > 0)
-                {
-                    CurrentState.ResourceAnnotations[service] = annotations;
-                }
-
                 CurrentState.IngressDefinitions[service] = new IngressDefinition
                 {
                     Hosts = hosts,
                     Path = "/",
                     TlsSecret = string.IsNullOrWhiteSpace(tls) ? null : tls,
-                    PortNumber = port
+                    PortNumber = port,
+                    Annotations = annotations.Count > 0 ? annotations : null
                 };
             }
 
