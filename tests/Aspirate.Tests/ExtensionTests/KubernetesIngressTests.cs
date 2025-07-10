@@ -37,4 +37,20 @@ public class KubernetesIngressTests
 
         objects.OfType<V1Ingress>().Should().ContainSingle();
     }
+
+    [Fact]
+    public void ToKubernetesIngress_UsesBindingPort_WhenDifferentFromTargetPort()
+    {
+        var data = new KubernetesDeploymentData()
+            .SetName("web")
+            .SetContainerImage("test")
+            .SetIngressEnabled(true)
+            .SetIngressHost("example.com")
+            .SetIngressPath("/")
+            .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080, ExternalPort = 80 } });
+
+        var ingress = data.ToKubernetesIngress();
+
+        ingress.Spec.Rules.First().Http.Paths.First().Backend.Service.Port.Number.Should().Be(80);
+    }
 }
