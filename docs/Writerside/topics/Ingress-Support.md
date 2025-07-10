@@ -23,3 +23,15 @@ aspirate run --with-ingress
 | --with-ingress | `ASPIRATE_WITH_INGRESS` | Enable ingress configuration non-interactively |
 
 When specifying ingress information you may also set the **port number** that should be used by the ingress backend. If omitted, Aspir8 will use the first internal port defined for the service.
+
+## Service port translation
+
+Bindings defined on resources include `port` and `targetPort` values. During
+generation these translate directly to a Kubernetes Service's `port` and
+`targetPort` respectively. When `port` is omitted the value of
+`targetPort` is used for both fields.
+
+The Ingress backend forwards traffic to one of the Service ports. By default the
+first internal port (the first binding's `targetPort`) is selected. Using the
+optional ingress port number introduced in Issue 2 you can explicitly set which
+Service port the Ingress rule should use.
