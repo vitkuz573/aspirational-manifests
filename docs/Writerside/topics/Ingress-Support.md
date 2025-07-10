@@ -8,21 +8,15 @@ an optional service port, and optional TLS secret. Selected values are stored in
 When enabled, Aspir8 will also offer to deploy the NGINX ingress controller if it is not found
 in the target cluster.
 
-```
-aspirate generate --with-ingress
-```
-
-```
-aspirate run --with-ingress
+```bash
+aspirate generate
 ```
 
-The `--with-ingress` option is primarily used when running non-interactively so that ingress configuration is applied without prompts.
+```bash
+aspirate run
+```
 
-## Cli Options (Optional)
-
-| Option | Environmental Variable | Description |
-|-------|-----------------------|-------------|
-| --with-ingress | `ASPIRATE_WITH_INGRESS` | Enable ingress configuration non-interactively |
+Ingress configuration runs automatically when services with external bindings are detected during interactive execution.
 
 When specifying ingress information you may also set the **port number** that should be used by the ingress backend. If omitted, Aspir8 will use the first internal port defined for the service.
 

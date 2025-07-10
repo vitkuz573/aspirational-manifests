@@ -21,23 +21,6 @@ public class ConfigureIngressAction(
             .Select(r => r.Key)
             .ToList();
 
-        if (!CurrentState.NonInteractive && CurrentState.WithIngress == false)
-        {
-            return true;
-        }
-
-        if (CurrentState.NonInteractive)
-        {
-            if (CurrentState.WithIngress != true)
-            {
-                Logger.ValidationFailed("The with ingress option is required in non-interactive mode.");
-                ActionCausesExitException.ExitNow();
-            }
-        }
-        else
-        {
-            CurrentState.WithIngress = true;
-        }
 
         if (candidates.Count == 0)
         {
@@ -150,7 +133,7 @@ public class ConfigureIngressAction(
 
     public override void ValidateNonInteractiveState()
     {
-        if (CurrentState.WithIngress == true && (CurrentState.IngressDefinitions == null || CurrentState.IngressDefinitions.Count == 0))
+        if (CurrentState.NonInteractive && (CurrentState.IngressDefinitions == null || CurrentState.IngressDefinitions.Count == 0))
         {
             Logger.ValidationFailed("Ingress definitions are required when running non-interactively.");
         }

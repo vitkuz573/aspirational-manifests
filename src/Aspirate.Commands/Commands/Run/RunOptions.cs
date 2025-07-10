@@ -5,7 +5,6 @@ public sealed class RunOptions : BaseCommandOptions,
     IAspireOptions,
     IPrivateRegistryCredentialsOptions,
     IDashboardOptions,
-    IIngressOptions,
     IRunOptions
 {
     public string? ProjectPath { get; set; }
@@ -27,5 +26,4 @@ public sealed class RunOptions : BaseCommandOptions,
     public string? PrivateRegistryEmail { get; set; }
     public bool? WithPrivateRegistry { get; set; }
     public bool? IncludeDashboard { get; set; }
-    public bool? WithIngress { get; set; }
 }

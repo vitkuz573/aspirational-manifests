@@ -26,7 +26,6 @@ public sealed class RunCommand : BaseCommand<RunOptions, RunCommandHandler>
        AddOption(PrivateRegistryPasswordOption.Instance);
        AddOption(PrivateRegistryEmailOption.Instance);
        AddOption(IncludeDashboardOption.Instance);
-       AddOption(WithIngressOption.Instance);
        AddOption(AllowClearNamespaceOption.Instance);
     }
 }

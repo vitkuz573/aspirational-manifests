@@ -127,9 +127,6 @@ public class AspirateState :
     [JsonPropertyName("includeDashboard")]
     public bool? IncludeDashboard { get; set; }
 
-    [RestorableStateProperty]
-    [JsonPropertyName("withIngress")]
-    public bool? WithIngress { get; set; }
 
     [RestorableStateProperty]
     [JsonPropertyName("ingressDefinitions")]
