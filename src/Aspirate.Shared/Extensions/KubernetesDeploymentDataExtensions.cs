@@ -284,10 +284,19 @@ public static class KubernetesDeploymentDataExtensions
         };
     }
 
-    public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
+public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
+{
+    var labels = data.ToKubernetesLabels();
+    var metadata = data.ToKubernetesObjectMetaData(labels);
+
+    if (data.IngressAnnotations.Count > 0)
     {
-        var labels = data.ToKubernetesLabels();
-        var metadata = data.ToKubernetesObjectMetaData(labels);
+        metadata.Annotations ??= new Dictionary<string, string>();
+        foreach (var annotation in data.IngressAnnotations)
+        {
+            metadata.Annotations[annotation.Key] = annotation.Value;
+        }
+    }
 
         var firstPort = data.Ports.FirstOrDefault();
         var servicePort = data.IngressPortNumber
@@ -434,7 +443,8 @@ public static class KubernetesDeploymentDataExtensions
                 .SetIngressHosts(def.Hosts)
                 .SetIngressTlsSecret(def.TlsSecret)
                 .SetIngressPath(def.Path)
-                .SetIngressPortNumber(def.PortNumber);
+                .SetIngressPortNumber(def.PortNumber)
+                .SetIngressAnnotations(def.Annotations);
         }
 
         return data;

@@ -61,7 +61,7 @@ AWS CloudFormation templates can be referenced in your manifest using `aws.cloud
 
 `aspirate` accepts additional fields beyond the official .NET Aspire schema. These extra fields are treated as extensions and are preserved when reading and writing manifest files.
 
-When running interactively, `aspirate` prompts for annotations for each selected external service alongside the host names and TLS secret questions. The supplied values are persisted in the state file so they can be reused on subsequent runs. Annotations are configured separately and are **not** read from `manifest.json`.
+When running interactively, `aspirate` prompts for ingress annotations for each selected external service alongside the host names and TLS secret questions. The supplied values are persisted in the state file so they can be reused on subsequent runs. These annotations apply only to the generated Ingress resource and are **not** read from `manifest.json`.
 
 For details on how binding ports map to Services and how to choose the port used
 by Ingress, see [Ingress Support](Ingress-Support.md#service-port-translation).
