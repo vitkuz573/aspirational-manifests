@@ -200,6 +200,7 @@ public abstract class AspirateTestBase
             {
                 ["value"] = new()
                 {
+                    Type = "string",
                     Default = new ParameterDefault
                     {
                         Generate = new Generate
@@ -217,7 +218,10 @@ public abstract class AspirateTestBase
         {
             parameters.Inputs = new Dictionary<string, ParameterInput>
             {
-                ["value"] = new(),
+                ["value"] = new()
+                {
+                    Type = "string"
+                },
             };
         }
 

@@ -1,5 +1,3 @@
-using Xunit;
-
 namespace Aspirate.Tests.ModelTests;
 
 public class ParameterInputSerializationTests

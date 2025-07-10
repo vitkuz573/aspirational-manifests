@@ -49,6 +49,7 @@ public class PopulateInputsActionTests : BaseActionTests<PopulateInputsAction>
             {
                 ["value"] = new()
                 {
+                    Type = "string",
                     Secret = true,
                     Default = new ParameterDefault
                     {
@@ -96,6 +97,7 @@ public class PopulateInputsActionTests : BaseActionTests<PopulateInputsAction>
             {
                 ["value"] = new()
                 {
+                    Type = "string",
                     Secret = false,
                     Default = new ParameterDefault
                     {
