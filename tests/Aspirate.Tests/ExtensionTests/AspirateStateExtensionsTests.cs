@@ -3,6 +3,9 @@ using Aspirate.Shared.Extensions;
 using Aspirate.Shared.Interfaces.Commands;
 using Aspirate.Shared.Interfaces.Commands.Contracts;
 using Aspirate.Shared.Models.Aspirate;
+using Aspirate.Shared.Models.AspireManifests.Components.Common;
+using System.Collections.Generic;
+using System.Linq;
 using FluentAssertions;
 using Xunit;
 
@@ -41,5 +44,49 @@ public class AspirateStateExtensionsTests
 
         // Assert
         state.ContainerBuilder.Should().Be(ContainerBuilder.Docker.Value);
+    }
+
+    [Fact]
+    public void GetResourcesWithExternalBindings_ReturnsExpectedResources()
+    {
+        // Arrange
+        var state = new AspirateState
+        {
+            LoadedAspireManifestResources = new Dictionary<string, Resource>
+            {
+                ["web"] = new ProjectResource
+                {
+                    Bindings = new Dictionary<string, Binding>
+                    {
+                        ["http"] = new Binding
+                        {
+                            Scheme = "http",
+                            Protocol = "tcp",
+                            Transport = "http",
+                            External = true
+                        }
+                    }
+                },
+                ["internal"] = new ProjectResource
+                {
+                    Bindings = new Dictionary<string, Binding>
+                    {
+                        ["http"] = new Binding
+                        {
+                            Scheme = "http",
+                            Protocol = "tcp",
+                            Transport = "http",
+                            External = false
+                        }
+                    }
+                }
+            }
+        };
+
+        // Act
+        var results = state.GetResourcesWithExternalBindings().Select(r => r.Key).ToList();
+
+        // Assert
+        results.Should().ContainSingle().Which.Should().Be("web");
     }
 }
