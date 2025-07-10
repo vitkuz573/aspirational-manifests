@@ -67,6 +67,11 @@ public class ConfigureIngressAction(
                         .PromptStyle("yellow")
                         .AllowEmpty());
 
+                var port = Logger.Prompt(
+                    new TextPrompt<int?>($"[bold]Enter service port for [blue]{service}[/] (leave blank for default): [/]")
+                        .PromptStyle("yellow")
+                        .AllowEmpty());
+
                 var annotations = new Dictionary<string, string>();
                 while (true)
                 {
@@ -94,7 +99,8 @@ public class ConfigureIngressAction(
                 {
                     Host = host,
                     Path = "/",
-                    TlsSecret = string.IsNullOrWhiteSpace(tls) ? null : tls
+                    TlsSecret = string.IsNullOrWhiteSpace(tls) ? null : tls,
+                    PortNumber = port
                 };
             }
 

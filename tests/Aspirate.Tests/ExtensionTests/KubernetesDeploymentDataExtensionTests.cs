@@ -116,7 +116,7 @@ public class KubernetesDeploymentDataExtensionTests
         // Assert
         result.Spec.Ports[0].Name.Should().Be("test-port");
         result.Spec.Ports[0].Port.Should().Be(8080);
-        result.Spec.Ports[0].TargetPort.Value.Should().Be(8080);
+        result.Spec.Ports[0].TargetPort.Value.Should().Be("8080");
     }
 
     [Fact]
@@ -133,7 +133,7 @@ public class KubernetesDeploymentDataExtensionTests
         // Assert
         result.Spec.Ports[0].Name.Should().Be("test-port");
         result.Spec.Ports[0].Port.Should().Be(80);
-        result.Spec.Ports[0].TargetPort.Value.Should().Be(8080);
+        result.Spec.Ports[0].TargetPort.Value.Should().Be("8080");
     }
 
     [Fact]

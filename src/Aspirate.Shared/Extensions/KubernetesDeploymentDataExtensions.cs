@@ -289,7 +289,9 @@ public static class KubernetesDeploymentDataExtensions
         var labels = data.ToKubernetesLabels();
         var metadata = data.ToKubernetesObjectMetaData(labels);
 
-        var servicePort = data.Ports.FirstOrDefault()?.InternalPort ?? 80;
+        var servicePort = data.IngressPortNumber
+            ?? data.Ports.FirstOrDefault()?.InternalPort
+            ?? 80;
 
         var ingress = new V1Ingress
         {
@@ -432,7 +434,8 @@ public static class KubernetesDeploymentDataExtensions
                 .SetIngressEnabled(true)
                 .SetIngressHost(def.Host)
                 .SetIngressTlsSecret(def.TlsSecret)
-                .SetIngressPath(def.Path);
+                .SetIngressPath(def.Path)
+                .SetIngressPortNumber(def.PortNumber);
         }
 
         return data;

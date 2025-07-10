@@ -19,4 +19,9 @@ public sealed class IngressDefinition
     /// Optional TLS secret name.
     /// </summary>
     public string? TlsSecret { get; set; }
+
+    /// <summary>
+    /// Optional service port number to use for the ingress backend.
+    /// </summary>
+    public int? PortNumber { get; set; }
 }
