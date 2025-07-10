@@ -12,12 +12,12 @@ public sealed class RunCommandHandler(IServiceProvider serviceProvider) : BaseCo
             .QueueAction(nameof(SubstituteValuesAspireManifestAction))
             .QueueAction(nameof(ApplyDaprAnnotationsAction))
             .QueueAction(nameof(PopulateContainerDetailsForProjectsAction))
+            .QueueAction(nameof(ConfigureIngressAction))
             .QueueAction(nameof(BuildAndPushContainersFromProjectsAction))
             .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
             .QueueAction(nameof(AskImagePullPolicyAction))
             .QueueAction(nameof(SaveSecretsAction))
             .QueueAction(nameof(CustomNamespaceAction))
-            .QueueAction(nameof(ConfigureIngressAction))
             .QueueAction(nameof(RunKubernetesObjectsAction))
             .ExecuteCommandsAsync();
 }
