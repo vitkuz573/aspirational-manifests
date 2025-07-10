@@ -1,3 +1,6 @@
+using System.Text.Json.Serialization;
+using System.Linq;
+
 namespace Aspirate.Shared.Models.Aspirate;
 
 /// <summary>
@@ -6,9 +9,22 @@ namespace Aspirate.Shared.Models.Aspirate;
 public sealed class IngressDefinition
 {
     /// <summary>
-    /// Host name for the ingress rule.
+    /// Host names for the ingress rule.
     /// </summary>
-    public required string Host { get; set; }
+    public List<string> Hosts { get; set; } = [];
+
+    [JsonPropertyName("host")]
+    public string? LegacyHost
+    {
+        get => Hosts.FirstOrDefault();
+        set
+        {
+            if (!string.IsNullOrWhiteSpace(value))
+            {
+                Hosts = [ value ];
+            }
+        }
+    }
 
     /// <summary>
     /// Path for the ingress rule. Defaults to '/'.

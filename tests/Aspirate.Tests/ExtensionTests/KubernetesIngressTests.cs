@@ -11,7 +11,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
-            .SetIngressHost("example.com")
+            .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetIngressTlsSecret("tls")
             .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080 } });
@@ -29,7 +29,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
-            .SetIngressHost("example.com")
+            .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080 } });
 
@@ -45,7 +45,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
-            .SetIngressHost("example.com")
+            .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080, ExternalPort = 80 } });
 

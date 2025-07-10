@@ -57,9 +57,28 @@ public class ConfigureIngressAction(
 
             foreach (var service in selected)
             {
-                var host = Logger.Prompt(
-                    new TextPrompt<string>($"[bold]Enter host for service [blue]{service}[/]: [/]")
-                        .PromptStyle("yellow"));
+                var hosts = new List<string>();
+
+                while (true)
+                {
+                    var host = Logger.Prompt(
+                        new TextPrompt<string>($"[bold]Enter host for service [blue]{service}[/] (leave blank to stop): [/]")
+                            .PromptStyle("yellow")
+                            .AllowEmpty());
+
+                    if (string.IsNullOrWhiteSpace(host))
+                    {
+                        if (hosts.Count == 0)
+                        {
+                            Logger.MarkupLine("[red]A host is required.[/]");
+                            continue;
+                        }
+
+                        break;
+                    }
+
+                    hosts.Add(host);
+                }
 
                 var tls = Logger.Prompt(
                     new TextPrompt<string>($"[bold]Enter TLS secret for service [blue]{service}[/] (leave blank if none): [/]")
@@ -106,7 +125,7 @@ public class ConfigureIngressAction(
 
                 CurrentState.IngressDefinitions[service] = new IngressDefinition
                 {
-                    Host = host,
+                    Hosts = hosts,
                     Path = "/",
                     TlsSecret = string.IsNullOrWhiteSpace(tls) ? null : tls,
                     PortNumber = port
