@@ -289,8 +289,10 @@ public static class KubernetesDeploymentDataExtensions
         var labels = data.ToKubernetesLabels();
         var metadata = data.ToKubernetesObjectMetaData(labels);
 
+        var firstPort = data.Ports.FirstOrDefault();
         var servicePort = data.IngressPortNumber
-            ?? data.Ports.FirstOrDefault()?.InternalPort
+            ?? (firstPort?.ExternalPort > 0 ? firstPort.ExternalPort : (int?)null)
+            ?? firstPort?.InternalPort
             ?? 80;
 
         var ingress = new V1Ingress

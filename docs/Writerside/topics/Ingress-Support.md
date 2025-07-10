@@ -28,10 +28,10 @@ When specifying ingress information you may also set the **port number** that sh
 
 Bindings defined on resources include `port` and `targetPort` values. During
 generation these translate directly to a Kubernetes Service's `port` and
-`targetPort` respectively. When `port` is omitted the value of
+`targetPort` respectively. If a binding omits `port`, the value of
 `targetPort` is used for both fields.
 
-The Ingress backend forwards traffic to one of the Service ports. By default the
-first internal port (the first binding's `targetPort`) is selected. Using the
-optional ingress port number introduced in Issue 2 you can explicitly set which
-Service port the Ingress rule should use.
+Ingress forwards traffic to the Service's `port`. When no `port` is specified
+for a binding, that Service port defaults to the `targetPort` value. You can use
+the optional ingress port number to select which Service port the Ingress rule
+should forward traffic to.

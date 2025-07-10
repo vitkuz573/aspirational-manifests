@@ -79,7 +79,7 @@ public class ConfigureIngressAction(
                             .UseConverter(b => $"{b.Key} ({b.Value.Scheme}:{b.Value.TargetPort})")
                             .AddChoices(bindings));
 
-                var port = selectedBinding.Value.TargetPort;
+                var port = selectedBinding.Value.Port ?? selectedBinding.Value.TargetPort;
 
                 var annotations = new Dictionary<string, string>();
                 while (true)
