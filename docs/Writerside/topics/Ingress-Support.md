@@ -1,26 +1,22 @@
 # Ingress Support
 
 Aspir8 can optionally generate Kubernetes Ingress resources for services that expose HTTP bindings.
-During `generate` or `run` you will be prompted to select the services you wish to expose. When multiple services are available the prompt includes an
+When running interactively, Aspir8 automatically prompts you to select the services you wish to expose whenever external bindings are detected. When multiple services are available the prompt includes an
 "All Services" group so you can quickly select every option. For each service you can provide one or more host names,
 an optional service port, and optional TLS secret. Selected values are stored in the project state so subsequent runs reuse them.
 
 When enabled, Aspir8 will also offer to deploy the NGINX ingress controller if it is not found
 in the target cluster.
 
-```
-aspirate generate --with-ingress
-```
-
-```
-aspirate run --with-ingress
+```bash
+aspirate generate
 ```
 
-## Cli Options (Optional)
+```bash
+aspirate run
+```
 
-| Option | Environmental Variable | Description |
-|-------|-----------------------|-------------|
-| --with-ingress | `ASPIRATE_WITH_INGRESS` | Enable ingress configuration non-interactively |
+Ingress configuration runs automatically when services with external bindings are detected during interactive execution.
 
 When specifying ingress information you may also set the **port number** that should be used by the ingress backend. If omitted, Aspir8 will use the first internal port defined for the service.
 
