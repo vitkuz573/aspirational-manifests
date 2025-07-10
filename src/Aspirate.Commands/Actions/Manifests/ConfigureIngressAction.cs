@@ -1,5 +1,6 @@
 using Aspirate.Shared.Literals;
 using Aspirate.Shared.Extensions;
+using Aspirate.Shared.Models.AspireManifests.Components.Common;
 
 namespace Aspirate.Commands.Actions.Manifests;
 
@@ -65,10 +66,20 @@ public class ConfigureIngressAction(
                         .PromptStyle("yellow")
                         .AllowEmpty());
 
-                var port = Logger.Prompt(
-                    new TextPrompt<int?>($"[bold]Enter service port for [blue]{service}[/] (leave blank for default): [/]")
-                        .PromptStyle("yellow")
-                        .AllowEmpty());
+                var bindings = ((IResourceWithBinding)CurrentState.LoadedAspireManifestResources[service])
+                    .Bindings!
+                    .Where(b => b.Value.External)
+                    .ToList();
+
+                var selectedBinding = bindings.Count == 1
+                    ? bindings[0]
+                    : Logger.Prompt(
+                        new SelectionPrompt<KeyValuePair<string, Binding>>()
+                            .Title($"Select external binding for service [blue]{service}[/]")
+                            .UseConverter(b => $"{b.Key} ({b.Value.Scheme}:{b.Value.TargetPort})")
+                            .AddChoices(bindings));
+
+                var port = selectedBinding.Value.TargetPort;
 
                 var annotations = new Dictionary<string, string>();
                 while (true)
