@@ -63,6 +63,9 @@ AWS CloudFormation templates can be referenced in your manifest using `aws.cloud
 
 When running interactively with ingress enabled, `aspirate` prompts for annotations for each selected external service alongside the host and TLS secret questions. The supplied values are persisted in the state file so they can be reused on subsequent runs. Annotations are configured separately and are **not** read from `manifest.json`.
 
+For details on how binding ports map to Services and how to choose the port used
+by Ingress, see [Ingress Support](Ingress-Support.md#service-port-translation).
+
 ##Specify components when running with `--non-interactive`
 When ran non-interactively, you can specify which components to build with `-c` or `--components`. Example: `-c webApi -c frontend -c sql -c redis`.
 
