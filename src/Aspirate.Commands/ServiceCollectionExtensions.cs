@@ -38,7 +38,6 @@ public static class ServiceCollectionExtensions
             .RegisterAction<RemoveManifestsFromClusterAction>()
             .RegisterAction<SubstituteValuesAspireManifestAction>()
             .RegisterAction<ApplyDaprAnnotationsAction>()
-            .RegisterAction<ConfigureAnnotationsAction>()
             .RegisterAction<PopulateInputsAction>()
             .RegisterAction<SaveSecretsAction>()
             .RegisterAction<AskPrivateRegistryCredentialsAction>()
