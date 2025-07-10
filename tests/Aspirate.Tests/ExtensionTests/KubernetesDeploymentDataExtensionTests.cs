@@ -116,6 +116,24 @@ public class KubernetesDeploymentDataExtensionTests
         // Assert
         result.Spec.Ports[0].Name.Should().Be("test-port");
         result.Spec.Ports[0].Port.Should().Be(8080);
+        result.Spec.Ports[0].TargetPort.Value.Should().Be(8080);
+    }
+
+    [Fact]
+    public void ToKubernetesService_DifferentPorts_ShouldMapExternalAndInternal()
+    {
+        // Arrange
+        var data = new KubernetesDeploymentData()
+            .SetName("test")
+            .SetPorts(new List<Ports> { new Ports { Name = "test-port", InternalPort = 8080, ExternalPort = 80 } });
+
+        // Act
+        var result = data.ToKubernetesService();
+
+        // Assert
+        result.Spec.Ports[0].Name.Should().Be("test-port");
+        result.Spec.Ports[0].Port.Should().Be(80);
+        result.Spec.Ports[0].TargetPort.Value.Should().Be(8080);
     }
 
     [Fact]
