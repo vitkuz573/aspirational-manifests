@@ -32,6 +32,7 @@ public class ConfigureIngressAction(
         }
 
         CurrentState.IngressDefinitions ??= new();
+        CurrentState.ResourceAnnotations ??= new();
 
         var candidates = CurrentState.AllSelectedSupportedComponents
             .Where(r => r.Value is IResourceWithBinding res &&
@@ -65,6 +66,30 @@ public class ConfigureIngressAction(
                     new TextPrompt<string>($"[bold]Enter TLS secret for service [blue]{service}[/] (leave blank if none): [/]")
                         .PromptStyle("yellow")
                         .AllowEmpty());
+
+                var annotations = new Dictionary<string, string>();
+                while (true)
+                {
+                    var key = Logger.Prompt(new TextPrompt<string>($"Enter annotation key for [blue]{service}[/] (leave blank to stop): ")
+                        .PromptStyle("yellow")
+                        .AllowEmpty());
+
+                    if (string.IsNullOrWhiteSpace(key))
+                    {
+                        break;
+                    }
+
+                    var value = Logger.Prompt(new TextPrompt<string>($"Enter value for annotation [blue]{key}[/]: ")
+                        .PromptStyle("yellow"));
+
+                    annotations[key] = value;
+                }
+
+                if (annotations.Count > 0)
+                {
+                    CurrentState.ResourceAnnotations[service] = annotations;
+                }
+
                 CurrentState.IngressDefinitions[service] = new IngressDefinition
                 {
                     Host = host,
