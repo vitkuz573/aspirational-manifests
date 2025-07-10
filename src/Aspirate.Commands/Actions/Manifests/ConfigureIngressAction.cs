@@ -17,34 +17,37 @@ public class ConfigureIngressAction(
             return true;
         }
 
-        if (CurrentState.WithIngress == null)
-        {
-            if (CurrentState.NonInteractive)
-            {
-                Logger.ValidationFailed("The with ingress option is required in non-interactive mode.");
-                ActionCausesExitException.ExitNow();
-            }
+        var candidates = CurrentState.GetResourcesWithExternalBindings()
+            .Select(r => r.Key)
+            .ToList();
 
-            CurrentState.WithIngress = Logger.Confirm("[bold]Would you like to configure ingress for HTTP services?[/]", false);
-        }
-
-        if (CurrentState.WithIngress != true)
+        if (!CurrentState.NonInteractive && CurrentState.WithIngress == false)
         {
             return true;
         }
 
-        CurrentState.IngressDefinitions ??= new();
-        CurrentState.ResourceAnnotations ??= new();
-
-        var candidates = CurrentState.GetResourcesWithExternalBindings()
-            .Select(r => r.Key)
-            .ToList();
+        if (CurrentState.NonInteractive)
+        {
+            if (CurrentState.WithIngress != true)
+            {
+                Logger.ValidationFailed("The with ingress option is required in non-interactive mode.");
+                ActionCausesExitException.ExitNow();
+            }
+        }
+        else
+        {
+            CurrentState.WithIngress = true;
+        }
 
         if (candidates.Count == 0)
         {
             Logger.MarkupLine("[yellow](!)[/] No services with external bindings detected.");
             return true;
         }
+
+
+        CurrentState.IngressDefinitions ??= new();
+        CurrentState.ResourceAnnotations ??= new();
 
         if (!CurrentState.NonInteractive)
         {
