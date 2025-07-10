@@ -27,17 +27,21 @@ public sealed class GenerateCommandHandler(IServiceProvider serviceProvider) : B
             .QueueAction(nameof(PopulateInputsAction))
             .QueueAction(nameof(SubstituteValuesAspireManifestAction))
             .QueueAction(nameof(ApplyDaprAnnotationsAction))
-            .QueueAction(nameof(PopulateContainerDetailsForProjectsAction))
-            .QueueAction(nameof(BuildAndPushContainersFromProjectsAction))
-            .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
-            .QueueAction(nameof(SaveSecretsAction));
+            .QueueAction(nameof(PopulateContainerDetailsForProjectsAction));
 
     private ActionExecutor BaseKubernetesActionSequence() =>
         BaseGenerateActionSequence()
+            .QueueAction(nameof(ConfigureIngressAction))
+            .QueueAction(nameof(BuildAndPushContainersFromProjectsAction))
+            .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
+            .QueueAction(nameof(SaveSecretsAction))
             .QueueAction(nameof(AskImagePullPolicyAction));
 
     private Task<int> GenerateDockerComposeManifests() =>
         BaseGenerateActionSequence()
+            .QueueAction(nameof(BuildAndPushContainersFromProjectsAction))
+            .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
+            .QueueAction(nameof(SaveSecretsAction))
             .QueueAction(nameof(GenerateDockerComposeManifestAction))
             .ExecuteCommandsAsync();
 
