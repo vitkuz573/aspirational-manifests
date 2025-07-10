@@ -53,7 +53,10 @@ public class ConfigureIngressAction(
                     .Title("Select [green]services[/] to expose via ingress")
                     .PageSize(10)
                     .MoreChoicesText("[grey](Move up and down to reveal more services)[/]")
-                    .AddChoices(candidates));
+                    .InstructionsText(
+                        "[grey](Press [blue]<space>[/] to toggle a service, " +
+                        "[green]<enter>[/] to accept)[/]")
+                    .AddChoiceGroup("All Services", candidates));
 
             foreach (var service in selected)
             {
