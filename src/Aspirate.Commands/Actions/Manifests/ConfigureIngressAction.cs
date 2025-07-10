@@ -1,4 +1,5 @@
 using Aspirate.Shared.Literals;
+using Aspirate.Shared.Extensions;
 
 namespace Aspirate.Commands.Actions.Manifests;
 
@@ -34,10 +35,7 @@ public class ConfigureIngressAction(
         CurrentState.IngressDefinitions ??= new();
         CurrentState.ResourceAnnotations ??= new();
 
-        var candidates = CurrentState.AllSelectedSupportedComponents
-            .Where(r => r.Value is IResourceWithBinding res &&
-                        res.Bindings != null &&
-                        res.Bindings.Values.Any(b => b.External))
+        var candidates = CurrentState.GetResourcesWithExternalBindings()
             .Select(r => r.Key)
             .ToList();
 

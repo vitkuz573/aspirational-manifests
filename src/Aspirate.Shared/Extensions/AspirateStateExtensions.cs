@@ -62,4 +62,19 @@ public static class AspirateStateExtensions
 
         currentState.SecretState = previousState.SecretState;
     }
+
+    /// <summary>
+    /// Returns all manifest resources that define at least one external binding.
+    /// </summary>
+    /// <param name="state">The <see cref="AspirateState"/> instance.</param>
+    /// <returns>A collection of resources with external bindings.</returns>
+    public static IEnumerable<KeyValuePair<string, Resource>> GetResourcesWithExternalBindings(this AspirateState state)
+    {
+        ArgumentNullException.ThrowIfNull(state);
+
+        return state.LoadedAspireManifestResources
+            .Where(r => r.Value is IResourceWithBinding res &&
+                        res.Bindings != null &&
+                        res.Bindings.Values.Any(b => b.External));
+    }
 }
