@@ -9,7 +9,8 @@ public sealed class ImagePullPolicyOption : BaseOption<string?>
         Name = nameof(IGenerateOptions.ImagePullPolicy);
         Description = "The Image pull policy to use when generating manifests";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
+
         AddValidator(ValidateFormat);
     }
 

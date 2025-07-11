@@ -12,7 +12,7 @@ public sealed class SecretPasswordOption : BaseOption<string?>
         Name = nameof(ICommandOptions.SecretPassword);
         Description = "The Secret Password to use";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static SecretPasswordOption Instance { get; } = new();

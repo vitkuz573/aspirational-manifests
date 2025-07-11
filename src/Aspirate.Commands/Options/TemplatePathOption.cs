@@ -13,7 +13,7 @@ public sealed class TemplatePathOption : BaseOption<string?>
         Name = nameof(IInitOptions.TemplatePath);
         Description = "The Custom Template path to use";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static TemplatePathOption Instance { get; } = new();

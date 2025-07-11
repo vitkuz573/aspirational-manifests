@@ -13,7 +13,7 @@ public sealed class ContainerRegistryOption : BaseOption<string?>
         Name = nameof(IContainerOptions.ContainerRegistry);
         Description = "The Container Registry to use as the fall-back value for all containers";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ContainerRegistryOption Instance { get; } = new();

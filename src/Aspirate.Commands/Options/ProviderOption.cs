@@ -9,7 +9,7 @@ public sealed class ProviderOption : BaseOption<string?>
         Name = nameof(IListSecretsOptions.Provider);
         Description = "Filter secrets by resource provider.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ProviderOption Instance { get; } = new();

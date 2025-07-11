@@ -9,7 +9,8 @@ public sealed class OutputFormatOption : BaseOption<string?>
         Name = nameof(IGenerateOptions.OutputFormat);
         Description = "The output format of the generated manifests. Supported values are 'kustomize', 'compose', and 'helm'.";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
+
         AddValidator(ValidateFormat);
     }
 

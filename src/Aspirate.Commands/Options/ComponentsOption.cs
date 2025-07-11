@@ -13,7 +13,7 @@ public sealed class ComponentsOption : BaseOption<List<string>?>
         Name = nameof(IComponentsOptions.CliSpecifiedComponents);
         Description = "Specify which components build or generate, non interactively";
         Arity = ArgumentArity.ZeroOrMore;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ComponentsOption Instance { get; } = new();

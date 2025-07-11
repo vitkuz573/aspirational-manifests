@@ -9,7 +9,7 @@ public sealed class ReplaceSecretsOption : BaseOption<bool?>
         Name = nameof(ISecretState.ReplaceSecrets);
         Description = "Replace all secrets and inputs.";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ReplaceSecretsOption Instance { get; } = new();

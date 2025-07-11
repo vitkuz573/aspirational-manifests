@@ -9,7 +9,7 @@ public sealed class Pbkdf2IterationsOption : BaseOption<int>
         Name = nameof(ICommandOptions.Pbkdf2Iterations);
         Description = "The number of iterations for PBKDF2 when protecting secrets";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static Pbkdf2IterationsOption Instance { get; } = new();

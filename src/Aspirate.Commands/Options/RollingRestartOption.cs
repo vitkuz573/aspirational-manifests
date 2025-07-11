@@ -13,7 +13,7 @@ public sealed class RollingRestartOption : BaseOption<bool?>
         Name = nameof(IApplyOptions.RollingRestart);
         Description = "Indicates if a rolling restart should occur at the end of deploy. Defaults to 'false'.";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static RollingRestartOption Instance { get; } = new();

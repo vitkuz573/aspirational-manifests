@@ -12,7 +12,7 @@ public sealed class PrivateRegistryUsernameOption : BaseOption<string?>
         Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUsername);
         Description = "The Private Registry username.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PrivateRegistryUsernameOption Instance { get; } = new();

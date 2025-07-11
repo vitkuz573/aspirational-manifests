@@ -13,7 +13,7 @@ public sealed class ProjectPathOption : BaseOption<string>
         Name = nameof(IAspireOptions.ProjectPath);
         Description = "The path to the aspire project";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ProjectPathOption Instance { get; } = new();

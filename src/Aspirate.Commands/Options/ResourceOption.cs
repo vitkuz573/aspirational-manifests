@@ -9,7 +9,7 @@ public sealed class ResourceOption : BaseOption<string?>
         Name = nameof(IListSecretsOptions.Resource);
         Description = "Filter secrets by resource name.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ResourceOption Instance { get; } = new();

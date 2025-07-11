@@ -13,7 +13,7 @@ public sealed class ContainerBuildContextOption : BaseOption<string?>
         Name = nameof(IContainerOptions.ContainerBuildContext);
         Description = "The Container Build Context to use when Dockerfile is used to build projects";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ContainerBuildContextOption Instance { get; } = new();

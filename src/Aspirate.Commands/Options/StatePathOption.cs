@@ -9,7 +9,7 @@ public sealed class StatePathOption : BaseOption<string>
         Name = nameof(ICommandOptions.StatePath);
         Description = "The path where the state file will be stored";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static StatePathOption Instance { get; } = new();

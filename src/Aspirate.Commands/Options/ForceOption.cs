@@ -9,7 +9,7 @@ public sealed class ForceOption : BaseOption<bool?>
         Name = nameof(IClearSecretsOptions.Force);
         Description = "Force the command to run without confirmation.";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ForceOption Instance { get; } = new();

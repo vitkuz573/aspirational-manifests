@@ -13,7 +13,7 @@ public sealed class ContainerImageTagOption : BaseOption<List<string>?>
         Name = nameof(IContainerOptions.ContainerImageTags);
         Description = "The Container Image Tags to use for all containers. Can include multiple times.";
         Arity = ArgumentArity.ZeroOrMore;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ContainerImageTagOption Instance { get; } = new();

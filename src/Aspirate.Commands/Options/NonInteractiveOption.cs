@@ -12,7 +12,7 @@ public sealed class NonInteractiveOption : BaseOption<bool?>
         Name = nameof(ICommandOptions.NonInteractive);
         Description = "Disables interactive mode for the command";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static NonInteractiveOption Instance { get; } = new();

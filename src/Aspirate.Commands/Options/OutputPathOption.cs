@@ -13,7 +13,7 @@ public sealed class OutputPathOption : BaseOption<string>
         Name = nameof(IGenerateOptions.OutputPath);
         Description = "The output path for generated manifests";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static OutputPathOption Instance { get; } = new();

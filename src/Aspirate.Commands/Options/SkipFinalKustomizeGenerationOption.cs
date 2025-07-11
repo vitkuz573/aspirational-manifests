@@ -14,7 +14,7 @@ public sealed class SkipFinalKustomizeGenerationOption : BaseOption<bool?>
         Name = nameof(IGenerateOptions.SkipFinalKustomizeGeneration);
         Description = "Skips The final generation of the kustomize manifest, which is the parent top level file";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static SkipFinalKustomizeGenerationOption Instance { get; } = new();

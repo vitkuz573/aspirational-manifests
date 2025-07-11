@@ -13,7 +13,7 @@ public sealed class ContainerBuildArgsOption : BaseOption<List<string>?>
         Name = nameof(IContainerOptions.ContainerBuildArgs);
         Description = "The Container Build Arguments to use for all containers. In \"key\"=\"value\" format. Can include multiple times.";
         Arity = ArgumentArity.ZeroOrMore;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ContainerBuildArgsOption Instance { get; } = new();

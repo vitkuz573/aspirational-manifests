@@ -12,7 +12,7 @@ public sealed class PrivateRegistryEmailOption : BaseOption<string?>
         Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryEmail);
         Description = "The Private Registry email. It is required and defaults to 'aspirate@aspirate.com'.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PrivateRegistryEmailOption Instance { get; } = new();

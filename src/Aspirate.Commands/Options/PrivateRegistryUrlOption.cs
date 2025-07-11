@@ -12,7 +12,7 @@ public sealed class PrivateRegistryUrlOption : BaseOption<string?>
         Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUrl);
         Description = "The Private Registry url.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PrivateRegistryUrlOption Instance { get; } = new();

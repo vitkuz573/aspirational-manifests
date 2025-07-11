@@ -9,7 +9,7 @@ public sealed class AllowClearNamespaceOption : BaseOption<bool?>
         Name = nameof(IRunOptions.AllowClearNamespace);
         Description = "Is Aspirate allowed to clear the namespace if it exists before deploying during the run command?";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static AllowClearNamespaceOption Instance { get; } = new();

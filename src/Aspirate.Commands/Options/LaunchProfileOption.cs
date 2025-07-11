@@ -13,7 +13,7 @@ public sealed class LaunchProfileOption : BaseOption<string?>
         Name = nameof(ICommandOptions.LaunchProfile);
         Description = "The launch profile to use when building the aspire manifest from the AppHost.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static LaunchProfileOption Instance { get; } = new();

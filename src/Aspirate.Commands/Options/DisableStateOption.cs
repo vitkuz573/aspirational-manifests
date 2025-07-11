@@ -9,7 +9,7 @@ public sealed class DisableStateOption : BaseOption<bool?>
         Name = nameof(ICommandOptions.DisableState);
         Description = "Disables State Support";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static DisableStateOption Instance { get; } = new();

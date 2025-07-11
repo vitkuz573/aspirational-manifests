@@ -9,7 +9,7 @@ public sealed class DisableSecretsOption : BaseOption<bool?>
         Name = nameof(ICommandOptions.DisableSecrets);
         Description = "Disables Secret Support";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static DisableSecretsOption Instance { get; } = new();

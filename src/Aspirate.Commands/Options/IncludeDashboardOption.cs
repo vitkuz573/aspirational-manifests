@@ -9,7 +9,7 @@ public sealed class IncludeDashboardOption : BaseOption<bool?>
         Name = nameof(IDashboardOptions.IncludeDashboard);
         Description = "Include the Aspire Dashboard in the generated manifests";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static IncludeDashboardOption Instance { get; } = new();

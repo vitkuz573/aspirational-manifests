@@ -9,7 +9,7 @@ public sealed class RuntimeIdentifierOption : BaseOption<string?>
         Name = nameof(IBuildOptions.RuntimeIdentifier);
         Description = "The Custom Runtime identifier to use for .net project builds.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static RuntimeIdentifierOption Instance { get; } = new();

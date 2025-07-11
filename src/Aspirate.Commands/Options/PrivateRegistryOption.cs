@@ -12,7 +12,7 @@ public sealed class PrivateRegistryOption : BaseOption<bool?>
         Name = nameof(IPrivateRegistryCredentialsOptions.WithPrivateRegistry);
         Description = "Enables Private registry imagePullSecret. You will need to supply username and password as well.";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PrivateRegistryOption Instance { get; } = new();

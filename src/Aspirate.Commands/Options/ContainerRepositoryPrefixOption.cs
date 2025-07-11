@@ -13,7 +13,7 @@ public sealed class ContainerRepositoryPrefixOption : BaseOption<string?>
         Name = nameof(IContainerOptions.ContainerRepositoryPrefix);
         Description = "The Container repository prefix to use as the fall-back value for all containers";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ContainerRepositoryPrefixOption Instance { get; } = new();

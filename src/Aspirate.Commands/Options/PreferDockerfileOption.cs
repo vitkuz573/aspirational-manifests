@@ -9,7 +9,7 @@ public sealed class PreferDockerfileOption : BaseOption<bool?>
         Name = nameof(IBuildOptions.PreferDockerfile);
         Description = "Instructs to use Dockerfile when available to build project images";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PreferDockerfileOption Instance { get; } = new();

@@ -12,7 +12,7 @@ public sealed class PrivateRegistryPasswordOption : BaseOption<string?>
         Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryPassword);
         Description = "The Private Registry password.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static PrivateRegistryPasswordOption Instance { get; } = new();

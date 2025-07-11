@@ -4,5 +4,5 @@ public interface IBaseOption
 {
     bool IsSecret { get; }
 
-    public object? GetOptionDefault();
+    object? GetOptionDefault();
 }

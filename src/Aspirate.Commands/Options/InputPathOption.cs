@@ -13,7 +13,7 @@ public sealed class InputPathOption : BaseOption<string>
         Name = nameof(IKubernetesOptions.InputPath);
         Description = "The path for the kustomize manifests directory";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static InputPathOption Instance { get; } = new();

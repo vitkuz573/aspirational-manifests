@@ -12,11 +12,10 @@ public sealed class SecretProviderOption : BaseOption<string?>
         Name = nameof(ICommandOptions.SecretProvider);
         Description = "The secret backend provider to use. Defaults to file.";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static SecretProviderOption Instance { get; } = new();
 
     public override bool IsSecret => false;
 }
-

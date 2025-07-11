@@ -13,7 +13,7 @@ public sealed class ParameterResourceValueOption : BaseOption<List<string>?>
         Name = nameof(IGenerateOptions.Parameters);
         Description = "The parameter resource value.";
         Arity = ArgumentArity.ZeroOrMore;
-        IsRequired = false;
+        Required = false;
     }
 
     public static ParameterResourceValueOption Instance { get; } = new();

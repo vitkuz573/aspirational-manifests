@@ -13,7 +13,7 @@ public sealed class KubernetesContextOption : BaseOption<string?>
         Name = nameof(IKubernetesOptions.KubeContext);
         Description = "The name of the kubernetes context to use";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static KubernetesContextOption Instance { get; } = new();

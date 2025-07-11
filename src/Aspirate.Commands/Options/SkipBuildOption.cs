@@ -9,7 +9,7 @@ public sealed class SkipBuildOption : BaseOption<bool?>
         Name = nameof(IGenerateOptions.SkipBuild);
         Description = "Skips build and Push of containers";
         Arity = ArgumentArity.ZeroOrOne;
-        IsRequired = false;
+        Required = false;
     }
 
     public static SkipBuildOption Instance { get; } = new();

@@ -9,7 +9,8 @@ public sealed class ContainerBuilderOption : BaseOption<string>
         Name = nameof(IContainerOptions.ContainerBuilder);
         Description = "The Container Builder: can be 'docker', 'podman' or 'nerdctl'. The default is 'docker'";
         Arity = ArgumentArity.ExactlyOne;
-        IsRequired = false;
+        Required = false;
+
         AddValidator(ValidateFormat);
     }
 
