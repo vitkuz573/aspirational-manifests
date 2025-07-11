@@ -8,9 +8,8 @@ public sealed class ContainerRepositoryPrefixOption : BaseOption<string?>
         "-crp"
     ];
 
-    private ContainerRepositoryPrefixOption() : base(_aliases, "ASPIRATE_CONTAINER_REPOSITORY_PREFIX", null)
+    private ContainerRepositoryPrefixOption() : base(nameof(IContainerOptions.ContainerRepositoryPrefix), _aliases, "ASPIRATE_CONTAINER_REPOSITORY_PREFIX", null)
     {
-        Name = nameof(IContainerOptions.ContainerRepositoryPrefix);
         Description = "The Container repository prefix to use as the fall-back value for all containers";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

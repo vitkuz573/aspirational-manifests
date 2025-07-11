@@ -8,9 +8,8 @@ public sealed class ContainerImageTagOption : BaseOption<List<string>?>
         "--container-image-tag"
     ];
 
-    private ContainerImageTagOption() : base(_aliases, "ASPIRATE_CONTAINER_IMAGE_TAG", null)
+    private ContainerImageTagOption() : base(nameof(IContainerOptions.ContainerImageTags), _aliases, "ASPIRATE_CONTAINER_IMAGE_TAG", null)
     {
-        Name = nameof(IContainerOptions.ContainerImageTags);
         Description = "The Container Image Tags to use for all containers. Can include multiple times.";
         Arity = ArgumentArity.ZeroOrMore;
         Required = false;

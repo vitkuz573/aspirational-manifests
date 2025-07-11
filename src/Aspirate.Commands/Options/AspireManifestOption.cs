@@ -8,9 +8,8 @@ public sealed class AspireManifestOption : BaseOption<string?>
         "--aspire-manifest"
     ];
 
-    private AspireManifestOption() : base(_aliases, "ASPIRATE_ASPIRE_MANIFEST_PATH", null)
+    private AspireManifestOption() : base(nameof(IAspireOptions.AspireManifest), _aliases, "ASPIRATE_ASPIRE_MANIFEST_PATH", null)
     {
-        Name = nameof(IAspireOptions.AspireManifest);
         Description = "The aspire manifest file to use";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

@@ -4,14 +4,13 @@ public sealed class ImagePullPolicyOption : BaseOption<string?>
 {
     private static readonly string[] _aliases = ["--image-pull-policy"];
 
-    private ImagePullPolicyOption() : base(_aliases, "ASPIRATE_IMAGE_PULL_POLICY", null)
+    private ImagePullPolicyOption() : base(nameof(IGenerateOptions.ImagePullPolicy), _aliases, "ASPIRATE_IMAGE_PULL_POLICY", null)
     {
-        Name = nameof(IGenerateOptions.ImagePullPolicy);
         Description = "The Image pull policy to use when generating manifests";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;
 
-        AddValidator(ValidateFormat);
+        Validators.Add(ValidateFormat);
     }
 
     public static ImagePullPolicyOption Instance { get; } = new();

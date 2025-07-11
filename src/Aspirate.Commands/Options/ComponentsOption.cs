@@ -8,9 +8,8 @@ public sealed class ComponentsOption : BaseOption<List<string>?>
         "--components"
     ];
 
-    private ComponentsOption() : base(_aliases, "ASPIRATE_COMPONENTS", null)
+    private ComponentsOption() : base(nameof(IComponentsOptions.CliSpecifiedComponents), _aliases, "ASPIRATE_COMPONENTS", null)
     {
-        Name = nameof(IComponentsOptions.CliSpecifiedComponents);
         Description = "Specify which components build or generate, non interactively";
         Arity = ArgumentArity.ZeroOrMore;
         Required = false;

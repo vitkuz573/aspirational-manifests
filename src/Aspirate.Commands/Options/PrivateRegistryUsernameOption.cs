@@ -7,9 +7,8 @@ public sealed class PrivateRegistryUsernameOption : BaseOption<string?>
         "--private-registry-username"
     ];
 
-    private PrivateRegistryUsernameOption() : base(_aliases, "ASPIRATE_PRIVATE_REGISTRY_USERNAME", null)
+    private PrivateRegistryUsernameOption() : base(nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUsername), _aliases, "ASPIRATE_PRIVATE_REGISTRY_USERNAME", null)
     {
-        Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUsername);
         Description = "The Private Registry username.";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

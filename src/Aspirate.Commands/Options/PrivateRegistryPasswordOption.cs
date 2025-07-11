@@ -7,9 +7,8 @@ public sealed class PrivateRegistryPasswordOption : BaseOption<string?>
         "--private-registry-password"
     ];
 
-    private PrivateRegistryPasswordOption() : base(_aliases, "ASPIRATE_PRIVATE_REGISTRY_PASSWORD", null)
+    private PrivateRegistryPasswordOption() : base(nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryPassword), _aliases, "ASPIRATE_PRIVATE_REGISTRY_PASSWORD", null)
     {
-        Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryPassword);
         Description = "The Private Registry password.";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

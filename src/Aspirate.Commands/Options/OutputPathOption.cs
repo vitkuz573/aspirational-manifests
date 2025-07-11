@@ -8,9 +8,8 @@ public sealed class OutputPathOption : BaseOption<string>
         "--output-path"
     ];
 
-    private OutputPathOption() : base(_aliases, "ASPIRATE_OUTPUT_PATH", AspirateLiterals.DefaultArtifactsPath)
+    private OutputPathOption() : base(nameof(IGenerateOptions.OutputPath), _aliases, "ASPIRATE_OUTPUT_PATH", AspirateLiterals.DefaultArtifactsPath)
     {
-        Name = nameof(IGenerateOptions.OutputPath);
         Description = "The output path for generated manifests";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

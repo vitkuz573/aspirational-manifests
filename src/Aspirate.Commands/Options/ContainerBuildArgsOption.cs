@@ -8,9 +8,8 @@ public sealed class ContainerBuildArgsOption : BaseOption<List<string>?>
         "--container-build-arg"
     ];
 
-    private ContainerBuildArgsOption() : base(_aliases, "ASPIRATE_CONTAINER_BUILD_ARGS", null)
+    private ContainerBuildArgsOption() : base(nameof(IContainerOptions.ContainerBuildArgs), _aliases, "ASPIRATE_CONTAINER_BUILD_ARGS", null)
     {
-        Name = nameof(IContainerOptions.ContainerBuildArgs);
         Description = "The Container Build Arguments to use for all containers. In \"key\"=\"value\" format. Can include multiple times.";
         Arity = ArgumentArity.ZeroOrMore;
         Required = false;

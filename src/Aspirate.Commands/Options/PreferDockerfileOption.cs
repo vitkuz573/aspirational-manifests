@@ -4,9 +4,8 @@ public sealed class PreferDockerfileOption : BaseOption<bool?>
 {
     private static readonly string[] _aliases = ["--prefer-dockerfile"];
 
-    private PreferDockerfileOption() : base(_aliases, "ASPIRATE_PREFER_DOCKERFILE", null)
+    private PreferDockerfileOption() : base(nameof(IBuildOptions.PreferDockerfile), _aliases, "ASPIRATE_PREFER_DOCKERFILE", null)
     {
-        Name = nameof(IBuildOptions.PreferDockerfile);
         Description = "Instructs to use Dockerfile when available to build project images";
         Arity = ArgumentArity.ZeroOrOne;
         Required = false;

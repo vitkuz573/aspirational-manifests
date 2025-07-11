@@ -8,9 +8,8 @@ public sealed class ContainerBuildContextOption : BaseOption<string?>
         "--container-build-context"
     ];
 
-    private ContainerBuildContextOption() : base(_aliases, "ASPIRATE_CONTAINER_BUILD_CONTEXT", null)
+    private ContainerBuildContextOption() : base(nameof(IContainerOptions.ContainerBuildContext), _aliases, "ASPIRATE_CONTAINER_BUILD_CONTEXT", null)
     {
-        Name = nameof(IContainerOptions.ContainerBuildContext);
         Description = "The Container Build Context to use when Dockerfile is used to build projects";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

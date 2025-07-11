@@ -7,9 +7,8 @@ public sealed class PrivateRegistryUrlOption : BaseOption<string?>
         "--private-registry-url"
     ];
 
-    private PrivateRegistryUrlOption() : base(_aliases, "ASPIRATE_PRIVATE_REGISTRY_URL", null)
+    private PrivateRegistryUrlOption() : base(nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUrl), _aliases, "ASPIRATE_PRIVATE_REGISTRY_URL", null)
     {
-        Name = nameof(IPrivateRegistryCredentialsOptions.PrivateRegistryUrl);
         Description = "The Private Registry url.";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

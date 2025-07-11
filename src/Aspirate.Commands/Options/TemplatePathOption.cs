@@ -8,9 +8,8 @@ public sealed class TemplatePathOption : BaseOption<string?>
         "--template-path"
     ];
 
-    private TemplatePathOption() : base(_aliases, "ASPIRATE_TEMPLATE_PATH", null)
+    private TemplatePathOption() : base(nameof(IInitOptions.TemplatePath), _aliases, "ASPIRATE_TEMPLATE_PATH", null)
     {
-        Name = nameof(IInitOptions.TemplatePath);
         Description = "The Custom Template path to use";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

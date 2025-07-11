@@ -8,9 +8,8 @@ public sealed class ParameterResourceValueOption : BaseOption<List<string>?>
         "--parameter"
     ];
 
-    private ParameterResourceValueOption() : base(_aliases, "ASPIRATE_PARAMETER_VALUE", null)
+    private ParameterResourceValueOption() : base(nameof(IGenerateOptions.Parameters), _aliases, "ASPIRATE_PARAMETER_VALUE", null)
     {
-        Name = nameof(IGenerateOptions.Parameters);
         Description = "The parameter resource value.";
         Arity = ArgumentArity.ZeroOrMore;
         Required = false;

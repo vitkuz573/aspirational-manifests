@@ -7,9 +7,8 @@ public sealed class NonInteractiveOption : BaseOption<bool?>
         "--non-interactive"
     ];
 
-    private NonInteractiveOption() : base(_aliases, "ASPIRATE_NON_INTERACTIVE", null)
+    private NonInteractiveOption() : base(nameof(ICommandOptions.NonInteractive), _aliases, "ASPIRATE_NON_INTERACTIVE", null)
     {
-        Name = nameof(ICommandOptions.NonInteractive);
         Description = "Disables interactive mode for the command";
         Arity = ArgumentArity.ZeroOrOne;
         Required = false;

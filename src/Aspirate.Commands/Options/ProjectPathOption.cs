@@ -8,9 +8,8 @@ public sealed class ProjectPathOption : BaseOption<string>
         "--project-path"
     ];
 
-    private ProjectPathOption() : base(_aliases, "ASPIRATE_PROJECT_PATH", AspirateLiterals.DefaultAspireProjectPath)
+    private ProjectPathOption() : base(nameof(IAspireOptions.ProjectPath), _aliases, "ASPIRATE_PROJECT_PATH", AspirateLiterals.DefaultAspireProjectPath)
     {
-        Name = nameof(IAspireOptions.ProjectPath);
         Description = "The path to the aspire project";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

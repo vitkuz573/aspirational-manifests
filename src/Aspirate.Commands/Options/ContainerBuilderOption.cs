@@ -4,14 +4,13 @@ public sealed class ContainerBuilderOption : BaseOption<string>
 {
     private static readonly string[] _aliases = ["--container-builder"];
 
-    private ContainerBuilderOption() : base(_aliases, "ASPIRATE_CONTAINER_BUILDER", "docker")
+    private ContainerBuilderOption() : base(nameof(IContainerOptions.ContainerBuilder), _aliases, "ASPIRATE_CONTAINER_BUILDER", "docker")
     {
-        Name = nameof(IContainerOptions.ContainerBuilder);
         Description = "The Container Builder: can be 'docker', 'podman' or 'nerdctl'. The default is 'docker'";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;
 
-        AddValidator(ValidateFormat);
+        Validators.Add(ValidateFormat);
     }
 
     public static ContainerBuilderOption Instance { get; } = new();

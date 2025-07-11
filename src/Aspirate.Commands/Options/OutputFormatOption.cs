@@ -4,14 +4,13 @@ public sealed class OutputFormatOption : BaseOption<string?>
 {
     private static readonly string[] _aliases = ["--output-format"];
 
-    private OutputFormatOption() : base(_aliases, "ASPIRATE_OUTPUT_FORMAT", null)
+    private OutputFormatOption() : base(nameof(IGenerateOptions.OutputFormat), _aliases, "ASPIRATE_OUTPUT_FORMAT", null)
     {
-        Name = nameof(IGenerateOptions.OutputFormat);
         Description = "The output format of the generated manifests. Supported values are 'kustomize', 'compose', and 'helm'.";
         Arity = ArgumentArity.ZeroOrOne;
         Required = false;
 
-        AddValidator(ValidateFormat);
+        Validators.Add(ValidateFormat);
     }
 
     public static OutputFormatOption Instance { get; } = new();

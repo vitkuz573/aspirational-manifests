@@ -4,9 +4,8 @@ public sealed class RuntimeIdentifierOption : BaseOption<string?>
 {
     private static readonly string[] _aliases = ["--runtime-identifier"];
 
-    private RuntimeIdentifierOption() : base(_aliases, "ASPIRATE_RUNTIME_IDENTIFIER", null)
+    private RuntimeIdentifierOption() : base(nameof(IBuildOptions.RuntimeIdentifier), _aliases, "ASPIRATE_RUNTIME_IDENTIFIER", null)
     {
-        Name = nameof(IBuildOptions.RuntimeIdentifier);
         Description = "The Custom Runtime identifier to use for .net project builds.";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

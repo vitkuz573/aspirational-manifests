@@ -1,42 +1,45 @@
 namespace Aspirate.Commands.Options;
 
-public abstract class BaseOption<T>(
-    string[] aliases,
-    string envName,
-    T defaultValue) :
-        Option<T>(
-            aliases,
-            getDefaultValue: GetOptionDefault(envName, defaultValue)),
-        IBaseOption
+public abstract class BaseOption<T> : Option<T>, IBaseOption
 {
+    private readonly string _envName;
+    private readonly T _defaultValue;
+
     public abstract bool IsSecret { get; }
 
-    public T GetOptionDefault() => GetOptionDefault(envName, defaultValue)();
+    protected BaseOption(string name, string[] aliases, string envName, T defaultValue) : base(name, aliases)
+    {
+        _envName = envName;
+        _defaultValue = defaultValue;
+
+        DefaultValueFactory = _ => GetOptionDefault(_envName, _defaultValue)();
+    }
+
+    public T GetOptionDefault() => GetOptionDefault(_envName, _defaultValue)();
 
     object? IBaseOption.GetOptionDefault() => GetOptionDefault();
 
-    private static Func<TReturnValue> GetOptionDefault<TReturnValue>(string envVarName, TReturnValue defaultValue) =>
-        () =>
+    private static Func<TReturnValue> GetOptionDefault<TReturnValue>(string envVarName, TReturnValue defaultValue) => () =>
+    {
+        var envValue = Environment.GetEnvironmentVariable(envVarName);
+
+        if (envVarName == "ASPIRATE_SECRET_PASSWORD")
         {
-            var envValue = Environment.GetEnvironmentVariable(envVarName);
+            Environment.SetEnvironmentVariable(envVarName, null);
+        }
 
-            if (envVarName == "ASPIRATE_SECRET_PASSWORD")
-            {
-                Environment.SetEnvironmentVariable(envVarName, null);
-            }
+        if (envValue == null)
+        {
+            return defaultValue;
+        }
 
-            if (envValue == null)
-            {
-                return defaultValue;
-            }
-
-            try
-            {
-                return (TReturnValue)Convert.ChangeType(envValue, typeof(TReturnValue));
-            }
-            catch (Exception)
-            {
-                return defaultValue;
-            }
-        };
+        try
+        {
+            return (TReturnValue)Convert.ChangeType(envValue, typeof(TReturnValue));
+        }
+        catch (Exception)
+        {
+            return defaultValue;
+        }
+    };
 }

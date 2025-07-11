@@ -8,9 +8,8 @@ public sealed class LaunchProfileOption : BaseOption<string?>
         "--launch-profile"
     ];
 
-    private LaunchProfileOption() : base(_aliases, "ASPIRATE_LAUNCH_PROFILE", null)
+    private LaunchProfileOption() : base(nameof(ICommandOptions.LaunchProfile), _aliases, "ASPIRATE_LAUNCH_PROFILE", null)
     {
-        Name = nameof(ICommandOptions.LaunchProfile);
         Description = "The launch profile to use when building the aspire manifest from the AppHost.";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;

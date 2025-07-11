@@ -4,9 +4,8 @@ public sealed class StatePathOption : BaseOption<string>
 {
     private static readonly string[] _aliases = ["--state-path"];
 
-    private StatePathOption() : base(_aliases, "ASPIRATE_STATE_PATH", AspirateLiterals.DefaultAspireProjectPath)
+    private StatePathOption() : base(nameof(ICommandOptions.StatePath), _aliases, "ASPIRATE_STATE_PATH", AspirateLiterals.DefaultAspireProjectPath)
     {
-        Name = nameof(ICommandOptions.StatePath);
         Description = "The path where the state file will be stored";
         Arity = ArgumentArity.ExactlyOne;
         Required = false;
