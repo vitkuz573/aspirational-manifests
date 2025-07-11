@@ -101,7 +101,7 @@ public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider s
     {
         stateFile = fs.Path.Combine(options.StatePath, AspirateLiterals.StateFileName);
 
-        var doesNotExist =  !fs.File.Exists(stateFile);
+        var doesNotExist = !fs.File.Exists(stateFile);
 
         if (doesNotExist && options.RequiresState == true)
         {
@@ -124,13 +124,16 @@ public class StateService(IFileSystem fs, IAnsiConsole logger, ISecretProvider s
         }
 
         await RestoreAllState(options, stateFile);
+
         return true;
     }
 
     private async Task<bool> RestoreAllState(StateManagementOptions options, string stateFile)
     {
         await RestoreState(options, stateFile, true);
+
         LogAllStateReloaded(stateFile);
+
         return true;
     }
 

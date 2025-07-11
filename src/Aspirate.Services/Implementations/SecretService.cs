@@ -6,7 +6,7 @@ public class SecretService(
     IAnsiConsole logger,
     IEnumerable<ISecretProtectionStrategy> protectionStrategies)
     : ISecretService
-{ 
+{
     private readonly SecretProviderFactory _factory = providerFactory;
     private IReadOnlyCollection<ISecretProtectionStrategy> ProtectionStrategies { get; } = protectionStrategies.ToList();
 

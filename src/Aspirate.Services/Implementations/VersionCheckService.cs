@@ -1,4 +1,4 @@
-﻿namespace Aspirate.Services.Implementations;
+namespace Aspirate.Services.Implementations;
 
 public class VersionCheckService(IFileSystem fs, IAnsiConsole logger) : IVersionCheckService
 {
@@ -47,10 +47,11 @@ public class VersionCheckService(IFileSystem fs, IAnsiConsole logger) : IVersion
                 }
 
                 logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] Version checks have been [blue]enabled[/].");
+
                 return;
             }
 
-            await File.WriteAllTextAsync(updatesDisabledFilePath, "1");
+            await fs.File.WriteAllTextAsync(updatesDisabledFilePath, "1");
 
             logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] Version checks have been [blue]disabled[/].");
         }
@@ -89,7 +90,7 @@ public class VersionCheckService(IFileSystem fs, IAnsiConsole logger) : IVersion
 
                 var updatedLastCheckedData = JsonSerializer.Serialize(lastCheckedVersion);
 
-                return File.WriteAllTextAsync(lastVersionCheckedFilePath, updatedLastCheckedData);
+                return fs.File.WriteAllTextAsync(lastVersionCheckedFilePath, updatedLastCheckedData);
             }
 
             var lastCheckedDate = lastCheckedVersion.LastChecked;
@@ -105,6 +106,7 @@ public class VersionCheckService(IFileSystem fs, IAnsiConsole logger) : IVersion
         catch (Exception e)
         {
             logger.ValidationFailed(e.Message);
+
             return Task.CompletedTask;
         }
     }
@@ -137,19 +139,19 @@ public class VersionCheckService(IFileSystem fs, IAnsiConsole logger) : IVersion
 
             var lastCheckedData = JsonSerializer.Serialize(lastChecked);
 
-            await File.WriteAllTextAsync(lastVersionCheckedFilePath, lastCheckedData);
+            await fs.File.WriteAllTextAsync(lastVersionCheckedFilePath, lastCheckedData);
 
             if (latestVersion > currentVersion)
             {
                 logger.MarkupLine($"[bold][yellow]A new version of Aspirate is available: [blue]{latestVersion}[/].[/][/]");
                 logger.MarkupLine($"[bold][yellow]You are currently using: [blue]{currentVersion}[/].[/][/]");
-                logger.MarkupLine(
-                    $"[italic][yellow]You can update with: [blue]dotnet tool install -g aspirate --prerelease[/].[/][/]");
+                logger.MarkupLine($"[italic][yellow]You can update with: [blue]dotnet tool install -g aspirate --prerelease[/].[/][/]");
             }
         }
         catch (HttpRequestException)
         {
             logger.MarkupLine($"[red]Network error: Unable to reach api.nuget.org. Please check your internet connection.[/]");
+
             return;
         }
         catch (Exception e)

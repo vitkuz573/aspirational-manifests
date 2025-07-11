@@ -80,7 +80,8 @@ public class ShellExecutionService(IAnsiConsole console, IFileSystem fileSystem)
         try
         {
             var commandPath = FindFullPathFromPath(commandName);
-            if(string.IsNullOrEmpty(commandPath) || commandName.Equals(commandPath, StringComparison.Ordinal))
+
+            if (string.IsNullOrEmpty(commandPath) || commandName.Equals(commandPath, StringComparison.Ordinal))
             {
                 return CommandAvailableResult.NotAvailable;
             }
