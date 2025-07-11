@@ -168,4 +168,88 @@ public class KustomizeServiceTests : AspirateTestBase
         var contents = fs.File.ReadAllText(expected);
         contents.Should().Contain("ConnectionString_Test=dummy");
     }
+
+    [Fact]
+    public async Task WriteSecretsOutToTempFiles_CreatesEmptyFilesInNestedOverlay()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory("/overlays/prod");
+        fs.AddDirectory("/overlays/api/prod");
+        fs.AddDirectory("/overlays/panel/prod");
+
+        fs.AddFile("/overlays/prod/kustomization.yaml", new("resources:\n- ../api/prod\n- ../panel/prod\n"));
+        fs.AddFile("/overlays/api/prod/kustomization.yaml", new("secretGenerator:\n- name: api-secrets\n  envs:\n  - .api.secrets\n"));
+        fs.AddFile("/overlays/panel/prod/kustomization.yaml", new("secretGenerator:\n- name: panel-secrets\n  envs:\n  - .panel.secrets\n"));
+
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+        var console = Substitute.For<IAnsiConsole>();
+        var manifestWriter = new ManifestWriter(fs);
+        var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
+
+        var state = CreateAspirateState();
+        state.InputPath = "/overlays";
+        state.OverlayPath = "/overlays/prod";
+        state.SecretState = new SecretState();
+
+        var secretProvider = new SecretProvider(fs);
+        secretProvider.LoadState(state);
+
+        var files = new List<string>();
+
+        await sut.WriteSecretsOutToTempFiles(state, files, secretProvider);
+
+        fs.FileExists("/overlays/api/prod/.api.secrets").Should().BeTrue();
+        fs.FileExists("/overlays/panel/prod/.panel.secrets").Should().BeTrue();
+        fs.File.ReadAllText("/overlays/api/prod/.api.secrets").Should().BeEmpty();
+        fs.File.ReadAllText("/overlays/panel/prod/.panel.secrets").Should().BeEmpty();
+    }
+
+    [Fact]
+    public async Task WriteSecretsOutToTempFiles_WritesSecretsInNestedOverlay()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory("/overlays/prod");
+        fs.AddDirectory("/overlays/api/prod");
+        fs.AddDirectory("/overlays/panel/prod");
+
+        fs.AddFile("/overlays/prod/kustomization.yaml", new("resources:\n- ../api/prod\n- ../panel/prod\n"));
+        fs.AddFile("/overlays/api/prod/kustomization.yaml", new("secretGenerator:\n- name: api-secrets\n  envs:\n  - .api.secrets\n"));
+        fs.AddFile("/overlays/panel/prod/kustomization.yaml", new("secretGenerator:\n- name: panel-secrets\n  envs:\n  - .panel.secrets\n"));
+
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+        var console = Substitute.For<IAnsiConsole>();
+        var manifestWriter = new ManifestWriter(fs);
+        var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
+
+        var state = CreateAspirateState();
+        state.InputPath = "/overlays";
+        state.OverlayPath = "/overlays/prod";
+        state.SecretState = new SecretState
+        {
+            Secrets = new()
+            {
+                ["api"] = new()
+                {
+                    ["token"] = "1234"
+                },
+                ["panel"] = new()
+                {
+                    ["pwd"] = "abcd"
+                }
+            }
+        };
+
+        var secretProvider = new SecretProvider(fs);
+        secretProvider.LoadState(state);
+
+        var files = new List<string>();
+
+        await sut.WriteSecretsOutToTempFiles(state, files, secretProvider);
+
+        fs.FileExists("/overlays/api/prod/.api.secrets").Should().BeTrue();
+        fs.FileExists("/overlays/panel/prod/.panel.secrets").Should().BeTrue();
+
+        fs.File.ReadAllText("/overlays/api/prod/.api.secrets").Should().Contain("token=1234");
+        fs.File.ReadAllText("/overlays/panel/prod/.panel.secrets").Should().Contain("pwd=abcd");
+    }
 }

@@ -46,96 +46,169 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
-        if (!secretProvider.SecretStateExists(state))
-        {
-            return;
-        }
-
-
-        if (state.SecretState is null || state.SecretState.Secrets.Count == 0)
-        {
-            return;
-        }
-
-        var basePath = !string.IsNullOrEmpty(state.OverlayPath)
+        var startPath = !string.IsNullOrEmpty(state.OverlayPath)
             ? state.OverlayPath
             : !string.IsNullOrEmpty(state.InputPath)
-                ? state.InputPath
+                ? state.InputPath!
                 : fileSystem.Path.GetTempPath();
 
-        if (!string.IsNullOrEmpty(state.OverlayPath))
+        if (!fileSystem.Directory.Exists(startPath))
         {
-            foreach (var dir in fileSystem.Directory.GetDirectories(basePath))
+            logger.MarkupLine($"[yellow]Overlay directory '{startPath}' does not exist.[/]");
+            return;
+        }
+
+        var visited = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        await ProcessKustomizationDirectory(startPath, visited, files, secretProvider);
+    }
+
+    private async Task ProcessKustomizationDirectory(string directory, HashSet<string> visited, List<string> files, ISecretProvider secretProvider)
+    {
+        var fullPath = fileSystem.Path.GetFullPath(directory);
+        if (!visited.Add(fullPath))
+        {
+            return;
+        }
+
+        var kustomizationFile = GetKustomizationFilePath(fullPath);
+        if (kustomizationFile is null)
+        {
+            return;
+        }
+
+        KustomizationYaml? kustomization = null;
+        try
+        {
+            var text = await fileSystem.File.ReadAllTextAsync(kustomizationFile);
+            var deserializer = new DeserializerBuilder()
+                .IgnoreUnmatchedProperties()
+                .Build();
+            kustomization = deserializer.Deserialize<KustomizationYaml>(text);
+        }
+        catch (Exception ex)
+        {
+            logger.MarkupLine($"[yellow]Failed to parse kustomization at '{kustomizationFile}': {ex.Message}[/]");
+            return;
+        }
+
+        if (kustomization is null)
+        {
+            return;
+        }
+
+        if (kustomization.SecretGenerator is not null)
+        {
+            foreach (var generator in kustomization.SecretGenerator)
             {
-                var name = fileSystem.Path.GetFileName(dir);
-                var secretFilePath = fileSystem.Path.Combine(dir, $".{name}.secrets");
-                if (!fileSystem.File.Exists(secretFilePath))
+                if (generator.Envs is null)
                 {
-                    files.Add(secretFilePath);
-                    var stream = fileSystem.File.Create(secretFilePath);
-                    stream.Close();
+                    continue;
+                }
+
+                foreach (var env in generator.Envs)
+                {
+                    var envPath = fileSystem.Path.GetFullPath(fileSystem.Path.Combine(fullPath, env));
+                    var resourceName = ExtractResourceName(env);
+
+                    if (!fileSystem.File.Exists(envPath))
+                    {
+                        files.Add(envPath);
+                        var stream = fileSystem.File.Create(envPath);
+                        stream.Close();
+                    }
+                    else
+                    {
+                        files.Add(envPath);
+                    }
+
+                    if (secretProvider.State?.Secrets != null
+                        && secretProvider.State.Secrets.TryGetValue(resourceName, out var secrets)
+                        && secrets.Count > 0)
+                    {
+                        await using var writer = fileSystem.File.CreateText(envPath);
+                        foreach (var key in secrets.Keys)
+                        {
+                            var secretValue = secretProvider.GetSecret(resourceName, key);
+                            await writer.WriteLineAsync($"{key}={secretValue}");
+                        }
+
+                        await writer.FlushAsync();
+                        writer.Close();
+
+                        if (OperatingSystem.IsWindows())
+                        {
+                            var fileInfo = fileSystem.FileInfo.New(envPath);
+                            var security = fileInfo.GetAccessControl();
+                            var currentUser = WindowsIdentity.GetCurrent().User;
+
+                            if (currentUser != null)
+                            {
+                                var rule = new FileSystemAccessRule(currentUser, FileSystemRights.Read | FileSystemRights.Write, AccessControlType.Allow);
+
+                                security.SetAccessRule(rule);
+                                security.SetAccessRuleProtection(true, false);
+
+                                fileInfo.SetAccessControl(security);
+                            }
+                        }
+                        else
+                        {
+                            try
+                            {
+                                fileSystem.File.SetUnixFileMode(envPath, UnixFileMode.UserRead | UnixFileMode.UserWrite);
+                            }
+                            catch (PlatformNotSupportedException)
+                            {
+                                // Ignore on platforms that do not support setting file permissions
+                            }
+                            catch (NotImplementedException)
+                            {
+                                // Mock file system used in tests does not implement this API
+                            }
+                        }
+                    }
                 }
             }
         }
 
-        foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
+        if (kustomization.Resources is null)
         {
-            var resourcePath = fileSystem.Path.Combine(basePath, resourceSecrets.Key);
+            return;
+        }
 
-            if (!fileSystem.Directory.Exists(resourcePath))
+        foreach (var resource in kustomization.Resources)
+        {
+            var next = fileSystem.Path.GetFullPath(fileSystem.Path.Combine(fullPath, resource));
+            if (fileSystem.Directory.Exists(next) && GetKustomizationFilePath(next) != null)
             {
-                continue;
-            }
-
-            var secretFile = fileSystem.Path.Combine(resourcePath, $".{resourceSecrets.Key}.secrets");
-
-            files.Add(secretFile);
-
-            await using var streamWriter = fileSystem.File.CreateText(secretFile);
-
-            foreach (var key in resourceSecrets.Value.Keys)
-            {
-                var secretValue = secretProvider.GetSecret(resourceSecrets.Key, key);
-
-                await streamWriter.WriteLineAsync($"{key}={secretValue}");
-            }
-
-            await streamWriter.FlushAsync();
-
-            streamWriter.Close();
-
-            if (OperatingSystem.IsWindows())
-            {
-                var fileInfo = fileSystem.FileInfo.New(secretFile);
-                var security = fileInfo.GetAccessControl();
-                var currentUser = WindowsIdentity.GetCurrent().User;
-
-                if (currentUser != null)
-                {
-                    var rule = new FileSystemAccessRule(currentUser, FileSystemRights.Read | FileSystemRights.Write, AccessControlType.Allow);
-
-                    security.SetAccessRule(rule);
-                    security.SetAccessRuleProtection(true, false);
-
-                    fileInfo.SetAccessControl(security);
-                }
-            }
-            else
-            {
-                try
-                {
-                    fileSystem.File.SetUnixFileMode(secretFile, UnixFileMode.UserRead | UnixFileMode.UserWrite);
-                }
-                catch (PlatformNotSupportedException)
-                {
-                    // Ignore on platforms that do not support setting file permissions
-                }
-                catch (NotImplementedException)
-                {
-                    // Mock file system used in tests does not implement this API
-                }
+                await ProcessKustomizationDirectory(next, visited, files, secretProvider);
             }
         }
+    }
+
+    private string? GetKustomizationFilePath(string directory)
+    {
+        foreach (var fileName in ["kustomization.yaml", "kustomization.yml", "Kustomization"])
+        {
+            var candidate = fileSystem.Path.Combine(directory, fileName);
+            if (fileSystem.File.Exists(candidate))
+            {
+                return candidate;
+            }
+        }
+
+        return null;
+    }
+
+    private static string ExtractResourceName(string envFile)
+    {
+        var name = Path.GetFileNameWithoutExtension(envFile);
+        if (name.StartsWith('.'))
+        {
+            name = name[1..];
+        }
+
+        return name;
     }
 
     public async Task<string?> WriteImagePullSecretToTempFile(AspirateState state, ISecretProvider secretProvider)
@@ -214,7 +287,7 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
         return secretFile;
     }
 
-    public void CleanupSecretEnvFiles(bool? disableSecrets, IEnumerable<string> secretFiles)
+public void CleanupSecretEnvFiles(bool? disableSecrets, IEnumerable<string> secretFiles)
     {
         if (disableSecrets == true)
         {
@@ -226,4 +299,19 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             fileSystem.File.Delete(secretFile);
         }
     }
+}
+
+internal sealed class KustomizationYaml
+{
+    [YamlMember(Alias = "resources")]
+    public List<string>? Resources { get; set; }
+
+    [YamlMember(Alias = "secretGenerator")]
+    public List<KustomizationSecretGenerator>? SecretGenerator { get; set; }
+}
+
+internal sealed class KustomizationSecretGenerator
+{
+    [YamlMember(Alias = "envs")]
+    public List<string>? Envs { get; set; }
 }
