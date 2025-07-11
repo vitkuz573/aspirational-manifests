@@ -145,6 +145,7 @@ public class HelmChartCreator(IFileSystem fileSystem, IKubernetesService kuberne
 
         var valuesFile = $"{chartPath}/values.yaml";
         var valuesYaml = serializer.Serialize(values);
+
         await File.AppendAllTextAsync(valuesFile, valuesYaml);
     }
 }

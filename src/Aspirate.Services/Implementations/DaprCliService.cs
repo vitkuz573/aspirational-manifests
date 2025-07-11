@@ -14,6 +14,7 @@ public class DaprCliService(IShellExecutionService shellExecutionService, IAnsiC
         }
 
         _daprPath = result.FullPath;
+
         return true;
     }
 

@@ -1,7 +1,7 @@
-namespace Aspirate.Services.Implementations;
-
 using System.Security.AccessControl;
 using System.Security.Principal;
+
+namespace Aspirate.Services.Implementations;
 
 public class KustomizeService(IFileSystem fileSystem, IShellExecutionService shellExecutionService, IAnsiConsole logger, IManifestWriter manifestWriter) : IKustomizeService
 {
@@ -77,10 +77,12 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             foreach (var key in resourceSecrets.Value.Keys)
             {
                 var secretValue = secretProvider.GetSecret(resourceSecrets.Key, key);
+
                 await streamWriter.WriteLineAsync($"{key}={secretValue}");
             }
 
             await streamWriter.FlushAsync();
+
             streamWriter.Close();
 
             if (OperatingSystem.IsWindows())
@@ -88,13 +90,14 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
                 var fileInfo = fileSystem.FileInfo.New(secretFile);
                 var security = fileInfo.GetAccessControl();
                 var currentUser = WindowsIdentity.GetCurrent().User;
+
                 if (currentUser != null)
                 {
-                    var rule = new FileSystemAccessRule(currentUser,
-                        FileSystemRights.Read | FileSystemRights.Write,
-                        AccessControlType.Allow);
+                    var rule = new FileSystemAccessRule(currentUser, FileSystemRights.Read | FileSystemRights.Write, AccessControlType.Allow);
+
                     security.SetAccessRule(rule);
                     security.SetAccessRuleProtection(true, false);
+
                     fileInfo.SetAccessControl(security);
                 }
             }
@@ -162,14 +165,14 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             var fileInfo = fileSystem.FileInfo.New(secretFile);
             var security = fileInfo.GetAccessControl();
             var currentUser = WindowsIdentity.GetCurrent().User;
+
             if (currentUser != null)
             {
-                var rule = new FileSystemAccessRule(
-                    currentUser,
-                    FileSystemRights.Read | FileSystemRights.Write,
-                    AccessControlType.Allow);
+                var rule = new FileSystemAccessRule(currentUser, FileSystemRights.Read | FileSystemRights.Write, AccessControlType.Allow);
+
                 security.SetAccessRule(rule);
                 security.SetAccessRuleProtection(true, false);
+
                 fileInfo.SetAccessControl(security);
             }
         }
@@ -199,7 +202,7 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
-        foreach (var secretFile in secretFiles.Where(secretFile => fileSystem.File.Exists(secretFile)))
+        foreach (var secretFile in secretFiles.Where(fileSystem.File.Exists))
         {
             fileSystem.File.Delete(secretFile);
         }

@@ -4,25 +4,14 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
 {
     private static readonly StringBuilder _imageBuilder = new();
 
-    public async Task<MsBuildContainerProperties> GetContainerDetails(
-        string resourceName,
-        ProjectResource projectResource,
-        ContainerOptions options,
-        string? basePath = null)
+    public async Task<MsBuildContainerProperties> GetContainerDetails(string resourceName, ProjectResource projectResource, ContainerOptions options, string? basePath = null)
     {
-        var containerPropertiesJson = await propertyService.GetProjectPropertiesAsync(
-            fileSystem.NormalizePath(projectResource.Path, basePath),
-            ContainerBuilderLiterals.ContainerRegistry,
-            ContainerBuilderLiterals.ContainerRepository,
-            ContainerBuilderLiterals.ContainerImageName,
-            ContainerBuilderLiterals.ContainerImageTag,
-            ContainerBuilderLiterals.DockerfileFile,
-            ContainerBuilderLiterals.DockerfileContext);
+        var containerPropertiesJson = await propertyService.GetProjectPropertiesAsync(fileSystem.NormalizePath(projectResource.Path, basePath), ContainerBuilderLiterals.ContainerRegistry, ContainerBuilderLiterals.ContainerRepository, ContainerBuilderLiterals.ContainerImageName, ContainerBuilderLiterals.ContainerImageTag, ContainerBuilderLiterals.DockerfileFile, ContainerBuilderLiterals.DockerfileContext);
 
         var msBuildProperties = JsonSerializer.Deserialize<MsBuildProperties<MsBuildContainerProperties>>(containerPropertiesJson ?? "{}");
 
         // Exit app if container registry is empty. We need it.
-        EnsureContainerRegistryIsNotEmpty(msBuildProperties.Properties, projectResource, options.Registry);
+        EnsureContainerRegistryIsNotEmpty(msBuildProperties.Properties, options.Registry);
 
         // Fallback to service name if image name is not provided from anywhere. (imageName is deprecated using repository like it says to).
         if (string.IsNullOrEmpty(msBuildProperties.Properties.ContainerRepository) && string.IsNullOrEmpty(msBuildProperties.Properties.ContainerImageName))
@@ -43,18 +32,14 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
         _imageBuilder.Clear();
 
         HandleRegistry(containerDetails);
-
         HandleRepository(containerDetails, containerPrefix);
-
         HandleImage(containerDetails);
-
         HandleTag(containerDetails);
 
         return _imageBuilder.ToString().Trim('/');
     }
 
-    private static void HandleTag(MsBuildContainerProperties containerDetails) =>
-        _imageBuilder.Append($":{containerDetails.ContainerImageTag.Split(";").First()}");
+    private static void HandleTag(MsBuildContainerProperties containerDetails) => _imageBuilder.Append($":{containerDetails.ContainerImageTag.Split(";").First()}");
 
     private static void HandleImage(MsBuildContainerProperties containerDetails)
     {
@@ -97,10 +82,7 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
         }
     }
 
-    private void EnsureContainerRegistryIsNotEmpty(
-        MsBuildContainerProperties details,
-        ProjectResource projectResource,
-        string? containerRegistry)
+    private static void EnsureContainerRegistryIsNotEmpty(MsBuildContainerProperties details, string? containerRegistry)
     {
         if (HasRegistry(details))
         {
@@ -112,14 +94,12 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
         {
             details.ContainerRegistry = containerRegistry;
         }
-        //
+
         // console.MarkupLine($"[red bold]Required MSBuild property [blue]'ContainerRegistry'[/] not set in project [blue]'{project.Path}'. Cannot continue[/].[/]");
         // throw new ActionCausesExitException(1);
     }
 
-    private static void HandleTags(
-        MsBuildProperties<MsBuildContainerProperties> msBuildProperties,
-        List<string>? containerImageTag)
+    private static void HandleTags(MsBuildProperties<MsBuildContainerProperties> msBuildProperties, List<string>? containerImageTag)
     {
         if (!string.IsNullOrEmpty(msBuildProperties.Properties.ContainerImageTag))
         {
@@ -129,6 +109,7 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
         if (containerImageTag is not null)
         {
             msBuildProperties.Properties.ContainerImageTag = string.Join(';', containerImageTag);
+
             return;
         }
 
@@ -137,6 +118,8 @@ public class ContainerDetailsService(IProjectPropertyService propertyService, IA
 
 
     private static bool HasImageName(MsBuildContainerProperties? containerDetails) => !string.IsNullOrEmpty(containerDetails?.ContainerImageName);
+
     private static bool HasRepository(MsBuildContainerProperties? containerDetails) => !string.IsNullOrEmpty(containerDetails?.ContainerRepository);
+
     private static bool HasRegistry(MsBuildContainerProperties? containerDetails) => !string.IsNullOrEmpty(containerDetails?.ContainerRegistry);
 }

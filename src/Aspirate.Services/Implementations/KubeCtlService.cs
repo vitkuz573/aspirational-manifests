@@ -3,7 +3,7 @@ namespace Aspirate.Services.Implementations;
 public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console, IShellExecutionService shellExecutionService) : IKubeCtlService
 {
 
-    private static readonly Regex NamespaceMatcher = new("name: (.*)", RegexOptions.Compiled);
+    private static readonly Regex NamespaceMatcher = NamespaceRegex();
     public async Task<string?> SelectKubernetesContextForDeployment()
     {
         var contexts = await GatherContexts();
@@ -11,6 +11,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
         if (contexts.Count == 0)
         {
             console.MarkupLine("[red]No Kubernetes contexts found in kubeconfig[/]");
+
             return null;
         }
 
@@ -39,8 +40,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
         {
             Command = KubeCtlLiterals.KubeCtlCommand,
             ArgumentsBuilder = argumentsBuilder,
-            PreCommandMessage =
-                $"[cyan]Executing: [green]{KubeCtlLiterals.KubeCtlCommand} {argumentsBuilder.RenderArguments()}[/] against kubernetes context [blue]{context}.[/][/]",
+            PreCommandMessage = $"[cyan]Executing: [green]{KubeCtlLiterals.KubeCtlCommand} {argumentsBuilder.RenderArguments()}[/] against kubernetes context [blue]{context}.[/][/]",
             FailureCommandMessage = $"[red]Failed to deploy manifests in [blue]'{fullOutputPath}'[/][/]",
             ShowOutput = true,
         };
@@ -71,8 +71,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
         {
             Command = KubeCtlLiterals.KubeCtlCommand,
             ArgumentsBuilder = argumentsBuilder,
-            PreCommandMessage =
-                $"[cyan]Executing: [green]{KubeCtlLiterals.KubeCtlCommand} {argumentsBuilder.RenderArguments()}[/] against kubernetes context [blue]{context}.[/][/]",
+            PreCommandMessage = $"[cyan]Executing: [green]{KubeCtlLiterals.KubeCtlCommand} {argumentsBuilder.RenderArguments()}[/] against kubernetes context [blue]{context}.[/][/]",
             FailureCommandMessage = "[red]Failed to perform rolling restart of deployments.[/]",
             ShowOutput = true,
         };
@@ -186,6 +185,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
         if (string.IsNullOrEmpty(context))
         {
             console.MarkupLine("[red]Active context has not been set.[/]");
+
             return false;
         }
 
@@ -216,9 +216,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
             var root = jsonDoc.RootElement;
             var contexts = root.GetProperty(KubeCtlLiterals.KubeCtlContextsProperty);
 
-            return contexts.EnumerateArray()
-                .Select(context => context.GetProperty(KubeCtlLiterals.KubeCtlNameProperty).GetString())
-                .ToList();
+            return [.. contexts.EnumerateArray().Select(context => context.GetProperty(KubeCtlLiterals.KubeCtlNameProperty).GetString())];
         }
         catch
         {
@@ -233,4 +231,7 @@ public partial class KubeCtlService(IFileSystem filesystem, IAnsiConsole console
                 .PageSize(10)
                 .MoreChoicesText("[grey](Move up and down to reveal more contexts)[/]")
                 .AddChoices(contextNames));
+
+    [GeneratedRegex("name: (.*)", RegexOptions.Compiled)]
+    private static partial Regex NamespaceRegex();
 }
