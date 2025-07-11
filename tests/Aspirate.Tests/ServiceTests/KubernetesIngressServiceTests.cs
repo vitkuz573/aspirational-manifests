@@ -28,7 +28,7 @@ public class KubernetesIngressServiceTests : BaseServiceTests<IKubernetesIngress
 
         var sut = new KubernetesIngressService(fileSystem, kubeCtl, k8sService, console);
 
-        await sut.EnsureIngressController("test");
+        await sut.EnsureIngressController("test", IngressController.Nginx.Value);
 
         await kubeCtl.Received().ApplyManifestFile("test", Arg.Any<string>());
     }

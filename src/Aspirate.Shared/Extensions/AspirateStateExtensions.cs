@@ -33,6 +33,11 @@ public static class AspirateStateExtensions
         {
             state.ContainerBuilder = ContainerBuilder.Docker.Value;
         }
+
+        if (string.IsNullOrEmpty(state.IngressController))
+        {
+            state.IngressController = IngressController.Nginx.Value;
+        }
     }
 
     public static void ReplaceCurrentStateWithPreviousState(this AspirateState currentState, AspirateState previousState, bool restoreAllRestorable)

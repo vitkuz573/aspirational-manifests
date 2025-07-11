@@ -33,6 +33,17 @@ public class ConfigureIngressAction(
 
         if (!CurrentState.NonInteractive)
         {
+            if (string.IsNullOrEmpty(CurrentState.IngressController))
+            {
+                var controller = Logger.Prompt(
+                    new SelectionPrompt<string>()
+                        .Title("Select ingress controller")
+                        .PageSize(10)
+                        .AddChoices(IngressController.List.Select(c => c.Value).ToArray()));
+
+                CurrentState.IngressController = controller;
+            }
+
             var selected = Logger.Prompt(
                 new MultiSelectionPrompt<string>()
                     .Title("Select [green]services[/] to expose via ingress")
@@ -116,10 +127,10 @@ public class ConfigureIngressAction(
                 };
             }
 
-            if (Logger.Confirm("Deploy nginx ingress controller if not present?", false) &&
+            if (Logger.Confirm($"Deploy {CurrentState.IngressController} ingress controller if not present?", false) &&
                 !string.IsNullOrEmpty(CurrentState.KubeContext))
             {
-                await ingressService.EnsureIngressController(CurrentState.KubeContext);
+                await ingressService.EnsureIngressController(CurrentState.KubeContext, CurrentState.IngressController);
             }
         }
 
@@ -131,6 +142,11 @@ public class ConfigureIngressAction(
         if (CurrentState.NonInteractive && (CurrentState.IngressDefinitions == null || CurrentState.IngressDefinitions.Count == 0))
         {
             Logger.ValidationFailed("Ingress definitions are required when running non-interactively.");
+        }
+
+        if (CurrentState.NonInteractive && string.IsNullOrEmpty(CurrentState.IngressController))
+        {
+            Logger.ValidationFailed("Ingress controller is required when running non-interactively.");
         }
     }
 }
