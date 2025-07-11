@@ -62,8 +62,11 @@ internal sealed class UpdateChecksCommand : GenericCommand
     }
 }
 
-internal sealed class EnableUpdateChecksCommand() : GenericCommand("enable", "Enables Aspir8 version checks.")
+internal sealed class EnableUpdateChecksCommand : GenericCommand
 {
+    public EnableUpdateChecksCommand() : base("enable", "Enables Aspir8 version checks.")
+    {
+    }
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
@@ -75,8 +78,11 @@ internal sealed class EnableUpdateChecksCommand() : GenericCommand("enable", "En
     }
 }
 
-internal sealed class DisableUpdateChecksCommand() : GenericCommand("disable", "Disables Aspir8 version checks.")
+internal sealed class DisableUpdateChecksCommand : GenericCommand
 {
+    public DisableUpdateChecksCommand() : base("disable", "Disables Aspir8 version checks.")
+    {
+    }
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
@@ -88,8 +94,11 @@ internal sealed class DisableUpdateChecksCommand() : GenericCommand("disable", "
     }
 }
 
-internal sealed class ShowLogoCommand() : GenericCommand("show", "Show the aspirate Logo.")
+internal sealed class ShowLogoCommand : GenericCommand
 {
+    public ShowLogoCommand() : base("show", "Show the aspirate Logo.")
+    {
+    }
     protected override Task<int> ExecuteCommand(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
@@ -109,8 +118,11 @@ internal sealed class ShowLogoCommand() : GenericCommand("show", "Show the aspir
     }
 }
 
-internal sealed class HideLogoCommand() : GenericCommand("hide", "Hide the Aspir8 logo.")
+internal sealed class HideLogoCommand : GenericCommand
 {
+    public HideLogoCommand() : base("hide", "Hide the Aspir8 logo.")
+    {
+    }
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
         var serviceProvider = services.BuildServiceProvider();
