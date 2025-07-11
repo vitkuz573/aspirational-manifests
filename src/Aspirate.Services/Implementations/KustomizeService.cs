@@ -55,11 +55,20 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
-        var tempPath = fileSystem.Path.GetTempPath();
+        var basePath = !string.IsNullOrEmpty(state.InputPath)
+            ? state.InputPath
+            : fileSystem.Path.GetTempPath();
 
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {
-            var secretFile = fileSystem.Path.Combine(tempPath, $"{resourceSecrets.Key}.{Path.GetRandomFileName()}.secrets");
+            var resourcePath = fileSystem.Path.Combine(basePath, resourceSecrets.Key);
+
+            if (!fileSystem.Directory.Exists(resourcePath))
+            {
+                continue;
+            }
+
+            var secretFile = fileSystem.Path.Combine(resourcePath, $".{resourceSecrets.Key}.secrets");
 
             files.Add(secretFile);
 
