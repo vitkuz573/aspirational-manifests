@@ -155,4 +155,53 @@ public class ApplyManifestsToClusterActionTests : BaseActionTests<ApplyManifests
         await kubeCtl.Received().ApplyManifestFile(state.KubeContext, "temp.yaml");
         kustomize.Received().CleanupSecretEnvFiles(state.DisableSecrets, Arg.Is<IEnumerable<string>>(x => x.Contains("temp.yaml")));
     }
+
+    [Fact]
+    public async Task ExecuteApplyManifestsToClusterActionTests_WithOverlayInput_Success()
+    {
+        // Arrange
+        var overlayPath = "/overlay";
+        var outputPath = "/overlay/aspirate-output";
+
+        var state = CreateAspirateState(nonInteractive: true, projectPath: DefaultProjectPath, inputPath: overlayPath, kubeContext: "docker-desktop");
+        state.OutputPath = outputPath;
+
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddDirectory(overlayPath);
+
+        var kubeCtl = Substitute.For<IKubeCtlService>();
+        kubeCtl.ApplyManifests(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+
+        var kustomize = Substitute.For<IKustomizeService>();
+
+        var secretProvider = new SecretProvider(fileSystem);
+
+        var services = new ServiceCollection();
+        services.RegisterAspirateEssential();
+        services.RemoveAll<IFileSystem>();
+        services.RemoveAll<IShellExecutionService>();
+        services.RemoveAll<AspirateState>();
+        services.RemoveAll<IKubeCtlService>();
+        services.RemoveAll<IKustomizeService>();
+        services.RemoveAll<SecretProvider>();
+
+        services.AddSingleton<IFileSystem>(fileSystem);
+        services.AddSingleton(secretProvider);
+        services.AddSingleton<IAnsiConsole>(new TestConsole());
+        services.AddSingleton(state);
+        services.AddSingleton(Substitute.For<IShellExecutionService>());
+        services.AddSingleton(kubeCtl);
+        services.AddSingleton(kustomize);
+
+        var provider = services.BuildServiceProvider();
+
+        var action = GetSystemUnderTest(provider);
+
+        // Act
+        var result = await action.ExecuteAsync();
+
+        // Assert
+        result.Should().BeTrue();
+        await kubeCtl.Received().ApplyManifests(state.KubeContext!, overlayPath);
+    }
 }
