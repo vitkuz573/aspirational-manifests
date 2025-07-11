@@ -24,6 +24,10 @@ public class AspirateState :
     public string? InputPath { get; set; }
 
     [RestorableStateProperty]
+    [JsonPropertyName("overlayPath")]
+    public string? OverlayPath { get; set; }
+
+    [RestorableStateProperty]
     [JsonPropertyName("outputPath")]
     public string? OutputPath { get; set; }
 

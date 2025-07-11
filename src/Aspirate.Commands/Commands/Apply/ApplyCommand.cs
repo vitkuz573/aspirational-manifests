@@ -8,6 +8,7 @@ public sealed class ApplyCommand : BaseCommand<ApplyOptions, ApplyCommandHandler
     {
         Options.Add(InputPathOption.Instance);
         Options.Add(KubernetesContextOption.Instance);
+        Options.Add(OverlayPathOption.Instance);
         Options.Add(SecretPasswordOption.Instance);
         Options.Add(RollingRestartOption.Instance);
     }

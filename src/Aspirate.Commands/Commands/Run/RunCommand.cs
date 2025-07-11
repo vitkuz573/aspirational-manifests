@@ -18,6 +18,7 @@ public sealed class RunCommand : BaseCommand<RunOptions, RunCommandHandler>
         Options.Add(ContainerRepositoryPrefixOption.Instance);
         Options.Add(ImagePullPolicyOption.Instance);
         Options.Add(NamespaceOption.Instance);
+        Options.Add(OverlayPathOption.Instance);
         Options.Add(RuntimeIdentifierOption.Instance);
         Options.Add(SecretPasswordOption.Instance);
         Options.Add(PrivateRegistryOption.Instance);

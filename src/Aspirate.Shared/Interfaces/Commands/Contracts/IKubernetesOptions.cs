@@ -5,4 +5,6 @@ public interface IKubernetesOptions
     string? InputPath { get; set; }
 
     string? KubeContext { get; set; }
+
+    string? OverlayPath { get; set; }
 }

@@ -23,6 +23,7 @@ public sealed class GenerateCommand : BaseCommand<GenerateOptions, GenerateComma
         Options.Add(OutputFormatOption.Instance);
         Options.Add(RuntimeIdentifierOption.Instance);
         Options.Add(SecretPasswordOption.Instance);
+        Options.Add(OverlayPathOption.Instance);
         Options.Add(PrivateRegistryOption.Instance);
         Options.Add(PrivateRegistryUrlOption.Instance);
         Options.Add(PrivateRegistryUsernameOption.Instance);

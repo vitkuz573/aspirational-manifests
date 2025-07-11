@@ -47,6 +47,13 @@ Builds can be skipped by passing the `--skip-build` flag.
 
 Your manifests will be in the AppHost/aspirate-output directory by default.
 
+If you maintain environment specific overlays, pass `--overlay-path` (or set
+`ASPIRATE_OVERLAY_PATH`) to build that overlay instead of the base manifests.
+
+```bash
+aspirate generate --overlay-path overlays/dev
+```
+
 If you'd like - you can generate a slim docker-compose deployment instead of a kubernetes deployment.
 For this you can pass --output-format compose.
 Please note - this will disable secret support.

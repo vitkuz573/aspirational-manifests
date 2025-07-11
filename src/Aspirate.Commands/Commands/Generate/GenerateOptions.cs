@@ -23,6 +23,7 @@ public sealed class GenerateOptions : BaseCommandOptions,
     public string? ContainerRepositoryPrefix { get; set; }
     public List<string>? ContainerImageTags { get; set; }
     public string? ImagePullPolicy { get; set; }
+    public string? OverlayPath { get; set; }
     public string? OutputFormat { get; set; }
     public List<string>? Parameters { get; set; }
     public string? RuntimeIdentifier { get; set; }

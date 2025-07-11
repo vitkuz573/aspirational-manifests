@@ -8,5 +8,6 @@ public sealed class DestroyCommand : BaseCommand<DestroyOptions, DestroyCommandH
     {
         Options.Add(InputPathOption.Instance);
         Options.Add(KubernetesContextOption.Instance);
+        Options.Add(OverlayPathOption.Instance);
     }
 }

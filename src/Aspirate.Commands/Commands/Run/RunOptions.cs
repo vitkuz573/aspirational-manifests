@@ -20,6 +20,7 @@ public sealed class RunOptions : BaseCommandOptions,
     public List<string>? ContainerImageTags { get; set; }
     public string? ImagePullPolicy { get; set; }
     public string? RuntimeIdentifier { get; set; }
+    public string? OverlayPath { get; set; }
     public string? PrivateRegistryUrl { get; set; }
     public string? PrivateRegistryUsername { get; set; }
     public string? PrivateRegistryPassword { get; set; }
