@@ -12,6 +12,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
+            .SetIngressClassName(IngressController.Nginx.Value)
             .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetIngressTlsSecret("tls")
@@ -23,6 +24,7 @@ public class KubernetesIngressTests
         ingress.Spec.Rules.First().Host.Should().Be("example.com");
         ingress.Spec.Tls.First().SecretName.Should().Be("tls");
         ingress.Metadata.Annotations.Should().ContainKey("test").WhoseValue.Should().Be("value");
+        ingress.Spec.IngressClassName.Should().Be(IngressController.Nginx.Value);
     }
 
     [Fact]
@@ -32,6 +34,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
+            .SetIngressClassName(IngressController.Nginx.Value)
             .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080 } });
@@ -48,6 +51,7 @@ public class KubernetesIngressTests
             .SetName("web")
             .SetContainerImage("test")
             .SetIngressEnabled(true)
+            .SetIngressClassName(IngressController.Nginx.Value)
             .SetIngressHosts(["example.com"])
             .SetIngressPath("/")
             .SetPorts(new List<Ports> { new Ports { Name = "http", InternalPort = 8080, ExternalPort = 80 } });

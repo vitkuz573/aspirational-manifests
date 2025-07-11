@@ -311,7 +311,7 @@ public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
             Metadata = metadata,
             Spec = new V1IngressSpec
             {
-                IngressClassName = "nginx",
+                IngressClassName = data.IngressClassName,
                 Rules = data.IngressHosts.Select(h => new V1IngressRule
                 {
                     Host = h,
@@ -444,7 +444,8 @@ public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
                 .SetIngressTlsSecret(def.TlsSecret)
                 .SetIngressPath(def.Path)
                 .SetIngressPortNumber(def.PortNumber)
-                .SetIngressAnnotations(def.Annotations);
+                .SetIngressAnnotations(def.Annotations)
+                .SetIngressClassName(state.IngressController);
         }
 
         return data;

@@ -26,6 +26,7 @@ public class KubernetesDeploymentData
     public string? ImagePullPolicy {get; private set;}
     public string? ServiceType { get; private set; } = "ClusterIP";
     public bool? IngressEnabled { get; private set; } = false;
+    public string? IngressClassName { get; private set; } = IngressController.Nginx.Value;
     public IReadOnlyCollection<string> IngressHosts { get; private set; } = [];
     public string? IngressTlsSecret { get; private set; }
     public string? IngressPath { get; private set; }
@@ -124,6 +125,12 @@ public class KubernetesDeploymentData
     public KubernetesDeploymentData SetImagePullPolicy(string? imagePullPolicy)
     {
         ImagePullPolicy = imagePullPolicy ?? "IfNotPresent";
+        return this;
+    }
+
+    public KubernetesDeploymentData SetIngressClassName(string? className)
+    {
+        IngressClassName = className ?? IngressController.Nginx.Value;
         return this;
     }
 
