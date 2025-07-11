@@ -19,11 +19,22 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         Options.Add(SecretProviderOption.Instance);
         Options.Add(Pbkdf2IterationsOption.Instance);
 
-        Action = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
+        Action = CommandHandler.Create<TOptions>(ConstructCommand);
     }
 
-    private async Task<int> ConstructCommand(TOptions options, IServiceCollection services)
+    private async Task<int> ConstructCommand(TOptions options)
     {
+        var services = new ServiceCollection();
+        services
+            .AddSingleton(AnsiConsole.Console)
+            .AddSecretProtectionStrategies()
+            .AddAspirateState()
+            .AddAspirateServices()
+            .AddAspirateActions()
+            .AddAspirateProcessors()
+            .AddAspirateSecretProvider()
+            .AddPlaceholderTransformation();
+
         var handler = ActivatorUtilities.CreateInstance<TOptionsHandler>(services.BuildServiceProvider());
 
         var versionCheckService = handler.Services.GetRequiredService<IVersionCheckService>();

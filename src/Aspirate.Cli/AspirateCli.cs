@@ -20,23 +20,6 @@ internal class AspirateCli : RootCommand
         AnsiConsole.WriteLine();
     }
 
-    public static void UseDefaultMasking(HelpContext helpContext)
-    {
-        var secretBaseOptions = helpContext.Command.Options
-            .OfType<IBaseOption>()
-            .Where(x => x.IsSecret)
-            .ToArray();
-
-        foreach (var secretBaseOption in secretBaseOptions)
-        {
-            AddDefaultMaskingForOption(helpContext, secretBaseOption);
-        }
-    }
-
-    private static void AddDefaultMaskingForOption(HelpContext helpContext, IBaseOption baseOption) =>
-        helpContext.HelpBuilder.CustomizeSymbol(
-            (Symbol)baseOption,
-            defaultValue: _ => new MaskedValue(baseOption.GetOptionDefault()?.ToString()).ToString());
 
     private static bool ShouldSkipLogo()
     {
