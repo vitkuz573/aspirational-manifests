@@ -17,10 +17,12 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
         return isKustomizeAvailable;
     }
 
-    public async Task<string> RenderManifestUsingKustomize(string kustomizePath)
+    public async Task<string> RenderManifestUsingKustomize(string kustomizePath, string? overlayPath = null)
     {
+        var buildPath = !string.IsNullOrEmpty(overlayPath) ? overlayPath : kustomizePath;
+
         var arguments = new ArgumentsBuilder()
-            .AppendArgument("build", kustomizePath);
+            .AppendArgument("build", buildPath);
 
         var result = await shellExecutionService.ExecuteCommand(new ShellCommandOptions
         {
@@ -55,9 +57,26 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
-        var basePath = !string.IsNullOrEmpty(state.InputPath)
-            ? state.InputPath
-            : fileSystem.Path.GetTempPath();
+        var basePath = !string.IsNullOrEmpty(state.OverlayPath)
+            ? state.OverlayPath
+            : !string.IsNullOrEmpty(state.InputPath)
+                ? state.InputPath
+                : fileSystem.Path.GetTempPath();
+
+        if (!string.IsNullOrEmpty(state.OverlayPath))
+        {
+            foreach (var dir in fileSystem.Directory.GetDirectories(basePath))
+            {
+                var name = fileSystem.Path.GetFileName(dir);
+                var secretFilePath = fileSystem.Path.Combine(dir, $".{name}.secrets");
+                if (!fileSystem.File.Exists(secretFilePath))
+                {
+                    files.Add(secretFilePath);
+                    var stream = fileSystem.File.Create(secretFilePath);
+                    stream.Close();
+                }
+            }
+        }
 
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {
