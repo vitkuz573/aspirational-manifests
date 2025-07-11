@@ -12,6 +12,19 @@ Builds can be skipped by passing the `--skip-build` flag.
 
 Your manifests will be in the `%output-dir%` directory by default.
 
+### Using Overlays
+
+To build a specific overlay, supply `--overlay-path` (or `ASPIRATE_OVERLAY_PATH`).
+If a component directory in the overlay lacks a `.secrets` file, Aspir8 creates
+an empty one so kustomize can run.
+
+```bash
+aspirate generate --overlay-path overlays/dev
+```
+
+See [Using Overlays](Using-Overlays.md) for details on directory structure and
+patch examples.
+
 ## Compose
 
 The output format of the manifest can also be changed to compose to generate a lightweight deployment (docker/podman compose).
