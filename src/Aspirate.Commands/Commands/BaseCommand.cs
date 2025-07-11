@@ -9,17 +9,17 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
     protected virtual bool CommandSkipsStateAndSecrets => false;
     protected virtual bool CommandAlwaysRequiresState => false;
 
-    protected BaseCommand(string name, string description)
-        : base(name, description)
+    protected BaseCommand(string name, string description) : base(name, description)
     {
-        AddOption(NonInteractiveOption.Instance);
-        AddOption(DisableSecretsOption.Instance);
-        AddOption(DisableStateOption.Instance);
-        AddOption(StatePathOption.Instance);
-        AddOption(LaunchProfileOption.Instance);
-        AddOption(SecretProviderOption.Instance);
-        AddOption(Pbkdf2IterationsOption.Instance);
-        Handler = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
+        Options.Add(NonInteractiveOption.Instance);
+        Options.Add(DisableSecretsOption.Instance);
+        Options.Add(DisableStateOption.Instance);
+        Options.Add(StatePathOption.Instance);
+        Options.Add(LaunchProfileOption.Instance);
+        Options.Add(SecretProviderOption.Instance);
+        Options.Add(Pbkdf2IterationsOption.Instance);
+
+        Action = CommandHandler.Create<TOptions, IServiceCollection>(ConstructCommand);
     }
 
     private async Task<int> ConstructCommand(TOptions options, IServiceCollection services)
@@ -27,11 +27,13 @@ public abstract class BaseCommand<TOptions, TOptionsHandler> : Command
         var handler = ActivatorUtilities.CreateInstance<TOptionsHandler>(services.BuildServiceProvider());
 
         var versionCheckService = handler.Services.GetRequiredService<IVersionCheckService>();
+
         await versionCheckService.CheckVersion();
 
         if (CommandSkipsStateAndSecrets)
         {
             handler.CurrentState.PopulateStateFromOptions(options);
+
             return await handler.HandleAsync(options);
         }
 
