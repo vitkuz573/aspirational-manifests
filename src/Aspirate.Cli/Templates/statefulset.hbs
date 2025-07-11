@@ -56,10 +56,16 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{name}}-env
-          {{/if}}
-          {{#if hasAnySecrets}}
+            {{#if hasAnySecrets}}
             - secretRef:
                 name: {{name}}-secrets
+            {{/if}}
+          {{else}}
+          {{#if hasAnySecrets}}
+          envFrom:
+            - secretRef:
+                name: {{name}}-secrets
+          {{/if}}
           {{/if}}
       {{#if hasVolumes}}
           volumeMounts:
