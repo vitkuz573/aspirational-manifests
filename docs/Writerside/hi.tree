@@ -33,6 +33,7 @@
     <toc-element topic="File-Permissions.md"/>
     <toc-element topic="External-Providers.md"/>
     <toc-element topic="Ingress-Support.md"/>
+    <toc-element topic="Using-Overlays.md"/>
     <toc-element topic="Dapr-Support.md"/>
     <toc-element topic="Security-Best-Practices.md"/>
     <toc-element topic="Troubleshooting.md"/>

@@ -47,8 +47,14 @@ Builds can be skipped by passing the `--skip-build` flag.
 
 Your manifests will be in the AppHost/aspirate-output directory by default.
 
+### Using Overlays
+
 If you maintain environment specific overlays, pass `--overlay-path` (or set
 `ASPIRATE_OVERLAY_PATH`) to build that overlay instead of the base manifests.
+When an overlay lacks `.secrets` files for a component, Aspirate automatically
+creates empty files so kustomize can process the directory.
+
+See the [Using Overlays](https://prom3theu5.github.io/aspirational-manifests/using-overlays.html) documentation for details.
 
 ```bash
 aspirate generate --overlay-path overlays/dev
