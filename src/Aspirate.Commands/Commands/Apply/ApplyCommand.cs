@@ -6,9 +6,9 @@ public sealed class ApplyCommand : BaseCommand<ApplyOptions, ApplyCommandHandler
 
     public ApplyCommand() : base("apply", "Apply the generated kustomize manifest to the cluster.")
     {
-        AddOption(InputPathOption.Instance);
-        AddOption(KubernetesContextOption.Instance);
-        AddOption(SecretPasswordOption.Instance);
-        AddOption(RollingRestartOption.Instance);
+        Options.Add(InputPathOption.Instance);
+        Options.Add(KubernetesContextOption.Instance);
+        Options.Add(SecretPasswordOption.Instance);
+        Options.Add(RollingRestartOption.Instance);
     }
 }

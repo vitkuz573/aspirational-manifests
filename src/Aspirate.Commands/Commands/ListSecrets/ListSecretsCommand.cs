@@ -7,7 +7,7 @@ public sealed class ListSecretsCommand : BaseCommand<ListSecretsOptions, ListSec
 
     public ListSecretsCommand() : base("list-secrets", "Lists secret keys per resource")
     {
-        AddOption(ResourceOption.Instance);
-        AddOption(ProviderOption.Instance);
+        Options.Add(ResourceOption.Instance);
+        Options.Add(ProviderOption.Instance);
     }
 }

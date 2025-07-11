@@ -1,11 +1,11 @@
-﻿namespace Aspirate.Commands.Commands.Settings;
+namespace Aspirate.Commands.Commands.Settings;
 
 public sealed class SettingsCommand : GenericCommand
 {
     public SettingsCommand() : base("settings", "Managed Aspir8 settings.")
     {
-        AddCommand(new UpdateChecksCommand());
-        AddCommand(new LogoCommand());
+        Subcommands.Add(new UpdateChecksCommand());
+        Subcommands.Add(new LogoCommand());
     }
 
     protected override Task<int> ExecuteCommand(IServiceCollection services)
@@ -16,6 +16,7 @@ public sealed class SettingsCommand : GenericCommand
         table.AddRow("logo", "Show / Hide the Aspir8 logo.");
 
         AnsiConsole.Render(table);
+
         return Task.FromResult(0);
     }
 }
@@ -24,8 +25,8 @@ internal sealed class LogoCommand : GenericCommand
 {
     public LogoCommand() : base("logo", "Show / Hide the Aspir8 logo.")
     {
-        AddCommand(new ShowLogoCommand());
-        AddCommand(new HideLogoCommand());
+        Subcommands.Add(new ShowLogoCommand());
+        Subcommands.Add(new HideLogoCommand());
     }
 
     protected override Task<int> ExecuteCommand(IServiceCollection services)
@@ -36,6 +37,7 @@ internal sealed class LogoCommand : GenericCommand
         table.AddRow("hide", "Hide the Aspir8 logo.");
 
         AnsiConsole.Render(table);
+
         return Task.FromResult(0);
     }
 }
@@ -44,8 +46,8 @@ internal sealed class UpdateChecksCommand : GenericCommand
 {
     public UpdateChecksCommand() : base("update-checks", "Manage Aspirate Version Checks.")
     {
-        AddCommand(new EnableUpdateChecksCommand());
-        AddCommand(new DisableUpdateChecksCommand());
+        Subcommands.Add(new EnableUpdateChecksCommand());
+        Subcommands.Add(new DisableUpdateChecksCommand());
     }
 
     protected override Task<int> ExecuteCommand(IServiceCollection services)
@@ -66,7 +68,9 @@ internal sealed class EnableUpdateChecksCommand() : GenericCommand("enable", "En
     {
         var serviceProvider = services.BuildServiceProvider();
         var versionCheckService = serviceProvider.GetRequiredService<IVersionCheckService>();
+
         await versionCheckService.SetUpdateChecks(true);
+
         return 0;
     }
 }
@@ -77,7 +81,9 @@ internal sealed class DisableUpdateChecksCommand() : GenericCommand("disable", "
     {
         var serviceProvider = services.BuildServiceProvider();
         var versionCheckService = serviceProvider.GetRequiredService<IVersionCheckService>();
+
         await versionCheckService.SetUpdateChecks(false);
+
         return 0;
     }
 }
@@ -95,8 +101,8 @@ internal sealed class ShowLogoCommand() : GenericCommand("show", "Show the aspir
         if (fileSystem.File.Exists(logoFilePath))
         {
             fileSystem.File.Delete(logoFilePath);
-            logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] The Aspir8 logo will now be [blue]shown[/].");
 
+            logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] The Aspir8 logo will now be [blue]shown[/].");
         }
 
         return Task.FromResult(0);
@@ -114,6 +120,7 @@ internal sealed class HideLogoCommand() : GenericCommand("hide", "Hide the Aspir
         var logoFilePath = fileSystem.Path.Combine(appDataFolder, AspirateLiterals.LogoDisabledFile);
 
         await fileSystem.File.WriteAllTextAsync(logoFilePath, "1");
+
         logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] The Aspir8 logo has been [blue]hidden[/].");
 
         return 0;

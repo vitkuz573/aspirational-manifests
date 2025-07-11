@@ -6,32 +6,32 @@ public sealed class GenerateCommand : BaseCommand<GenerateOptions, GenerateComma
 
     public GenerateCommand() : base("generate", "Builds, pushes containers, generates aspire manifest, helm chart and kustomize manifests.")
     {
-       AddOption(ProjectPathOption.Instance);
-       AddOption(AspireManifestOption.Instance);
-       AddOption(OutputPathOption.Instance);
-       AddOption(SkipBuildOption.Instance);
-       AddOption(SkipFinalKustomizeGenerationOption.Instance);
-       AddOption(ContainerBuilderOption.Instance);
-       AddOption(ContainerBuildContextOption.Instance);
-       AddOption(ContainerImageTagOption.Instance);
-       AddOption(ContainerBuildArgsOption.Instance);
-       AddOption(PreferDockerfileOption.Instance);
-       AddOption(ContainerRegistryOption.Instance);
-       AddOption(ContainerRepositoryPrefixOption.Instance);
-       AddOption(ImagePullPolicyOption.Instance);
-       AddOption(NamespaceOption.Instance);
-       AddOption(OutputFormatOption.Instance);
-       AddOption(RuntimeIdentifierOption.Instance);
-       AddOption(SecretPasswordOption.Instance);
-       AddOption(PrivateRegistryOption.Instance);
-       AddOption(PrivateRegistryUrlOption.Instance);
-       AddOption(PrivateRegistryUsernameOption.Instance);
-       AddOption(PrivateRegistryPasswordOption.Instance);
-       AddOption(PrivateRegistryEmailOption.Instance);
-       AddOption(IncludeDashboardOption.Instance);
-       AddOption(ComposeBuildsOption.Instance);
-       AddOption(ReplaceSecretsOption.Instance);
-       AddOption(ParameterResourceValueOption.Instance);
-       AddOption(ComponentsOption.Instance);
+        Options.Add(ProjectPathOption.Instance);
+        Options.Add(AspireManifestOption.Instance);
+        Options.Add(OutputPathOption.Instance);
+        Options.Add(SkipBuildOption.Instance);
+        Options.Add(SkipFinalKustomizeGenerationOption.Instance);
+        Options.Add(ContainerBuilderOption.Instance);
+        Options.Add(ContainerBuildContextOption.Instance);
+        Options.Add(ContainerImageTagOption.Instance);
+        Options.Add(ContainerBuildArgsOption.Instance);
+        Options.Add(PreferDockerfileOption.Instance);
+        Options.Add(ContainerRegistryOption.Instance);
+        Options.Add(ContainerRepositoryPrefixOption.Instance);
+        Options.Add(ImagePullPolicyOption.Instance);
+        Options.Add(NamespaceOption.Instance);
+        Options.Add(OutputFormatOption.Instance);
+        Options.Add(RuntimeIdentifierOption.Instance);
+        Options.Add(SecretPasswordOption.Instance);
+        Options.Add(PrivateRegistryOption.Instance);
+        Options.Add(PrivateRegistryUrlOption.Instance);
+        Options.Add(PrivateRegistryUsernameOption.Instance);
+        Options.Add(PrivateRegistryPasswordOption.Instance);
+        Options.Add(PrivateRegistryEmailOption.Instance);
+        Options.Add(IncludeDashboardOption.Instance);
+        Options.Add(ComposeBuildsOption.Instance);
+        Options.Add(ReplaceSecretsOption.Instance);
+        Options.Add(ParameterResourceValueOption.Instance);
+        Options.Add(ComponentsOption.Instance);
     }
 }

@@ -7,6 +7,6 @@ public sealed class ClearSecretsCommand : BaseCommand<ClearSecretsOptions, Clear
 
     public ClearSecretsCommand() : base("clear-secrets", "Removes stored secret state")
     {
-        AddOption(ForceOption.Instance);
+        Options.Add(ForceOption.Instance);
     }
 }
