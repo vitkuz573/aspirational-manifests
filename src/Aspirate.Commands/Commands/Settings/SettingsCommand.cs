@@ -66,6 +66,12 @@ internal sealed class EnableUpdateChecksCommand() : GenericCommand("enable", "En
 {
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
+        if (services is null)
+        {
+            services = new ServiceCollection();
+            services.RegisterAspirateEssential();
+        }
+
         var serviceProvider = services.BuildServiceProvider();
         var versionCheckService = serviceProvider.GetRequiredService<IVersionCheckService>();
 
@@ -79,6 +85,12 @@ internal sealed class DisableUpdateChecksCommand() : GenericCommand("disable", "
 {
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
+        if (services is null)
+        {
+            services = new ServiceCollection();
+            services.RegisterAspirateEssential();
+        }
+
         var serviceProvider = services.BuildServiceProvider();
         var versionCheckService = serviceProvider.GetRequiredService<IVersionCheckService>();
 
@@ -92,6 +104,12 @@ internal sealed class ShowLogoCommand() : GenericCommand("show", "Show the aspir
 {
     protected override Task<int> ExecuteCommand(IServiceCollection services)
     {
+        if (services is null)
+        {
+            services = new ServiceCollection();
+            services.RegisterAspirateEssential();
+        }
+
         var serviceProvider = services.BuildServiceProvider();
         var fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         var logger = serviceProvider.GetRequiredService<IAnsiConsole>();
@@ -113,6 +131,12 @@ internal sealed class HideLogoCommand() : GenericCommand("hide", "Hide the Aspir
 {
     protected override async Task<int> ExecuteCommand(IServiceCollection services)
     {
+        if (services is null)
+        {
+            services = new ServiceCollection();
+            services.RegisterAspirateEssential();
+        }
+
         var serviceProvider = services.BuildServiceProvider();
         var fileSystem = serviceProvider.GetRequiredService<IFileSystem>();
         var logger = serviceProvider.GetRequiredService<IAnsiConsole>();
