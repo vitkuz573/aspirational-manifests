@@ -1,8 +1,7 @@
-using System.CommandLine.Help;
-using Aspirate.Commands.Options;
 using Aspirate.Commands.Commands.ClearSecrets;
 using Aspirate.Commands.Commands.ListSecrets;
 using Aspirate.Commands.Commands.VerifySecrets;
+using Aspirate.Commands.Options;
 
 namespace Aspirate.Cli;
 
@@ -62,17 +61,17 @@ internal class AspirateCli : RootCommand
 
     public AspirateCli()
     {
-        AddCommand(new InitCommand());
-        AddCommand(new RunCommand());
-        AddCommand(new StopCommand());
-        AddCommand(new GenerateCommand());
-        AddCommand(new BuildCommand());
-        AddCommand(new ApplyCommand());
-        AddCommand(new DestroyCommand());
-        AddCommand(new VerifySecretsCommand());
-        AddCommand(new RotatePasswordCommand());
-        AddCommand(new ClearSecretsCommand());
-        AddCommand(new ListSecretsCommand());
-        AddCommand(new SettingsCommand());
+        Subcommands.Add(new InitCommand());
+        Subcommands.Add(new RunCommand());
+        Subcommands.Add(new StopCommand());
+        Subcommands.Add(new GenerateCommand());
+        Subcommands.Add(new BuildCommand());
+        Subcommands.Add(new ApplyCommand());
+        Subcommands.Add(new DestroyCommand());
+        Subcommands.Add(new VerifySecretsCommand());
+        Subcommands.Add(new RotatePasswordCommand());
+        Subcommands.Add(new ClearSecretsCommand());
+        Subcommands.Add(new ListSecretsCommand());
+        Subcommands.Add(new SettingsCommand());
     }
 }
