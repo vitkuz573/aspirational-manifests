@@ -11,7 +11,9 @@ public class KustomizeServiceTests : AspirateTestBase
     {
         // Arrange
         var fs = new MockFileSystem();
-        fs.AddDirectory(fs.Path.GetTempPath());
+        fs.AddDirectory("/input");
+        fs.AddDirectory("/input/postgrescontainer");
+        fs.AddDirectory("/input/postgrescontainer2");
 
         var shellExecutionService = Substitute.For<IShellExecutionService>();
         var console = Substitute.For<IAnsiConsole>();
@@ -19,6 +21,7 @@ public class KustomizeServiceTests : AspirateTestBase
         var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
 
         var state = CreateAspirateStateWithConnectionStrings();
+        state.InputPath = "/input";
         state.SecretState = new SecretState
         {
             Secrets = new()
