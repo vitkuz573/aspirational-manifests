@@ -85,11 +85,19 @@ public sealed class RemoveManifestsFromClusterAction(
 
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {
+            // Prefer to create the secret file in the input path overlay if the component directory exists.
             var resourcePath = fileSystem.Path.Combine(CurrentState.InputPath, resourceSecrets.Key);
 
-            if (!fileSystem.Directory.Exists(resourcePath))
+            if (!fileSystem.Directory.Exists(resourcePath) && !string.IsNullOrEmpty(CurrentState.OutputPath))
             {
-                continue;
+                // Fall back to the output path when the overlay does not contain the component directory.
+                resourcePath = fileSystem.Path.Combine(CurrentState.OutputPath, resourceSecrets.Key);
+
+                if (!fileSystem.Directory.Exists(resourcePath))
+                {
+                    // If the resource directory doesn't exist in either location, skip creating the file.
+                    continue;
+                }
             }
 
             var secretFile = fileSystem.Path.Combine(resourcePath, $".{resourceSecrets.Key}.secrets");
