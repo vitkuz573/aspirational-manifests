@@ -149,9 +149,9 @@ public class PopulateInputsActionTests : BaseActionTests<PopulateInputsAction>
         postgresParams.Value.Should().HaveLength(22);
         postgres2Params.Value.Should().HaveLength(22);
         postgresParams.Value.Should().NotBe(postgres2Params.Value);
-        postgresParams.Value.Count(char.IsLower).Should().BeGreaterOrEqualTo(1);
-        postgresParams.Value.Count(char.IsUpper).Should().BeGreaterOrEqualTo(1);
-        postgresParams.Value.Count(char.IsDigit).Should().BeGreaterOrEqualTo(1);
+        postgresParams.Value.Count(char.IsLower).Should().BeGreaterThanOrEqualTo(1);
+        postgresParams.Value.Count(char.IsUpper).Should().BeGreaterThanOrEqualTo(1);
+        postgresParams.Value.Count(char.IsDigit).Should().BeGreaterThanOrEqualTo(1);
     }
 
     private static void EnterPasswordInput(TestConsole console, string password)

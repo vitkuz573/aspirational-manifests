@@ -23,10 +23,10 @@ public class PasswordGeneratorTests : BaseServiceTests<IPasswordGenerator>
         var password = generator.Generate(options);
 
         password.Should().HaveLength(10);
-        password.Count(char.IsLower).Should().BeGreaterOrEqualTo(1);
-        password.Count(char.IsUpper).Should().BeGreaterOrEqualTo(1);
-        password.Count(char.IsDigit).Should().BeGreaterOrEqualTo(1);
-        password.Count(c => !char.IsLetterOrDigit(c)).Should().BeGreaterOrEqualTo(1);
+        password.Count(char.IsLower).Should().BeGreaterThanOrEqualTo(1);
+        password.Count(char.IsUpper).Should().BeGreaterThanOrEqualTo(1);
+        password.Count(char.IsDigit).Should().BeGreaterThanOrEqualTo(1);
+        password.Count(c => !char.IsLetterOrDigit(c)).Should().BeGreaterThanOrEqualTo(1);
     }
 
     [Fact]

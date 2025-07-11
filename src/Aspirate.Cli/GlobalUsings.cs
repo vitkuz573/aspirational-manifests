@@ -1,7 +1,7 @@
 // Global using directives
 
 global using System.CommandLine;
-global using System.CommandLine.Builder;
+global using System.CommandLine.Help;
 global using System.CommandLine.Invocation;
 global using System.CommandLine.NamingConventionBinder;
 global using System.CommandLine.Parsing;
@@ -9,7 +9,6 @@ global using Microsoft.Extensions.DependencyInjection;
 global using Microsoft.Extensions.DependencyInjection.Extensions;
 
 global using Aspirate.Cli;
-global using Aspirate.Cli.Middleware;
 global using Aspirate.Commands;
 global using Aspirate.Commands.Commands.Apply;
 global using Aspirate.Commands.Commands.Build;
