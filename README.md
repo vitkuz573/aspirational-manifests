@@ -113,6 +113,7 @@ To apply the manifests to your cluster, run:
 ```bash
 aspirate apply
 ```
+If an overlay path was provided with the `generate` command, aspirate will use that overlay when applying.
 
 Aspirate will first ask you which context they would like you to operate on, and will confirm first that you wish to act.
 
@@ -123,6 +124,7 @@ To remove the manifests from your cluster, run:
 ```bash
 aspirate destroy
 ```
+If an overlay path was provided with the `generate` command, aspirate will use that overlay when removing manifests.
 
 Aspirate will first ask you which context they would like you to operate on, and will confirm first that you wish to act.
 

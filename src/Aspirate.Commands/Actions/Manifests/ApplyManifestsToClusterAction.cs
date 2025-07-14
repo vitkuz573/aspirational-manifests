@@ -14,6 +14,7 @@ public sealed class ApplyManifestsToClusterAction(
         Logger.WriteRuler("[purple]Handle Deployment to Cluster[/]");
 
         var secretFiles = new List<string>();
+        var manifestsPath = GetManifestsPath();
 
         try
         {
@@ -31,7 +32,7 @@ public sealed class ApplyManifestsToClusterAction(
                 await kubeCtlService.ApplyManifestFile(CurrentState.KubeContext, imagePullSecretFile);
             }
 
-            await kubeCtlService.ApplyManifests(CurrentState.KubeContext, CurrentState.InputPath);
+            await kubeCtlService.ApplyManifests(CurrentState.KubeContext, manifestsPath);
             await HandleRollingRestart();
             Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] Deployments successfully applied to cluster [blue]'{CurrentState.KubeContext}'[/]");
 
@@ -51,7 +52,8 @@ public sealed class ApplyManifestsToClusterAction(
 
     private async Task HandleDapr()
     {
-        if (!fileSystem.Directory.Exists(fileSystem.Path.Combine(CurrentState.InputPath, "dapr")))
+        var manifestsPath = GetManifestsPath();
+        if (!fileSystem.Directory.Exists(fileSystem.Path.Combine(manifestsPath, "dapr")))
         {
             return;
         }
@@ -92,7 +94,7 @@ public sealed class ApplyManifestsToClusterAction(
             Logger.ValidationFailed("Cannot apply manifests to cluster without specifying the kubernetes context to use.");
         }
 
-        if (string.IsNullOrEmpty(CurrentState.InputPath))
+        if (string.IsNullOrEmpty(GetManifestsPath()))
         {
             Logger.ValidationFailed("Cannot apply manifests to cluster without specifying the input path to use for manifests.");
         }
@@ -105,7 +107,7 @@ public sealed class ApplyManifestsToClusterAction(
             return;
         }
 
-        var result = await kubeCtlService.PerformRollingRestart(CurrentState.KubeContext, CurrentState.InputPath);
+        var result = await kubeCtlService.PerformRollingRestart(CurrentState.KubeContext, GetManifestsPath());
 
         if (!result)
         {
@@ -113,4 +115,6 @@ public sealed class ApplyManifestsToClusterAction(
             ActionCausesExitException.ExitNow();
         }
     }
+
+    private string GetManifestsPath() => !string.IsNullOrEmpty(CurrentState.OverlayPath) ? CurrentState.OverlayPath! : CurrentState.InputPath!;
 }

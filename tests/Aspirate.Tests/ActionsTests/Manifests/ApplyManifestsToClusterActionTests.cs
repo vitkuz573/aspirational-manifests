@@ -155,4 +155,38 @@ public class ApplyManifestsToClusterActionTests : BaseActionTests<ApplyManifests
         await kubeCtl.Received().ApplyManifestFile(state.KubeContext, "temp.yaml");
         kustomize.Received().CleanupSecretEnvFiles(state.DisableSecrets, Arg.Is<IEnumerable<string>>(x => x.Contains("temp.yaml")));
     }
+
+    [Fact]
+    public async Task ApplyManifests_UsesOverlayPath_WhenSet()
+    {
+        var state = CreateAspirateState(nonInteractive: true, projectPath: DefaultProjectPath, inputPath: "/some-path", kubeContext: "docker-desktop");
+        state.OverlayPath = "/overlay";
+
+        var fileSystem = new MockFileSystem();
+        fileSystem.AddDirectory("/overlay");
+
+        var kubeCtl = Substitute.For<IKubeCtlService>();
+        kubeCtl.ApplyManifests(Arg.Any<string>(), Arg.Any<string>()).Returns(Task.FromResult(true));
+
+        var services = new ServiceCollection();
+        services.RegisterAspirateEssential();
+        services.RemoveAll<IFileSystem>();
+        services.RemoveAll<IAnsiConsole>();
+        services.RemoveAll<AspirateState>();
+        services.RemoveAll<IKubeCtlService>();
+
+        services.AddSingleton<IFileSystem>(fileSystem);
+        services.AddSingleton<IAnsiConsole>(new TestConsole());
+        services.AddSingleton(state);
+        services.AddSingleton(Substitute.For<IShellExecutionService>());
+        services.AddSingleton(kubeCtl);
+
+        var provider = services.BuildServiceProvider();
+
+        var action = GetSystemUnderTest(provider);
+
+        await action.ExecuteAsync();
+
+        await kubeCtl.Received().ApplyManifests(state.KubeContext, "/overlay");
+    }
 }

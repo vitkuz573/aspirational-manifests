@@ -13,13 +13,14 @@ public sealed class RemoveManifestsFromClusterAction(
         Logger.WriteRuler("[purple]Handle Removal from Cluster[/]");
 
         var secretFiles = new List<string>();
+        var manifestsPath = GetManifestsPath();
 
         try
         {
             await InteractivelySelectKubernetesCluster();
 
             CreateEmptySecretFiles(secretFiles);
-            await kubeCtlService.RemoveManifests(CurrentState.KubeContext, CurrentState.InputPath);
+            await kubeCtlService.RemoveManifests(CurrentState.KubeContext, manifestsPath);
             Logger.MarkupLine(
                 $"[green]({EmojiLiterals.CheckMark}) Done:[/] Deployments removed from cluster [blue]'{CurrentState.KubeContext}'[/]");
 
@@ -83,9 +84,11 @@ public sealed class RemoveManifestsFromClusterAction(
             return;
         }
 
+        var manifestsPath = GetManifestsPath();
+
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {
-            var resourcePath = fileSystem.Path.Combine(CurrentState.InputPath, resourceSecrets.Key);
+            var resourcePath = fileSystem.Path.Combine(manifestsPath, resourceSecrets.Key);
 
             if (!fileSystem.Directory.Exists(resourcePath))
             {
@@ -103,7 +106,8 @@ public sealed class RemoveManifestsFromClusterAction(
 
     private async Task HandleDapr()
     {
-        if (!fileSystem.Directory.Exists(fileSystem.Path.Combine(CurrentState.InputPath, "dapr")))
+        var manifestsPath = GetManifestsPath();
+        if (!fileSystem.Directory.Exists(fileSystem.Path.Combine(manifestsPath, "dapr")))
         {
             return;
         }
@@ -155,7 +159,7 @@ public sealed class RemoveManifestsFromClusterAction(
             Logger.ValidationFailed("Cannot remove manifests from a cluster without specifying the kubernetes context to use.");
         }
 
-        if (string.IsNullOrEmpty(CurrentState.InputPath))
+        if (string.IsNullOrEmpty(GetManifestsPath()))
         {
             Logger.ValidationFailed("Cannot remove manifests from a cluster without specifying the input path to use for manifests.");
         }
@@ -173,4 +177,6 @@ public sealed class RemoveManifestsFromClusterAction(
             fileSystem.File.Delete(secretFile);
         }
     }
+
+    private string GetManifestsPath() => !string.IsNullOrEmpty(CurrentState.OverlayPath) ? CurrentState.OverlayPath! : CurrentState.InputPath!;
 }

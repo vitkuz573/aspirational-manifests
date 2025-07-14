@@ -33,5 +33,6 @@ public sealed class GenerateCommand : BaseCommand<GenerateOptions, GenerateComma
         Options.Add(ReplaceSecretsOption.Instance);
         Options.Add(ParameterResourceValueOption.Instance);
         Options.Add(ComponentsOption.Instance);
+        Options.Add(OverlayPathOption.Instance);
     }
 }
