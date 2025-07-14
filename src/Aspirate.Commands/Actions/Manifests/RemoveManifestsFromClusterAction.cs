@@ -14,13 +14,20 @@ public sealed class RemoveManifestsFromClusterAction(
 
         var secretFiles = new List<string>();
         var manifestsPath = GetManifestsPath();
+        var overlayPath = CurrentState.OverlayPath;
+        var basePath = CurrentState.InputPath!;
 
         try
         {
             await InteractivelySelectKubernetesCluster();
 
             CreateEmptySecretFiles(secretFiles);
-            await kubeCtlService.RemoveManifests(CurrentState.KubeContext, manifestsPath);
+            await kubeCtlService.RemoveManifests(CurrentState.KubeContext, basePath);
+
+            if (!string.IsNullOrEmpty(overlayPath))
+            {
+                await kubeCtlService.RemoveManifests(CurrentState.KubeContext, overlayPath);
+            }
             Logger.MarkupLine(
                 $"[green]({EmojiLiterals.CheckMark}) Done:[/] Deployments removed from cluster [blue]'{CurrentState.KubeContext}'[/]");
 

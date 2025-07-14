@@ -2,7 +2,7 @@
 
 To remove the manifests from your cluster, run:
 
-If an overlay path was provided during `generate`, Aspirate uses that directory when removing manifests.
+If an overlay path was provided during `generate`, Aspirate removes the manifests from the input directory first and then deletes those in the overlay directory.
 
 ```bash
 aspirate destroy

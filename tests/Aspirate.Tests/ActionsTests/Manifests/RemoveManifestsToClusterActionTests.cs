@@ -139,6 +139,7 @@ public class RemoveManifestsToClusterActionTests : BaseActionTests<RemoveManifes
 
         await action.ExecuteAsync();
 
+        await kubeCtl.Received().RemoveManifests(state.KubeContext, "/some-path");
         await kubeCtl.Received().RemoveManifests(state.KubeContext, "/overlay");
     }
 }

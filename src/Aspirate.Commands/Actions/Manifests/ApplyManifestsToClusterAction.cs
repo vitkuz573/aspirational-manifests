@@ -15,6 +15,8 @@ public sealed class ApplyManifestsToClusterAction(
 
         var secretFiles = new List<string>();
         var manifestsPath = GetManifestsPath();
+        var overlayPath = CurrentState.OverlayPath;
+        var basePath = CurrentState.InputPath!;
 
         try
         {
@@ -32,7 +34,12 @@ public sealed class ApplyManifestsToClusterAction(
                 await kubeCtlService.ApplyManifestFile(CurrentState.KubeContext, imagePullSecretFile);
             }
 
-            await kubeCtlService.ApplyManifests(CurrentState.KubeContext, manifestsPath);
+            await kubeCtlService.ApplyManifests(CurrentState.KubeContext, basePath);
+
+            if (!string.IsNullOrEmpty(overlayPath))
+            {
+                await kubeCtlService.ApplyManifests(CurrentState.KubeContext, overlayPath);
+            }
             await HandleRollingRestart();
             Logger.MarkupLine($"[green]({EmojiLiterals.CheckMark}) Done:[/] Deployments successfully applied to cluster [blue]'{CurrentState.KubeContext}'[/]");
 
