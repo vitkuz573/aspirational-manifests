@@ -30,6 +30,7 @@ public class AspirateStateExtensionsTests
         public string? ContainerRepositoryPrefix { get; set; }
         public List<string>? ContainerImageTags { get; set; }
         public List<string>? ContainerBuildArgs { get; set; }
+        public string? OverlayPath { get; set; }
     }
 
     [Fact]
@@ -44,6 +45,17 @@ public class AspirateStateExtensionsTests
 
         // Assert
         state.ContainerBuilder.Should().Be(ContainerBuilder.Docker.Value);
+    }
+
+    [Fact]
+    public void PopulateStateFromOptions_OverlayPathStored()
+    {
+        var state = new AspirateState();
+        var options = new TestOptions { OverlayPath = "/over" };
+
+        state.PopulateStateFromOptions(options);
+
+        state.OverlayPath.Should().Be("/over");
     }
 
     [Fact]

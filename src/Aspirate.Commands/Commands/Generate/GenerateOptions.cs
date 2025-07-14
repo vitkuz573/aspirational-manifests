@@ -36,4 +36,5 @@ public sealed class GenerateOptions : BaseCommandOptions,
     public bool? IncludeDashboard { get; set; }
     public bool? ReplaceSecrets { get; set; }
     public List<string>? CliSpecifiedComponents { get; set; }
+    public string? OverlayPath { get; set; }
 }

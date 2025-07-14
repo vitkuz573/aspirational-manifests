@@ -76,6 +76,10 @@ When ran non-interactively, you can specify which components to build with `-c` 
 | --project-path                | -p    | `ASPIRATE_PROJECT_PATH`                    | The path to the aspire project.                                                                                                                                                              |
 | --aspire-manifest             | -m    | `ASPIRATE_ASPIRE_MANIFEST_PATH`            | The aspire manifest file to use                                                                                                                                                              |
 | --output-path                 | -o    | `ASPIRATE_OUTPUT_PATH`                     | The path to the output directory. Defaults to `%output-dir%`                                                                                                                                 |
+| --overlay-path                | -op   | `ASPIRATE_OVERLAY_PATH`
+    | Optional kustomize overlay directory applied during `apply` and `destroy`
+
+                                    |
 | --skip-build                  |       | `ASPIRATE_SKIP_BUILD`                      | Skips build and Push of containers.                                                                                                                                                          |
 | --disable-state               |       | `ASPIRATE_DISABLE_STATE`                   | Disable aspirate state management.                                                                                                                                                           |
 | --namespace                   |       | `ASPIRATE_NAMESPACE`                       | Generates a Kubernetes Namespace resource, and applies the namespace to all generated resources. Will be used at deployment time.                                                            |

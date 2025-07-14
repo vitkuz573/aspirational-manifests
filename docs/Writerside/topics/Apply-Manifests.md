@@ -2,6 +2,8 @@
 
 To apply the manifests to your cluster, run:
 
+If an overlay path was provided during `generate`, Aspirate uses that directory when applying manifests.
+
 ```bash
 aspirate apply
 ```

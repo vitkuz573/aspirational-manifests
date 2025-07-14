@@ -55,9 +55,11 @@ public class KustomizeService(IFileSystem fileSystem, IShellExecutionService she
             return;
         }
 
-        var basePath = !string.IsNullOrEmpty(state.InputPath)
-            ? state.InputPath
-            : fileSystem.Path.GetTempPath();
+        var basePath = !string.IsNullOrEmpty(state.OverlayPath)
+            ? state.OverlayPath!
+            : !string.IsNullOrEmpty(state.InputPath)
+                ? state.InputPath!
+                : fileSystem.Path.GetTempPath();
 
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {

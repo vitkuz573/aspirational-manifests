@@ -28,6 +28,10 @@ public class AspirateState :
     public string? OutputPath { get; set; }
 
     [RestorableStateProperty]
+    [JsonPropertyName("overlayPath")]
+    public string? OverlayPath { get; set; }
+
+    [RestorableStateProperty]
     [JsonPropertyName("launchProfile")]
     public string? LaunchProfile { get; set; }
 
