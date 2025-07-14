@@ -187,6 +187,7 @@ public class ApplyManifestsToClusterActionTests : BaseActionTests<ApplyManifests
 
         await action.ExecuteAsync();
 
+        await kubeCtl.Received().ApplyManifests(state.KubeContext, "/some-path");
         await kubeCtl.Received().ApplyManifests(state.KubeContext, "/overlay");
     }
 }
