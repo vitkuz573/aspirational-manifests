@@ -84,7 +84,7 @@ public sealed class RemoveManifestsFromClusterAction(
             return;
         }
 
-        var manifestsPath = GetManifestsPath();
+        var manifestsPath = CurrentState.InputPath!;
 
         foreach (var resourceSecrets in secretProvider.State.Secrets.Where(x => x.Value.Keys.Count > 0))
         {

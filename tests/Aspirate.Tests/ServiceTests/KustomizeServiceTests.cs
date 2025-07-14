@@ -81,4 +81,41 @@ public class KustomizeServiceTests : AspirateTestBase
         result.Should().NotBeNull();
         fs.FileExists(result!).Should().BeTrue();
     }
+
+    [Fact]
+    public async Task WriteSecretsOutToTempFiles_UsesInputPath_WhenOverlayPathSet()
+    {
+        var fs = new MockFileSystem();
+        fs.AddDirectory("/input");
+        fs.AddDirectory("/input/postgrescontainer");
+        fs.AddDirectory("/overlay");
+
+        var shellExecutionService = Substitute.For<IShellExecutionService>();
+        var console = Substitute.For<IAnsiConsole>();
+        var manifestWriter = new ManifestWriter(fs);
+        var sut = new KustomizeService(fs, shellExecutionService, console, manifestWriter);
+
+        var state = CreateAspirateStateWithConnectionStrings();
+        state.InputPath = "/input";
+        state.OverlayPath = "/overlay";
+        state.SecretState = new SecretState
+        {
+            Secrets = new()
+            {
+                ["postgrescontainer"] = new()
+                {
+                    ["ConnectionString_Test"] = "dummy"
+                }
+            }
+        };
+        var secretProvider = new SecretProvider(fs);
+        secretProvider.LoadState(state);
+
+        var files = new List<string>();
+
+        await sut.WriteSecretsOutToTempFiles(state, files, secretProvider);
+
+        files.Should().ContainSingle();
+        files[0].Should().StartWith("/input/postgrescontainer");
+    }
 }
