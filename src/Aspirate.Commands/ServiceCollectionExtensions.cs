@@ -44,6 +44,7 @@ public static class ServiceCollectionExtensions
             .RegisterAction<IncludeAspireDashboardAction>()
             .RegisterAction<GenerateHelmChartAction>()
             .RegisterAction<CustomNamespaceAction>()
+            .RegisterAction<ConfigureSecurityContextAction>()
             .RegisterAction<ConfigureIngressAction>()
             .RegisterAction<RunKubernetesObjectsAction>()
             .RegisterAction<StopDeployedKubernetesInstanceAction>();

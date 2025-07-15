@@ -67,6 +67,12 @@ The command will first create the manifest file, however this can be overridden 
 aspirate build
 ```
 
+## Security Contexts
+
+During `aspirate generate` you can provide Kubernetes pod security context values
+such as `runAsUser` and `runAsGroup` for each resource. These settings are saved
+in the state file and applied automatically to generated manifests.
+
 ## Secrets Management
 
 Aspirate now includes built-in support for robust secret management, allowing you to easily encrypt sensitive data such as connection strings. This feature is designed to increase security and minimize vulnerabilities.

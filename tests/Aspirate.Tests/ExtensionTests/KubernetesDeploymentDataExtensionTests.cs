@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using k8s;
+using k8s.Models;
 using Xunit;
 
 namespace Aspirate.Tests.ExtensionTests;
@@ -271,6 +272,35 @@ public class KubernetesDeploymentDataExtensionTests
 
         act.Should().Throw<InvalidOperationException>()
             .WithMessage("*missing required property 'target'");
+    }
+
+    [Fact]
+    public void ToKubernetesDeployment_AppliesSecurityContext()
+    {
+        var data = new KubernetesDeploymentData()
+            .SetName("web")
+            .SetContainerImage("img")
+            .SetSecurityContext(new V1PodSecurityContext { RunAsUser = 1000 }, new V1SecurityContext { RunAsUser = 1000 });
+
+        var deployment = data.ToKubernetesDeployment();
+
+        deployment.Spec.Template.Spec.SecurityContext.RunAsUser.Should().Be(1000);
+        deployment.Spec.Template.Spec.Containers[0].SecurityContext.RunAsUser.Should().Be(1000);
+    }
+
+    [Fact]
+    public void ToKubernetesStatefulSet_AppliesSecurityContext()
+    {
+        var data = new KubernetesDeploymentData()
+            .SetName("web")
+            .SetContainerImage("img")
+            .SetVolumes(new List<Volume> { new Volume { Name = "data", Target = "/d", ReadOnly = false } })
+            .SetSecurityContext(new V1PodSecurityContext { RunAsGroup = 2000 }, new V1SecurityContext { RunAsGroup = 2000 });
+
+        var ss = data.ToKubernetesStatefulSet();
+
+        ss.Spec.Template.Spec.SecurityContext.RunAsGroup.Should().Be(2000);
+        ss.Spec.Template.Spec.Containers[0].SecurityContext.RunAsGroup.Should().Be(2000);
     }
 }
 

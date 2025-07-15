@@ -82,6 +82,7 @@ public class DockerfileProcessor(
             .SetPorts(options.Resource.MapBindingsToPorts())
             .SetManifests(_manifests)
             .SetWithPrivateRegistry(options.WithPrivateRegistry.GetValueOrDefault())
+            .ApplySecurityContext(options)
             .Validate();
 
     public async Task BuildAndPushContainerForDockerfile(KeyValuePair<string, Resource> resource, ContainerOptions options, bool nonInteractive, string? basePath = null)
