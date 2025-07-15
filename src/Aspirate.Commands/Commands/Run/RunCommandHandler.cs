@@ -17,6 +17,7 @@ public sealed class RunCommandHandler(IServiceProvider serviceProvider) : BaseCo
             .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
             .QueueAction(nameof(AskImagePullPolicyAction))
             .QueueAction(nameof(SaveSecretsAction))
+            .QueueAction(nameof(ConfigureSecurityContextAction))
             .QueueAction(nameof(CustomNamespaceAction))
             .QueueAction(nameof(RunKubernetesObjectsAction))
             .ExecuteCommandsAsync();

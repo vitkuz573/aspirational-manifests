@@ -35,6 +35,7 @@ public sealed class GenerateCommandHandler(IServiceProvider serviceProvider) : B
             .QueueAction(nameof(BuildAndPushContainersFromProjectsAction))
             .QueueAction(nameof(BuildAndPushContainersFromDockerfilesAction))
             .QueueAction(nameof(SaveSecretsAction))
+            .QueueAction(nameof(ConfigureSecurityContextAction))
             .QueueAction(nameof(AskImagePullPolicyAction));
 
     private Task<int> GenerateDockerComposeManifests() =>
