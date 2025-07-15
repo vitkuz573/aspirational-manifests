@@ -29,30 +29,30 @@ spec:
         {{@key}}: {{this}}
       {{/each}}
 {{/if}}
-      spec:
-      {{#if withPrivateRegistry}}
-        imagePullSecrets:
-        - name: image-pull-secret
+    spec:
+    {{#if withPrivateRegistry}}
+      imagePullSecrets:
+      - name: image-pull-secret
+    {{/if}}
+    {{#if PodSecurityContext}}
+      securityContext:
+      {{#if PodSecurityContext.RunAsUser}}
+        runAsUser: {{PodSecurityContext.RunAsUser}}
       {{/if}}
-      {{#if PodSecurityContext}}
-        securityContext:
-        {{#if PodSecurityContext.RunAsUser}}
-          runAsUser: {{PodSecurityContext.RunAsUser}}
-        {{/if}}
-        {{#if PodSecurityContext.RunAsGroup}}
-          runAsGroup: {{PodSecurityContext.RunAsGroup}}
-        {{/if}}
-        {{#if PodSecurityContext.FsGroup}}
-          fsGroup: {{PodSecurityContext.FsGroup}}
-        {{/if}}
-        {{#if PodSecurityContext.RunAsNonRoot}}
-          runAsNonRoot: true
-        {{/if}}
+      {{#if PodSecurityContext.RunAsGroup}}
+        runAsGroup: {{PodSecurityContext.RunAsGroup}}
       {{/if}}
-        containers:
-          - name: {{name}}
-            image: {{containerImage}}
-            imagePullPolicy: {{imagePullPolicy}}
+      {{#if PodSecurityContext.FsGroup}}
+        fsGroup: {{PodSecurityContext.FsGroup}}
+      {{/if}}
+      {{#if PodSecurityContext.RunAsNonRoot}}
+        runAsNonRoot: true
+      {{/if}}
+    {{/if}}
+      containers:
+        - name: {{name}}
+          image: {{containerImage}}
+          imagePullPolicy: {{imagePullPolicy}}
           {{#if ContainerSecurityContext}}
           securityContext:
             {{#if ContainerSecurityContext.RunAsUser}}
