@@ -5,12 +5,12 @@ metadata:
   name: {{name}}
   labels:
     app: {{name}}
-{{#if hasAnyAnnotations}}
+  {{#if hasAnyAnnotations}}
   annotations:
-  {{#each annotations}}
+    {{#each annotations}}
     {{@key}}: {{this}}
-  {{/each}}
-{{/if}}
+    {{/each}}
+  {{/if}}
 spec:
   minReadySeconds: 60
   replicas: 1
@@ -23,32 +23,32 @@ spec:
     metadata:
       labels:
         app: {{name}}
-{{#if hasAnyAnnotations}}
+      {{#if hasAnyAnnotations}}
       annotations:
-      {{#each annotations}}
+        {{#each annotations}}
         {{@key}}: {{this}}
-      {{/each}}
-{{/if}}
+        {{/each}}
+      {{/if}}
     spec:
-    {{#if withPrivateRegistry}}
+      {{#if withPrivateRegistry}}
       imagePullSecrets:
-      - name: image-pull-secret
-    {{/if}}
-    {{#if PodSecurityContext}}
+        - name: image-pull-secret
+      {{/if}}
+      {{#if PodSecurityContext}}
       securityContext:
-      {{#if PodSecurityContext.RunAsUser}}
+        {{#if PodSecurityContext.RunAsUser}}
         runAsUser: {{PodSecurityContext.RunAsUser}}
-      {{/if}}
-      {{#if PodSecurityContext.RunAsGroup}}
+        {{/if}}
+        {{#if PodSecurityContext.RunAsGroup}}
         runAsGroup: {{PodSecurityContext.RunAsGroup}}
-      {{/if}}
-      {{#if PodSecurityContext.FsGroup}}
+        {{/if}}
+        {{#if PodSecurityContext.FsGroup}}
         fsGroup: {{PodSecurityContext.FsGroup}}
-      {{/if}}
-      {{#if PodSecurityContext.RunAsNonRoot}}
+        {{/if}}
+        {{#if PodSecurityContext.RunAsNonRoot}}
         runAsNonRoot: true
+        {{/if}}
       {{/if}}
-    {{/if}}
       containers:
         - name: {{name}}
           image: {{containerImage}}
@@ -68,44 +68,44 @@ spec:
           {{#if entrypoint}}
           command:
             - {{entrypoint}}
-        {{/if}}
-        {{#if hasArgs}}
-        args:
-        {{#each args}}
-        - {{this}}
-        {{/each}}
-        {{/if}}
-        {{#if hasPorts}}
-        ports:
-        {{#each ports}}
-        - name: {{name}}
-          containerPort: {{internalPort}}
-        {{/each}}
-        {{/if}}
-        {{#if hasAnyEnv}}
-        envFrom:
-        - configMapRef:
-            name: {{name}}-env
-        {{#if hasAnySecrets}}
-        - secretRef:
-            name: {{name}}-secrets
-        {{/if}}
-        {{else}}
-        {{#if hasAnySecrets}}
-        envFrom:
-        - secretRef:
-            name: {{name}}-secrets
-        {{/if}}
-        {{/if}}
-        {{#if hasVolumes}}
-        volumeMounts:
-        {{#each volumes}}
-        - name: {{this.name}}
-          mountPath: {{this.target}}
-          {{#if this.readOnly}}
-          readOnly: true
           {{/if}}
-        {{/each}}
-        {{/if}}
+          {{#if hasArgs}}
+          args:
+            {{#each args}}
+            - {{this}}
+            {{/each}}
+          {{/if}}
+          {{#if hasPorts}}
+          ports:
+            {{#each ports}}
+            - name: {{name}}
+              containerPort: {{internalPort}}
+            {{/each}}
+          {{/if}}
+          {{#if hasAnyEnv}}
+          envFrom:
+            - configMapRef:
+                name: {{name}}-env
+            {{#if hasAnySecrets}}
+            - secretRef:
+                name: {{name}}-secrets
+            {{/if}}
+          {{else}}
+          {{#if hasAnySecrets}}
+          envFrom:
+            - secretRef:
+                name: {{name}}-secrets
+          {{/if}}
+          {{/if}}
+          {{#if hasVolumes}}
+          volumeMounts:
+            {{#each volumes}}
+            - name: {{this.name}}
+              mountPath: {{this.target}}
+              {{#if this.readOnly}}
+              readOnly: true
+              {{/if}}
+            {{/each}}
+          {{/if}}
       terminationGracePeriodSeconds: 180
 
