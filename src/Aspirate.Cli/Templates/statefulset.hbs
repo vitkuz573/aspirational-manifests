@@ -32,10 +32,37 @@ spec:
       imagePullSecrets:
         - name: image-pull-secret
         {{/if}}
+    {{#if PodSecurityContext}}
+      securityContext:
+        {{#if PodSecurityContext.RunAsUser}}
+        runAsUser: {{PodSecurityContext.RunAsUser}}
+        {{/if}}
+        {{#if PodSecurityContext.RunAsGroup}}
+        runAsGroup: {{PodSecurityContext.RunAsGroup}}
+        {{/if}}
+        {{#if PodSecurityContext.FsGroup}}
+        fsGroup: {{PodSecurityContext.FsGroup}}
+        {{/if}}
+        {{#if PodSecurityContext.RunAsNonRoot}}
+        runAsNonRoot: true
+        {{/if}}
+    {{/if}}
       containers:
         - name: {{name}}
           image: {{containerImage}}
           imagePullPolicy: {{imagePullPolicy}}
+          {{#if ContainerSecurityContext}}
+          securityContext:
+            {{#if ContainerSecurityContext.RunAsUser}}
+            runAsUser: {{ContainerSecurityContext.RunAsUser}}
+            {{/if}}
+            {{#if ContainerSecurityContext.RunAsGroup}}
+            runAsGroup: {{ContainerSecurityContext.RunAsGroup}}
+            {{/if}}
+            {{#if ContainerSecurityContext.RunAsNonRoot}}
+            runAsNonRoot: true
+            {{/if}}
+          {{/if}}
           {{#if entrypoint}}
           command:
             - {{entrypoint}}
