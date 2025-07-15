@@ -1,3 +1,6 @@
+using k8s.Models;
+using Aspirate.Shared.Models.Aspirate;
+
 namespace Aspirate.Shared.Extensions;
 
 public static class KubernetesDeploymentDataExtensions
@@ -124,6 +127,11 @@ public static class KubernetesDeploymentDataExtensions
             container.VolumeMounts = volumeMounts;
         }
 
+        if (data.ContainerSecurityContext != null)
+        {
+            container.SecurityContext = data.ContainerSecurityContext;
+        }
+
         return container;
     }
 
@@ -185,6 +193,7 @@ public static class KubernetesDeploymentDataExtensions
                     {
                         Containers = new List<V1Container> { container },
                         TerminationGracePeriodSeconds = 180,
+                        SecurityContext = data.PodSecurityContext,
                         Volumes = data.HasBindMounts
                             ? data.BindMounts.Select(x => new V1Volume
                                 {
@@ -234,6 +243,7 @@ public static class KubernetesDeploymentDataExtensions
                     {
                         Containers = new List<V1Container> { data.ToKubernetesContainer(useConfigMap, useSecrets) },
                         TerminationGracePeriodSeconds = 180,
+                        SecurityContext = data.PodSecurityContext,
                         Volumes = data.HasBindMounts
                             ? data.BindMounts.Select(x => new V1Volume
                                 {
@@ -446,6 +456,32 @@ public static V1Ingress ToKubernetesIngress(this KubernetesDeploymentData data)
                 .SetIngressPortNumber(def.PortNumber)
                 .SetIngressAnnotations(def.Annotations)
                 .SetIngressClassName(state.IngressController);
+        }
+
+        return data;
+    }
+
+    public static KubernetesDeploymentData ApplySecurityContext(this KubernetesDeploymentData data, BaseKubernetesCreateOptions options)
+    {
+        var state = options.CurrentState;
+        if (state?.SecurityContexts != null && state.SecurityContexts.TryGetValue(options.Resource.Key, out var ctx))
+        {
+            var pod = new V1PodSecurityContext
+            {
+                RunAsUser = ctx.RunAsUser,
+                RunAsGroup = ctx.RunAsGroup,
+                FsGroup = ctx.FsGroup,
+                RunAsNonRoot = ctx.RunAsNonRoot
+            };
+
+            var container = new V1SecurityContext
+            {
+                RunAsUser = ctx.RunAsUser,
+                RunAsGroup = ctx.RunAsGroup,
+                RunAsNonRoot = ctx.RunAsNonRoot
+            };
+
+            data.SetSecurityContext(pod, container);
         }
 
         return data;

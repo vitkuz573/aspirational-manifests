@@ -151,4 +151,55 @@ public class StateServiceTests : BaseServiceTests<IStateService>
             mode.Should().Be(UnixFileMode.UserRead | UnixFileMode.UserWrite);
         }
     }
+
+    [Fact]
+    public async Task RestoreState_PersistsSecurityContexts()
+    {
+        IFileSystem fs = OperatingSystem.IsWindows() ? new MockFileSystem() : new FileSystem();
+        var console = new TestConsole();
+        var secretProvider = new SecretProvider(fs);
+        var sut = new StateService(fs, console, secretProvider);
+
+        var statePath = fs.Path.Combine(fs.Path.GetTempPath(), "state_sc");
+        if (fs is MockFileSystem mfs)
+        {
+            mfs.AddDirectory(statePath);
+        }
+        else
+        {
+            fs.Directory.CreateDirectory(statePath);
+        }
+
+        var state = CreateAspirateState();
+        state.SecurityContexts = new Dictionary<string, PodSecurityContext>
+        {
+            ["web"] = new PodSecurityContext { RunAsUser = 1000 }
+        };
+
+        var options = new StateManagementOptions
+        {
+            State = state,
+            DisableState = false,
+            NonInteractive = true,
+            RequiresState = false,
+            StatePath = statePath,
+        };
+
+        await sut.SaveState(options);
+
+        var newState = CreateAspirateState();
+        var restoreOptions = new StateManagementOptions
+        {
+            State = newState,
+            DisableState = false,
+            NonInteractive = true,
+            RequiresState = false,
+            StatePath = statePath,
+        };
+
+        await sut.RestoreState(restoreOptions);
+
+        newState.SecurityContexts.Should().ContainKey("web");
+        newState.SecurityContexts["web"].RunAsUser.Should().Be(1000);
+    }
 }

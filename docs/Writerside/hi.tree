@@ -34,6 +34,7 @@
     <toc-element topic="External-Providers.md"/>
     <toc-element topic="Ingress-Support.md"/>
     <toc-element topic="Dapr-Support.md"/>
+    <toc-element topic="Security-Contexts.md"/>
     <toc-element topic="Security-Best-Practices.md"/>
     <toc-element topic="Troubleshooting.md"/>
 </instance-profile>

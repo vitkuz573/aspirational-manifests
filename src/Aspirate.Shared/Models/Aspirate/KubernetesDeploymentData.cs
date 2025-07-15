@@ -1,5 +1,6 @@
 using Volume = Aspirate.Shared.Models.AspireManifests.Components.Common.Volume;
 using BindMount = Aspirate.Shared.Models.AspireManifests.Components.Common.BindMount;
+using k8s.Models;
 
 namespace Aspirate.Shared.Models.Aspirate;
 
@@ -32,6 +33,8 @@ public class KubernetesDeploymentData
     public string? IngressPath { get; private set; }
     public int? IngressPortNumber { get; private set; }
     public BicepResource? Deployment { get; private set; }
+    public V1PodSecurityContext? PodSecurityContext { get; private set; }
+    public V1SecurityContext? ContainerSecurityContext { get; private set; }
 
     public KubernetesDeploymentData SetName(string name)
     {
@@ -200,6 +203,13 @@ public class KubernetesDeploymentData
             }
         }
 
+        return this;
+    }
+
+    public KubernetesDeploymentData SetSecurityContext(V1PodSecurityContext? podContext, V1SecurityContext? containerContext = null)
+    {
+        PodSecurityContext = podContext;
+        ContainerSecurityContext = containerContext;
         return this;
     }
 
